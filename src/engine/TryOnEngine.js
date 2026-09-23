@@ -1,100 +1,155 @@
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
 export class TryOnEngine {
-  constructor(video,canvas,onStatus=()=>{}) {
-    this.video=video; this.canvas=canvas; this.ctx=canvas.getContext("2d");
-    this.onStatus=onStatus; this.landmarker=null; this.lastVideoTime=-1; this.running=false;
+  constructor(video, canvas, onStatus = () => {}) {
+    this.video = video;
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.onStatus = onStatus;
+    this.landmarker = null;
+    this.lastVideoTime = -1;
+    this.running = false;
+
+    // Primeira armação real do provador
+    this.glassesImage = new Image();
+    this.glassesImage.src = "/armacao-fremi-teste.png";
   }
-  async init(){
+
+  async init() {
     this.onStatus("Carregando rastreamento facial…");
-    const vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm");
-    this.landmarker=await FaceLandmarker.createFromOptions(vision,{
-      baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",delegate:"GPU"},
-      runningMode:"VIDEO",numFaces:1,outputFacialTransformationMatrixes:true
+
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+    );
+
+    this.landmarker = await FaceLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+        delegate: "GPU",
+      },
+      runningMode: "VIDEO",
+      numFaces: 1,
+      outputFacialTransformationMatrixes: true,
     });
+
     this.onStatus("Rastreamento pronto");
   }
-  async startCamera(){
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1280},height:{ideal:960}},audio:false});
-    this.video.srcObject=stream; await this.video.play(); this.resize(); this.running=true; requestAnimationFrame(()=>this.loop());
+
+  async startCamera() {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 1280 },
+        height: { ideal: 960 },
+      },
+      audio: false,
+    });
+
+    this.video.srcObject = stream;
+    await this.video.play();
+
+    this.resize();
+    this.running = true;
+
+    requestAnimationFrame(() => this.loop());
   }
-  resize(){this.canvas.width=this.video.videoWidth||1280;this.canvas.height=this.video.videoHeight||960}
-  loop(){
-    if(!this.running)return;
-    if(this.video.currentTime!==this.lastVideoTime){
-      this.lastVideoTime=this.video.currentTime;
-      const result=this.landmarker.detectForVideo(this.video,performance.now());
+
+  resize() {
+    this.canvas.width = this.video.videoWidth || 1280;
+    this.canvas.height = this.video.videoHeight || 960;
+  }
+
+  loop() {
+    if (!this.running) return;
+
+    if (this.video.currentTime !== this.lastVideoTime) {
+      this.lastVideoTime = this.video.currentTime;
+
+      const result = this.landmarker.detectForVideo(
+        this.video,
+        performance.now()
+      );
+
       this.draw(result);
     }
-    requestAnimationFrame(()=>this.loop());
-  }
-  draw(result){
-  this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 
-  const face=result.faceLandmarks?.[0];
-
-  if(!face){
-    this.onStatus("Posicione seu rosto na câmera");
-    return;
+    requestAnimationFrame(() => this.loop());
   }
 
-  this.onStatus("Rosto detectado ✓");
+  draw(result) {
+    this.ctx.clearRect(
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height
+    );
 
-  // Pontos externos dos olhos
-  const leftEye=face[33];
-  const rightEye=face[263];
+    const face = result.faceLandmarks?.[0];
 
-  const x1=leftEye.x*this.canvas.width;
-  const y1=leftEye.y*this.canvas.height;
-  const x2=rightEye.x*this.canvas.width;
-  const y2=rightEye.y*this.canvas.height;
+    if (!face) {
+      this.onStatus("Posicione seu rosto na câmera");
+      return;
+    }
 
-  // Centro dos óculos
-  const centerX=(x1+x2)/2;
-  const centerY=(y1+y2)/2;
+    this.onStatus("Rosto detectado ✓");
 
-  // Distância e inclinação entre os olhos
-  const eyeDistance=Math.hypot(x2-x1,y2-y1);
-  const angle=Math.atan2(y2-y1,x2-x1);
+    const leftEye = face[33];
+    const rightEye = face[263];
 
-  // Dimensões provisórias da armação
-  const glassesWidth=eyeDistance*1.75;
-  const glassesHeight=glassesWidth*0.34;
+    const x1 = leftEye.x * this.canvas.width;
+    const y1 = leftEye.y * this.canvas.height;
 
-  this.ctx.save();
+    const x2 = rightEye.x * this.canvas.width;
+    const y2 = rightEye.y * this.canvas.height;
 
-  this.ctx.translate(centerX,centerY);
-  this.ctx.rotate(angle);
+    const centerX = (x1 + x2) / 2;
+    const centerY = (y1 + y2) / 2;
 
-  this.ctx.strokeStyle="rgba(255,255,255,.95)";
-  this.ctx.lineWidth=Math.max(3,glassesWidth*0.018);
+    const eyeDistance = Math.hypot(
+      x2 - x1,
+      y2 - y1
+    );
 
-  const lensWidth=glassesWidth*0.40;
-  const lensHeight=glassesHeight;
-  const bridge=glassesWidth*0.08;
+    const angle = Math.atan2(
+      y2 - y1,
+      x2 - x1
+    );
 
-  // Lente esquerda
-  this.ctx.strokeRect(
-    -bridge/2-lensWidth,
-    -lensHeight/2,
-    lensWidth,
-    lensHeight
-  );
+    // Escala inicial da armação
+    const glassesWidth = eyeDistance * 1.9;
 
-  // Lente direita
-  this.ctx.strokeRect(
-    bridge/2,
-    -lensHeight/2,
-    lensWidth,
-    lensHeight
-  );
+    if (
+      !this.glassesImage.complete ||
+      !this.glassesImage.naturalWidth
+    ) {
+      return;
+    }
 
-  // Ponte
-  this.ctx.beginPath();
-  this.ctx.moveTo(-bridge/2,0);
-  this.ctx.lineTo(bridge/2,0);
-  this.ctx.stroke();
+    const aspect =
+      this.glassesImage.naturalHeight /
+      this.glassesImage.naturalWidth;
 
-  this.ctx.restore();
-}
+    const glassesHeight =
+      glassesWidth * aspect;
+
+    this.ctx.save();
+
+    this.ctx.translate(
+      centerX,
+      centerY
+    );
+
+    this.ctx.rotate(angle);
+
+    this.ctx.drawImage(
+      this.glassesImage,
+      -glassesWidth / 2,
+      -glassesHeight / 2,
+      glassesWidth,
+      glassesHeight
+    );
+
+    this.ctx.restore();
+  }
 }
