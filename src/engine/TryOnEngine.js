@@ -98,6 +98,8 @@ export class TryOnEngine {
     const rightEye = face[263];
 const leftTemple = face[234];
 const rightTemple = face[454];
+    const nose = face[1];
+const noseX = nose.x * this.canvas.width;
     const x1 = leftEye.x * this.canvas.width;
     const y1 = leftEye.y * this.canvas.height;
 const templeX1 = leftTemple.x * this.canvas.width;
@@ -119,6 +121,7 @@ const faceWidth = Math.hypot(
 );
 
 const centerX = (x1 + x2) / 2;
+const yaw = (noseX - centerX) / eyeDistance;
 const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     const angle = Math.atan2(
@@ -128,7 +131,7 @@ const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     // Escala inicial da armação
     const glassesWidth = faceWidth * 0.92;
-
+const perspectiveScaleX = Math.max(0.72, 1 - Math.abs(yaw) * 0.55);
     if (
       !this.glassesImage.complete ||
       !this.glassesImage.naturalWidth
@@ -154,9 +157,9 @@ const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     this.ctx.drawImage(
       this.glassesImage,
-      -glassesWidth / 2,
+     -(glassesWidth * perspectiveScaleX) / 2,
       -glassesHeight / 2,
-      glassesWidth,
+      glassesWidth * perspectiveScaleX,
       glassesHeight
     );
 
