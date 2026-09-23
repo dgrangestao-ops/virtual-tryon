@@ -97,12 +97,3 @@ export class TryOnEngine {
 
   this.ctx.restore();
 }
-    this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-    const face=result.faceLandmarks?.[0];
-    if(!face){this.onStatus("Posicione seu rosto na câmera");return}
-    this.onStatus("Rosto detectado ✓");
-    const ids=[33,263,168,234,454];
-    this.ctx.fillStyle="rgba(255,255,255,.85)";
-    for(const id of ids){const p=face[id];this.ctx.beginPath();this.ctx.arc(p.x*this.canvas.width,p.y*this.canvas.height,5,0,Math.PI*2);this.ctx.fill()}
-  }
-}
