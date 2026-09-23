@@ -123,7 +123,7 @@ const faceWidth = Math.hypot(
 const centerX = (x1 + x2) / 2;
 const yaw = (noseX - centerX) / eyeDistance;
 const matrixData = faceMatrix?.data;
-console.log("Face matrix:", matrixData);
+console.log("MEDIAPIPE RESULT:", result);
 const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     const angle = Math.atan2(
