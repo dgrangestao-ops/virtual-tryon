@@ -86,7 +86,7 @@ export class TryOnEngine {
     );
 
     const face = result.faceLandmarks?.[0];
-
+const faceMatrix = result.facialTransformationMatrixes?.[0];
     if (!face) {
       this.onStatus("Posicione seu rosto na câmera");
       return;
@@ -122,6 +122,8 @@ const faceWidth = Math.hypot(
 
 const centerX = (x1 + x2) / 2;
 const yaw = (noseX - centerX) / eyeDistance;
+const matrixData = faceMatrix?.data;
+console.log("Face matrix:", matrixData);
 const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     const angle = Math.atan2(
