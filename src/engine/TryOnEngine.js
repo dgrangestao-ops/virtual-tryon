@@ -132,6 +132,8 @@ const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
     // Escala inicial da armação
     const glassesWidth = faceWidth * 0.92;
 const perspectiveScaleX = Math.max(0.72, 1 - Math.abs(yaw) * 0.55);
+    const perspectiveShiftX = yaw * glassesWidth * 0.12;
+const perspectiveSkew = yaw * 0.18;
     if (
       !this.glassesImage.complete ||
       !this.glassesImage.naturalWidth
@@ -149,12 +151,19 @@ const perspectiveScaleX = Math.max(0.72, 1 - Math.abs(yaw) * 0.55);
     this.ctx.save();
 
     this.ctx.translate(
-      centerX,
+    centerX + perspectiveShiftX,
       centerY
     );
 
     this.ctx.rotate(angle);
-
+this.ctx.transform(
+  1,
+  0,
+  perspectiveSkew,
+  1,
+  0,
+  0
+);
     this.ctx.drawImage(
       this.glassesImage,
      -(glassesWidth * perspectiveScaleX) / 2,
