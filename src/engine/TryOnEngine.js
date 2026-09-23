@@ -103,13 +103,13 @@ export class TryOnEngine {
     const x2 = rightEye.x * this.canvas.width;
     const y2 = rightEye.y * this.canvas.height;
 
-    const centerX = (x1 + x2) / 2;
-    const centerY = (y1 + y2) / 2 + eyeDistance * 0.12;
-
     const eyeDistance = Math.hypot(
-      x2 - x1,
-      y2 - y1
-    );
+  x2 - x1,
+  y2 - y1
+);
+
+const centerX = (x1 + x2) / 2;
+const centerY = (y1 + y2) / 2 + eyeDistance * 0.12;
 
     const angle = Math.atan2(
       y2 - y1,
