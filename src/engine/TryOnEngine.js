@@ -109,7 +109,7 @@ export class TryOnEngine {
 );
 
 const centerX = (x1 + x2) / 2;
-const centerY = (y1 + y2) / 2 + eyeDistance * 0.12;
+const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
     const angle = Math.atan2(
       y2 - y1,
