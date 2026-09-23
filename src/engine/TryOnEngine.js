@@ -96,10 +96,20 @@ export class TryOnEngine {
 
     const leftEye = face[33];
     const rightEye = face[263];
-
+const leftTemple = face[234];
+const rightTemple = face[454];
     const x1 = leftEye.x * this.canvas.width;
     const y1 = leftEye.y * this.canvas.height;
+const templeX1 = leftTemple.x * this.canvas.width;
+const templeY1 = leftTemple.y * this.canvas.height;
 
+const templeX2 = rightTemple.x * this.canvas.width;
+const templeY2 = rightTemple.y * this.canvas.height;
+
+const faceWidth = Math.hypot(
+  templeX2 - templeX1,
+  templeY2 - templeY1
+);
     const x2 = rightEye.x * this.canvas.width;
     const y2 = rightEye.y * this.canvas.height;
 
@@ -117,7 +127,7 @@ const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
     );
 
     // Escala inicial da armação
-    const glassesWidth = eyeDistance * 1.9;
+    const glassesWidth = faceWidth * 0.92;
 
     if (
       !this.glassesImage.complete ||
