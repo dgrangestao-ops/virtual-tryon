@@ -104,7 +104,7 @@ export class TryOnEngine {
     const y2 = rightEye.y * this.canvas.height;
 
     const centerX = (x1 + x2) / 2;
-    const centerY = (y1 + y2) / 2;
+    const centerY = (y1 + y2) / 2 + eyeDistance * 0.12;
 
     const eyeDistance = Math.hypot(
       x2 - x1,
