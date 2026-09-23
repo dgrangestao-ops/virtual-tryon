@@ -121,10 +121,24 @@ const faceWidth = Math.hypot(
 );
 
 const centerX = (x1 + x2) / 2;
-const yaw = (noseX - centerX) / eyeDistance;
+
+// Fallback baseado nos landmarks
+const landmarkYaw = (noseX - centerX) / eyeDistance;
+
+// Rotação 3D real fornecida pelo MediaPipe
 const matrixData = faceMatrix?.data;
-console.log("MEDIAPIPE RESULT:", result);
-const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
+const matrixYaw =
+  matrixData?.length >= 16
+    ? Math.atan2(matrixData[8], matrixData[10])
+    : null;
+
+// Usa a matriz 3D quando disponível
+const yaw = Number.isFinite(matrixYaw)
+  ? matrixYaw
+  : landmarkYaw;
+
+const centerY =
+  (y1 + y2) / 2 + eyeDistance * 0.04;
 
     const angle = Math.atan2(
       y2 - y1,
