@@ -218,21 +218,29 @@ if (
   const hingeX =
     side * frontHalfWidth * 0.985;
   const hingeY =
-    -glassesHeight * 0.30;
+    -glassesHeight * 0.36;
 
   const vecX = targetLocalX - hingeX;
   const vecY = targetLocalY - hingeY;
   const targetDistance = Math.hypot(vecX, vecY);
 
   // A haste se orienta para o ponto temporal da face.
-  const templeAngle = Math.atan2(vecY, vecX);
+  const rawTempleAngle = Math.atan2(vecY, vecX);
+
+  // Limita a queda da haste: o landmark lateral fica abaixo da dobradiça,
+  // mas a haste real deve sair quase horizontal antes de curvar sobre a orelha.
+  const horizontalAngle = side < 0 ? Math.PI : 0;
+  let angleDelta = rawTempleAngle - horizontalAngle;
+  while (angleDelta > Math.PI) angleDelta -= Math.PI * 2;
+  while (angleDelta < -Math.PI) angleDelta += Math.PI * 2;
+  const templeAngle = horizontalAngle + angleDelta * 0.35;
 
   // Acrescenta uma pequena extensão além do landmark temporal
   // para alcançar visualmente a região da orelha.
   const visibleLength =
     Math.max(
       glassesWidth * 0.22,
-      targetDistance * (1.05 + yawAmount * 0.18)
+      targetDistance * (0.90 + yawAmount * 0.10)
     );
 
   const templeAspect =
