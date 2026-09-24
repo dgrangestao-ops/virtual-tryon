@@ -196,16 +196,16 @@ if (
     (glassesWidth * perspectiveScaleX) / 2;
 
   // A âncora entra na armação para garantir união visual.
-  const hingeInset = glassesWidth * 0.085;
+  const hingeInset = glassesWidth * 0.055;
   const hingeX =
     side * (frontHalfWidth - hingeInset);
   const hingeY =
-    -glassesHeight * 0.37;
+    -glassesHeight * 0.405;
 
   // Usa a largura facial como escala estável e dá alcance suficiente
   // para que a curva ultrapasse a região da orelha.
   const templeLength =
-    faceWidth * (0.92 + yawAmount * 0.20);
+    faceWidth * (0.78 + yawAmount * 0.18);
 
   const templeAspect =
     this.templeImage.naturalHeight /
