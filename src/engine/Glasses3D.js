@@ -83,11 +83,11 @@ export class Glasses3D {
     const aspect = width / height;
 
     this.root.visible = true;
-    // O canvas 3D já é espelhado pelo CSS junto com o vídeo.
-    // Portanto convertemos as coordenadas MediaPipe para o espaço
-    // não-espelhado do WebGL antes da transformação visual do canvas.
+    // O MediaPipe entrega coordenadas normalizadas no mesmo referencial
+    // do frame capturado. Como vídeo e canvas recebem o mesmo espelhamento
+    // via CSS, ambos devem usar a mesma coordenada X aqui.
     this.root.position.set(
-      -((x / width * 2 - 1) * aspect),
+      (x / width * 2 - 1) * aspect,
       -(y / height * 2 - 1),
       0
     );
