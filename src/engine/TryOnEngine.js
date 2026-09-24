@@ -173,94 +173,67 @@ export class TryOnEngine {
     this.ctx.rotate(angle);
 
 // ============================
-// HASTE LATERAL ANCORADA AO ROSTO
+// HASTE LATERAL — ENCAIXE PELA DOBRADIÇA
 // ============================
 
-// A haste usa o landmark temporal como referência de direção/distância.
-// A imagem é desenhada com pequena sobreposição sobre a frente para
-// eliminar qualquer vão visual na dobradiça.
+// O PNG da haste tem a dobradiça na extremidade direita.
+// Em vez de posicionar a imagem pela caixa inteira, ancoramos essa
+// extremidade dentro da frente da armação e dimensionamos a haste
+// pela largura real da cabeça.
 const yawAbs = Math.abs(yaw);
 const yawAmount = Math.min(
   1,
-  Math.max(0, (yawAbs - 0.09) / 0.34)
+  Math.max(0, (yawAbs - 0.08) / 0.34)
 );
 
 if (
-  yawAmount > 0.04 &&
+  yawAmount > 0.035 &&
   this.templeImage.complete &&
   this.templeImage.naturalWidth
 ) {
   const side = yaw >= 0 ? -1 : 1;
-
-  const targetXCanvas =
-    side < 0 ? templeX1 : templeX2;
-  const targetYCanvas =
-    side < 0 ? templeY1 : templeY2;
-
-  const dx = targetXCanvas - (centerX + perspectiveShiftX);
-  const dy = targetYCanvas - centerY;
-
-  const cosA = Math.cos(-angle);
-  const sinA = Math.sin(-angle);
-  const targetLocalX = dx * cosA - dy * sinA;
-  const targetLocalY = dx * sinA + dy * cosA;
-
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // Sobrepõe alguns pixels na frente: a haste nasce dentro da região
-  // da dobradiça, evitando o vão entre os dois PNGs.
-  const hingeOverlap = glassesWidth * 0.025;
+  // A âncora entra na armação para garantir união visual.
+  const hingeInset = glassesWidth * 0.055;
   const hingeX =
-    side * (frontHalfWidth - hingeOverlap);
+    side * (frontHalfWidth - hingeInset);
   const hingeY =
-    -glassesHeight * 0.375;
+    -glassesHeight * 0.405;
 
-  const vecX = targetLocalX - hingeX;
-  const vecY = targetLocalY - hingeY;
-  const targetDistance = Math.hypot(vecX, vecY);
-
-  const rawTempleAngle = Math.atan2(vecY, vecX);
-  const horizontalAngle = side < 0 ? Math.PI : 0;
-  let angleDelta = rawTempleAngle - horizontalAngle;
-  while (angleDelta > Math.PI) angleDelta -= Math.PI * 2;
-  while (angleDelta < -Math.PI) angleDelta += Math.PI * 2;
-
-  // A parte rígida sai quase horizontal. A curvatura existente no PNG
-  // é responsável pela descida final atrás da orelha.
-  const templeAngle =
-    horizontalAngle + angleDelta * 0.16;
-
-  // Aumenta o alcance para ultrapassar o ponto temporal e posicionar
-  // a curva final na região posterior da orelha.
-  const visibleLength =
-    Math.max(
-      glassesWidth * 0.42,
-      targetDistance * (1.20 + yawAmount * 0.18)
-    );
+  // Usa a largura facial como escala estável e dá alcance suficiente
+  // para que a curva ultrapasse a região da orelha.
+  const templeLength =
+    faceWidth * (0.78 + yawAmount * 0.18);
 
   const templeAspect =
     this.templeImage.naturalHeight /
     this.templeImage.naturalWidth;
   const templeHeight =
-    visibleLength * templeAspect;
+    templeLength * templeAspect;
+
+  // Pequena inclinação apenas; a curvatura do próprio asset faz
+  // a descida na ponta.
+  const templeTilt =
+    side * (0.005 + yawAmount * 0.018);
 
   this.ctx.save();
   this.ctx.translate(hingeX, hingeY);
-  this.ctx.globalAlpha = Math.min(1, yawAmount * 1.8);
+  this.ctx.rotate(templeTilt);
+  this.ctx.globalAlpha = Math.min(1, yawAmount * 1.9);
 
-  if (side < 0) {
-    this.ctx.rotate(templeAngle + Math.PI);
-  } else {
-    this.ctx.rotate(templeAngle);
+  // O asset estende-se da dobradiça (direita) para a ponta (esquerda).
+  // Espelha somente para reutilizá-lo no lado oposto.
+  if (side > 0) {
     this.ctx.scale(-1, 1);
   }
 
   this.ctx.drawImage(
     this.templeImage,
-    -visibleLength,
-    -templeHeight * 0.46,
-    visibleLength,
+    -templeLength,
+    -templeHeight * 0.50,
+    templeLength,
     templeHeight
   );
 
