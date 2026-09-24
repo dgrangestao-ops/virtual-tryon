@@ -173,15 +173,16 @@ export class TryOnEngine {
     this.ctx.rotate(angle);
 
 // ============================
-// HASTE LATERAL DINÂMICA
+// HASTE LATERAL ANCORADA AO ROSTO
 // ============================
 
-// A haste só aparece quando a rotação lateral é perceptível.
-// O lado visível é invertido porque a câmera frontal é espelhada.
+// Em vez de estimar a haste apenas pelo yaw, usamos o ponto lateral
+// real da face como destino. Isso mantém a dobradiça presa à frente
+// e faz a haste acompanhar a cabeça em diferentes distâncias da câmera.
 const yawAbs = Math.abs(yaw);
 const yawAmount = Math.min(
   1,
-  Math.max(0, (yawAbs - 0.10) / 0.32)
+  Math.max(0, (yawAbs - 0.09) / 0.34)
 );
 
 if (
@@ -189,26 +190,56 @@ if (
   this.templeImage.complete &&
   this.templeImage.naturalWidth
 ) {
+  // Câmera frontal espelhada.
   const side = yaw >= 0 ? -1 : 1;
+
+  // Coordenadas locais do ponto lateral da face em relação
+  // ao centro da armação. Esses landmarks acompanham a região
+  // temporal próxima à orelha melhor do que um comprimento fixo.
+  const targetXCanvas =
+    side < 0 ? templeX1 : templeX2;
+  const targetYCanvas =
+    side < 0 ? templeY1 : templeY2;
+
+  const dx = targetXCanvas - (centerX + perspectiveShiftX);
+  const dy = targetYCanvas - centerY;
+
+  // Converte o vetor da tela para o sistema local já rotacionado
+  // pela inclinação dos olhos.
+  const cosA = Math.cos(-angle);
+  const sinA = Math.sin(-angle);
+  const targetLocalX = dx * cosA - dy * sinA;
+  const targetLocalY = dx * sinA + dy * cosA;
+
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // Mantém a dobradiça presa à extremidade da frente.
+  // Dobradiça presa à borda superior/lateral da frente.
   const hingeX =
-    side * frontHalfWidth * 0.99;
+    side * frontHalfWidth * 0.985;
   const hingeY =
-    -glassesHeight * 0.32;
+    -glassesHeight * 0.30;
+
+  const vecX = targetLocalX - hingeX;
+  const vecY = targetLocalY - hingeY;
+  const targetDistance = Math.hypot(vecX, vecY);
+
+  // A haste se orienta para o ponto temporal da face.
+  const templeAngle = Math.atan2(vecY, vecX);
+
+  // Acrescenta uma pequena extensão além do landmark temporal
+  // para alcançar visualmente a região da orelha.
+  const visibleLength =
+    Math.max(
+      glassesWidth * 0.22,
+      targetDistance * (1.05 + yawAmount * 0.18)
+    );
 
   const templeAspect =
     this.templeImage.naturalHeight /
     this.templeImage.naturalWidth;
-
-  // Comprimento suficiente para alcançar visualmente a região da orelha.
-  const templeWidth =
-    glassesWidth * (0.36 + yawAmount * 0.34);
-
   const templeHeight =
-    templeWidth * templeAspect;
+    visibleLength * templeAspect;
 
   this.ctx.save();
   this.ctx.translate(hingeX, hingeY);
@@ -218,28 +249,20 @@ if (
     yawAmount * 1.8
   );
 
-  // Mantém a haste quase horizontal, como nas referências reais.
-  this.ctx.rotate(
-    side * (0.001 + yawAmount * 0.008)
-  );
-
-  // O PNG possui a dobradiça na direita.
-  if (side > 0) {
+  // Orienta a peça para o alvo anatômico.
+  // O asset tem a dobradiça à direita e se estende para a esquerda.
+  if (side < 0) {
+    this.ctx.rotate(templeAngle + Math.PI);
+  } else {
+    this.ctx.rotate(templeAngle);
     this.ctx.scale(-1, 1);
   }
 
-  // Perspectiva moderada: conserva o comprimento aparente
-  // sem voltar ao efeito de haste aberta para fora do rosto.
-  const depthScale =
-    0.58 + yawAmount * 0.25;
-
-  this.ctx.scale(depthScale, 1);
-
   this.ctx.drawImage(
     this.templeImage,
-    -templeWidth,
-    -templeHeight * 0.50,
-    templeWidth,
+    -visibleLength,
+    -templeHeight * 0.46,
+    visibleLength,
     templeHeight
   );
 
