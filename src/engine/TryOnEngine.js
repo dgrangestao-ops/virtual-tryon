@@ -176,28 +176,29 @@ export class TryOnEngine {
 // HASTE LATERAL DINÂMICA
 // ============================
 
-// Intensidade da rotação da cabeça.
-// Começa a mostrar a haste com uma rotação pequena.
+// Quanto a cabeça está girada
+const yawAbs = Math.abs(yaw);
+
+// A haste só começa a aparecer depois
+// de uma rotação perceptível da cabeça.
 const yawAmount = Math.min(
   1,
-  Math.max(0, Math.abs(yaw) / 0.38)
+  Math.max(0, (yawAbs - 0.07) / 0.30)
 );
 
 if (
-  yawAmount > 0.05 &&
+  yawAmount > 0.03 &&
   this.templeImage.complete &&
   this.templeImage.naturalWidth
 ) {
-  // Qual lado da armação está mais visível.
   const side = yaw >= 0 ? 1 : -1;
 
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // A haste começa curta e ganha profundidade
-  // conforme a cabeça gira.
+  // Comprimento visível aumenta com o giro.
   const templeWidth =
-    glassesWidth * (0.18 + yawAmount * 0.27);
+    glassesWidth * (0.08 + yawAmount * 0.30);
 
   const templeAspect =
     this.templeImage.naturalHeight /
@@ -206,19 +207,18 @@ if (
   const templeHeight =
     templeWidth * templeAspect;
 
-  // Ponto aproximado da dobradiça.
+  // Dobradiça na extremidade da frente da armação.
   const hingeX =
-    side * frontHalfWidth * 0.96;
+    side * frontHalfWidth * 0.94;
 
   const hingeY =
-    -glassesHeight * 0.30;
+    -glassesHeight * 0.27;
 
   this.ctx.save();
 
-  // Surge progressivamente.
   this.ctx.globalAlpha = Math.min(
     1,
-    yawAmount * 1.8
+    yawAmount * 1.5
   );
 
   this.ctx.translate(
@@ -226,29 +226,38 @@ if (
     hingeY
   );
 
-  // Pequena inclinação em direção à orelha.
+  // A haste deixa de parecer aberta lateralmente:
+  // fica comprimida quando quase frontal e ganha
+  // profundidade conforme a cabeça gira.
+  const depthScale =
+    0.20 + yawAmount * 0.80;
+
+  // Inclinação em direção à orelha.
   this.ctx.rotate(
-    side * yawAmount * 0.08
+    -side * (0.10 + yawAmount * 0.10)
   );
 
-  // O arquivo da haste possui a dobradiça
-  // em uma extremidade. Espelhamos para
-  // reutilizá-lo no lado oposto.
+  // Asset original: dobradiça na direita e ponta na esquerda.
+  // Espelha quando necessário.
   if (side > 0) {
     this.ctx.scale(-1, 1);
   }
 
+  this.ctx.scale(
+    depthScale,
+    1
+  );
+
   this.ctx.drawImage(
     this.templeImage,
     -templeWidth,
-    -templeHeight * 0.30,
+    -templeHeight * 0.35,
     templeWidth,
     templeHeight
   );
 
   this.ctx.restore();
 }
-
     // ============================
     // FRENTE DA ARMAÇÃO
     // ============================
