@@ -166,9 +166,9 @@ export class TryOnEngine {
 
       // Sobreposição real na dobradiça: elimina o vão entre os PNGs.
       const hingeX =
-        side * (frontHalfWidth - glassesWidth * 0.075);
+        side * (frontHalfWidth - glassesWidth * 0.105);
       const hingeY =
-        -glassesHeight * 0.365;
+        -glassesHeight * 0.335;
 
       const templeAspect =
         this.templeImage.naturalHeight /
@@ -176,11 +176,11 @@ export class TryOnEngine {
 
       // Comprimento físico base; a projeção em tela é controlada
       // separadamente pelo depthScale.
-      const physicalLength = faceWidth * 0.88;
+      const physicalLength = faceWidth * 1.02;
       const templeHeight = physicalLength * templeAspect;
 
       // Quanto mais lateral o rosto, maior a projeção visível em profundidade.
-      const depthScale = 0.30 + yawAmount * 0.36;
+      const depthScale = 0.38 + yawAmount * 0.40;
       const projectedLength = physicalLength * depthScale;
 
       this.ctx.save();
