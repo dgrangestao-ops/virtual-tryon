@@ -176,7 +176,7 @@ export class TryOnEngine {
 // HASTE LATERAL DINÂMICA
 // ============================
 
-// A haste aparece apenas quando a rotação lateral é suficiente.
+// A haste só aparece quando a rotação lateral é perceptível.
 // O lado visível é invertido porque a câmera frontal é espelhada.
 const yawAbs = Math.abs(yaw);
 const yawAmount = Math.min(
@@ -193,19 +193,19 @@ if (
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // Dobradiça fixa na borda externa da armação.
+  // Mantém a dobradiça presa à extremidade da frente.
   const hingeX =
-    side * frontHalfWidth * 0.985;
+    side * frontHalfWidth * 0.99;
   const hingeY =
-    -glassesHeight * 0.17;
-
-  // Comprimento visual da haste.
-  const templeWidth =
-    glassesWidth * (0.18 + yawAmount * 0.34);
+    -glassesHeight * 0.16;
 
   const templeAspect =
     this.templeImage.naturalHeight /
     this.templeImage.naturalWidth;
+
+  // Comprimento suficiente para alcançar visualmente a região da orelha.
+  const templeWidth =
+    glassesWidth * (0.34 + yawAmount * 0.38);
 
   const templeHeight =
     templeWidth * templeAspect;
@@ -218,29 +218,27 @@ if (
     yawAmount * 1.8
   );
 
-  // Mantém a haste praticamente alinhada com a linha dos olhos.
-  // A queda vertical é pequena e cresce suavemente com o giro.
+  // Mantém a haste quase horizontal, como nas referências reais.
   this.ctx.rotate(
-    side * (0.005 + yawAmount * 0.018)
+    side * (0.003 + yawAmount * 0.012)
   );
 
-  // O PNG tem a dobradiça na direita. Para o lado direito
-  // da tela, espelhamos mantendo a dobradiça presa em x=0.
+  // O PNG possui a dobradiça na direita.
   if (side > 0) {
     this.ctx.scale(-1, 1);
   }
 
-  // Não comprime excessivamente a haste: nas fotos de teste
-  // ela estava curta demais e terminava antes da região da orelha.
+  // Perspectiva moderada: conserva o comprimento aparente
+  // sem voltar ao efeito de haste aberta para fora do rosto.
   const depthScale =
-    0.48 + yawAmount * 0.42;
+    0.62 + yawAmount * 0.30;
 
   this.ctx.scale(depthScale, 1);
 
   this.ctx.drawImage(
     this.templeImage,
     -templeWidth,
-    -templeHeight * 0.48,
+    -templeHeight * 0.46,
     templeWidth,
     templeHeight
   );
