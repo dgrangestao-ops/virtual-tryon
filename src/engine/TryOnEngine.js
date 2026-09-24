@@ -177,9 +177,7 @@ export class TryOnEngine {
     // ============================
 
 const yawAmount = 1;
-    );
-
-    if (
+        if (
       yawAmount > 0 &&
       this.templeImage.complete &&
       this.templeImage.naturalWidth
