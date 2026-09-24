@@ -10,9 +10,13 @@ export class TryOnEngine {
     this.lastVideoTime = -1;
     this.running = false;
 
-    // Primeira armação real do provador
+    // Frente da armação
     this.glassesImage = new Image();
     this.glassesImage.src = "/armacao-fremi-teste.png";
+
+    // Haste real Fremi
+    this.templeImage = new Image();
+    this.templeImage.src = "/haste-fremi-esquerda.png";
   }
 
   async init() {
@@ -78,15 +82,11 @@ export class TryOnEngine {
   }
 
   draw(result) {
-    this.ctx.clearRect(
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height
-    );
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const face = result.faceLandmarks?.[0];
-const faceMatrix = result.facialTransformationMatrixes?.[0];
+    const faceMatrix = result.facialTransformationMatrixes?.[0];
+
     if (!face) {
       this.onStatus("Posicione seu rosto na câmera");
       return;
@@ -96,60 +96,60 @@ const faceMatrix = result.facialTransformationMatrixes?.[0];
 
     const leftEye = face[33];
     const rightEye = face[263];
-const leftTemple = face[234];
-const rightTemple = face[454];
+    const leftTemple = face[234];
+    const rightTemple = face[454];
     const nose = face[1];
-const noseX = nose.x * this.canvas.width;
+
     const x1 = leftEye.x * this.canvas.width;
     const y1 = leftEye.y * this.canvas.height;
-const templeX1 = leftTemple.x * this.canvas.width;
-const templeY1 = leftTemple.y * this.canvas.height;
-
-const templeX2 = rightTemple.x * this.canvas.width;
-const templeY2 = rightTemple.y * this.canvas.height;
-
-const faceWidth = Math.hypot(
-  templeX2 - templeX1,
-  templeY2 - templeY1
-);
     const x2 = rightEye.x * this.canvas.width;
     const y2 = rightEye.y * this.canvas.height;
 
-    const eyeDistance = Math.hypot(
-  x2 - x1,
-  y2 - y1
-);
+    const templeX1 = leftTemple.x * this.canvas.width;
+    const templeY1 = leftTemple.y * this.canvas.height;
+    const templeX2 = rightTemple.x * this.canvas.width;
+    const templeY2 = rightTemple.y * this.canvas.height;
 
-const centerX = (x1 + x2) / 2;
+    const noseX = nose.x * this.canvas.width;
 
-// Fallback baseado nos landmarks
-const landmarkYaw = (noseX - centerX) / eyeDistance;
-
-// Rotação 3D real fornecida pelo MediaPipe
-const matrixData = faceMatrix?.data;
-const matrixYaw =
-  matrixData?.length >= 16
-    ? Math.atan2(matrixData[8], matrixData[10])
-    : null;
-
-// Usa a matriz 3D quando disponível
-const yaw = Number.isFinite(matrixYaw)
-  ? matrixYaw
-  : landmarkYaw;
-
-const centerY =
-  (y1 + y2) / 2 + eyeDistance * 0.04;
-
-    const angle = Math.atan2(
-      y2 - y1,
-      x2 - x1
+    const faceWidth = Math.hypot(
+      templeX2 - templeX1,
+      templeY2 - templeY1
     );
 
-    // Escala inicial da armação
+    const eyeDistance = Math.hypot(x2 - x1, y2 - y1);
+
+    const centerX = (x1 + x2) / 2;
+    const centerY =
+      (y1 + y2) / 2 + eyeDistance * 0.04;
+
+    // Yaw 3D real
+    const landmarkYaw = (noseX - centerX) / eyeDistance;
+    const matrixData = faceMatrix?.data;
+
+    const matrixYaw =
+      matrixData?.length >= 16
+        ? Math.atan2(matrixData[8], matrixData[10])
+        : null;
+
+    const yaw = Number.isFinite(matrixYaw)
+      ? matrixYaw
+      : landmarkYaw;
+
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+
     const glassesWidth = faceWidth * 0.92;
-const perspectiveScaleX = Math.max(0.72, 1 - Math.abs(yaw) * 0.55);
-    const perspectiveShiftX = yaw * glassesWidth * 0.12;
-const perspectiveSkew = yaw * 0.18;
+
+    const perspectiveScaleX = Math.max(
+      0.72,
+      1 - Math.abs(yaw) * 0.55
+    );
+
+    const perspectiveShiftX =
+      yaw * glassesWidth * 0.12;
+
+    const perspectiveSkew = yaw * 0.18;
+
     if (
       !this.glassesImage.complete ||
       !this.glassesImage.naturalWidth
@@ -161,28 +161,96 @@ const perspectiveSkew = yaw * 0.18;
       this.glassesImage.naturalHeight /
       this.glassesImage.naturalWidth;
 
-    const glassesHeight =
-      glassesWidth * aspect;
+    const glassesHeight = glassesWidth * aspect;
 
     this.ctx.save();
 
     this.ctx.translate(
-    centerX + perspectiveShiftX,
+      centerX + perspectiveShiftX,
       centerY
     );
 
     this.ctx.rotate(angle);
-this.ctx.transform(
-  1,
-  0,
-  perspectiveSkew,
-  1,
-  0,
-  0
-);
+
+    // ============================
+    // HASTE LATERAL
+    // ============================
+
+    const yawAmount = Math.min(
+      1,
+      Math.max(0, (Math.abs(yaw) - 0.08) / 0.35)
+    );
+
+    if (
+      yawAmount > 0 &&
+      this.templeImage.complete &&
+      this.templeImage.naturalWidth
+    ) {
+      const templeWidth =
+        glassesWidth * (0.30 + yawAmount * 0.30);
+
+      const templeAspect =
+        this.templeImage.naturalHeight /
+        this.templeImage.naturalWidth;
+
+      const templeHeight =
+        templeWidth * templeAspect;
+
+      this.ctx.save();
+
+      // lado para o qual a cabeça está virada
+      const side = yaw >= 0 ? 1 : -1;
+
+      this.ctx.globalAlpha =
+        0.25 + yawAmount * 0.75;
+
+      this.ctx.translate(
+        side * glassesWidth * perspectiveScaleX * 0.43,
+        -glassesHeight * 0.32
+      );
+
+      // Espelha a mesma haste para o outro lado
+      if (side > 0) {
+        this.ctx.scale(-1, 1);
+      }
+
+      // A haste cresce em profundidade conforme o giro
+      this.ctx.transform(
+        1,
+        0,
+        side * yawAmount * 0.10,
+        1,
+        0,
+        0
+      );
+
+      this.ctx.drawImage(
+        this.templeImage,
+        side > 0 ? 0 : -templeWidth,
+        -templeHeight / 2,
+        templeWidth,
+        templeHeight
+      );
+
+      this.ctx.restore();
+    }
+
+    // ============================
+    // FRENTE DA ARMAÇÃO
+    // ============================
+
+    this.ctx.transform(
+      1,
+      0,
+      perspectiveSkew,
+      1,
+      0,
+      0
+    );
+
     this.ctx.drawImage(
       this.glassesImage,
-     -(glassesWidth * perspectiveScaleX) / 2,
+      -(glassesWidth * perspectiveScaleX) / 2,
       -glassesHeight / 2,
       glassesWidth * perspectiveScaleX,
       glassesHeight
