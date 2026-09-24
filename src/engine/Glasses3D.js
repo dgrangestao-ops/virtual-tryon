@@ -83,15 +83,22 @@ export class Glasses3D {
     const aspect = width / height;
 
     this.root.visible = true;
+    // O canvas 3D já é espelhado pelo CSS junto com o vídeo.
+    // Portanto convertemos as coordenadas MediaPipe para o espaço
+    // não-espelhado do WebGL antes da transformação visual do canvas.
     this.root.position.set(
-      (x / width * 2 - 1) * aspect,
+      -((x / width * 2 - 1) * aspect),
       -(y / height * 2 - 1),
       0
     );
 
-    const normalizedScale = (scale / width) * 2 * aspect;
+    // A geometria procedural tem largura local ~1.6 unidades.
+    // Normalizamos pela largura real do rosto para o primeiro encaixe.
+    const normalizedScale = ((scale / width) * 2 * aspect) / 1.6;
     this.root.scale.setScalar(normalizedScale);
-    this.root.rotation.set(pitch, -yaw, -roll);
+
+    // Compensa o espelhamento visual no eixo horizontal.
+    this.root.rotation.set(pitch, yaw, roll);
   }
 
   hide() {
