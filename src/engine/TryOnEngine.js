@@ -176,9 +176,7 @@ export class TryOnEngine {
     // HASTE LATERAL
     // ============================
 
-    const yawAmount = Math.min(
-      1,
-      Math.max(0, (Math.abs(yaw) - 0.08) / 0.35)
+const yawAmount = 1;
     );
 
     if (
