@@ -172,64 +172,82 @@ export class TryOnEngine {
 
     this.ctx.rotate(angle);
 
-    // ============================
-    // HASTE LATERAL
-    // ============================
+// ============================
+// HASTE LATERAL DINÂMICA
+// ============================
 
-const yawAmount = 1;
-        if (
-      yawAmount > 0 &&
-      this.templeImage.complete &&
-      this.templeImage.naturalWidth
-    ) {
-      const templeWidth =
-        glassesWidth * (0.30 + yawAmount * 0.30);
+// Intensidade da rotação da cabeça.
+// Começa a mostrar a haste com uma rotação pequena.
+const yawAmount = Math.min(
+  1,
+  Math.max(0, Math.abs(yaw) / 0.38)
+);
 
-      const templeAspect =
-        this.templeImage.naturalHeight /
-        this.templeImage.naturalWidth;
+if (
+  yawAmount > 0.05 &&
+  this.templeImage.complete &&
+  this.templeImage.naturalWidth
+) {
+  // Qual lado da armação está mais visível.
+  const side = yaw >= 0 ? 1 : -1;
 
-      const templeHeight =
-        templeWidth * templeAspect;
+  const frontHalfWidth =
+    (glassesWidth * perspectiveScaleX) / 2;
 
-      this.ctx.save();
+  // A haste começa curta e ganha profundidade
+  // conforme a cabeça gira.
+  const templeWidth =
+    glassesWidth * (0.18 + yawAmount * 0.27);
 
-      // lado para o qual a cabeça está virada
-      const side = yaw >= 0 ? 1 : -1;
+  const templeAspect =
+    this.templeImage.naturalHeight /
+    this.templeImage.naturalWidth;
 
-      this.ctx.globalAlpha =
-        0.25 + yawAmount * 0.75;
+  const templeHeight =
+    templeWidth * templeAspect;
 
-      this.ctx.translate(
-        side * glassesWidth * perspectiveScaleX * 0.43,
-        -glassesHeight * 0.32
-      );
+  // Ponto aproximado da dobradiça.
+  const hingeX =
+    side * frontHalfWidth * 0.96;
 
-      // Espelha a mesma haste para o outro lado
-      if (side > 0) {
-        this.ctx.scale(-1, 1);
-      }
+  const hingeY =
+    -glassesHeight * 0.30;
 
-      // A haste cresce em profundidade conforme o giro
-      this.ctx.transform(
-        1,
-        0,
-        side * yawAmount * 0.10,
-        1,
-        0,
-        0
-      );
+  this.ctx.save();
 
-      this.ctx.drawImage(
-        this.templeImage,
-        side > 0 ? 0 : -templeWidth,
-        -templeHeight / 2,
-        templeWidth,
-        templeHeight
-      );
+  // Surge progressivamente.
+  this.ctx.globalAlpha = Math.min(
+    1,
+    yawAmount * 1.8
+  );
 
-      this.ctx.restore();
-    }
+  this.ctx.translate(
+    hingeX,
+    hingeY
+  );
+
+  // Pequena inclinação em direção à orelha.
+  this.ctx.rotate(
+    side * yawAmount * 0.08
+  );
+
+  // O arquivo da haste possui a dobradiça
+  // em uma extremidade. Espelhamos para
+  // reutilizá-lo no lado oposto.
+  if (side > 0) {
+    this.ctx.scale(-1, 1);
+  }
+
+  this.ctx.drawImage(
+    this.templeImage,
+    -templeWidth,
+    -templeHeight * 0.30,
+    templeWidth,
+    templeHeight
+  );
+
+  this.ctx.restore();
+}
 
     // ============================
     // FRENTE DA ARMAÇÃO
