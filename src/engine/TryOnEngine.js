@@ -197,7 +197,7 @@ if (
   const hingeX =
     side * frontHalfWidth * 0.99;
   const hingeY =
-    -glassesHeight * 0.32;
+    -glassesHeight * 0.355;
 
   const templeAspect =
     this.templeImage.naturalHeight /
@@ -205,7 +205,7 @@ if (
 
   // Comprimento suficiente para alcançar visualmente a região da orelha.
   const templeWidth =
-    glassesWidth * (0.36 + yawAmount * 0.34);
+    glassesWidth * (0.30 + yawAmount * 0.29);
 
   const templeHeight =
     templeWidth * templeAspect;
@@ -231,7 +231,7 @@ if (
   // Perspectiva moderada: conserva o comprimento aparente
   // sem voltar ao efeito de haste aberta para fora do rosto.
   const depthScale =
-    0.58 + yawAmount * 0.25;
+    0.55 + yawAmount * 0.22;
 
   this.ctx.scale(depthScale, 1);
 
