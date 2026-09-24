@@ -194,8 +194,19 @@ export class TryOnEngine {
         this.ctx.scale(-1, 1);
       }
 
+      // Recorta alguns pixels da extremidade da dobradiça do PNG.
+      // A própria frente será desenhada depois por cima desta região,
+      // fazendo as duas peças parecerem uma única armação.
+      const sourceCrop = this.templeImage.naturalWidth * 0.045;
+      const sourceWidth =
+        this.templeImage.naturalWidth - sourceCrop;
+
       this.ctx.drawImage(
         this.templeImage,
+        0,
+        0,
+        sourceWidth,
+        this.templeImage.naturalHeight,
         -projectedLength,
         -templeHeight * 0.47,
         projectedLength,
