@@ -218,7 +218,7 @@ if (
   const hingeX =
     side * frontHalfWidth * 0.985;
   const hingeY =
-    -glassesHeight * 0.36;
+    -glassesHeight * 0.385;
 
   const vecX = targetLocalX - hingeX;
   const vecY = targetLocalY - hingeY;
@@ -233,14 +233,14 @@ if (
   let angleDelta = rawTempleAngle - horizontalAngle;
   while (angleDelta > Math.PI) angleDelta -= Math.PI * 2;
   while (angleDelta < -Math.PI) angleDelta += Math.PI * 2;
-  const templeAngle = horizontalAngle + angleDelta * 0.35;
+  const templeAngle = horizontalAngle + angleDelta * 0.22;
 
   // Acrescenta uma pequena extensão além do landmark temporal
   // para alcançar visualmente a região da orelha.
   const visibleLength =
     Math.max(
       glassesWidth * 0.22,
-      targetDistance * (0.90 + yawAmount * 0.10)
+      targetDistance * (0.96 + yawAmount * 0.12)
     );
 
   const templeAspect =
