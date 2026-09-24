@@ -176,29 +176,34 @@ export class TryOnEngine {
 // HASTE LATERAL DINÂMICA
 // ============================
 
-// Quanto a cabeça está girada
+// Revela a haste apenas quando há rotação lateral suficiente.
+// A câmera frontal funciona como espelho, por isso o lado visível
+// é o oposto do sinal bruto do yaw.
 const yawAbs = Math.abs(yaw);
-
-// A haste só começa a aparecer depois
-// de uma rotação perceptível da cabeça.
 const yawAmount = Math.min(
   1,
-  Math.max(0, (yawAbs - 0.07) / 0.30)
+  Math.max(0, (yawAbs - 0.10) / 0.32)
 );
 
 if (
-  yawAmount > 0.03 &&
+  yawAmount > 0.04 &&
   this.templeImage.complete &&
   this.templeImage.naturalWidth
 ) {
-  const side = yaw >= 0 ? 1 : -1;
-
+  const side = yaw >= 0 ? -1 : 1;
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // Comprimento visível aumenta com o giro.
+  // Dobradiça: permanece presa à borda da armação.
+  const hingeX =
+    side * frontHalfWidth * 0.97;
+  const hingeY =
+    -glassesHeight * 0.20;
+
+  // A haste fica curta em pequenos giros e ganha profundidade
+  // progressivamente. O limite evita o efeito de "asa aberta".
   const templeWidth =
-    glassesWidth * (0.08 + yawAmount * 0.30);
+    glassesWidth * (0.10 + yawAmount * 0.31);
 
   const templeAspect =
     this.templeImage.naturalHeight /
@@ -207,57 +212,43 @@ if (
   const templeHeight =
     templeWidth * templeAspect;
 
-  // Dobradiça na extremidade da frente da armação.
-  const hingeX =
-    side * frontHalfWidth * 0.94;
-
-  const hingeY =
-    -glassesHeight * 0.27;
-
   this.ctx.save();
+  this.ctx.translate(hingeX, hingeY);
 
+  // Entrada suave da haste.
   this.ctx.globalAlpha = Math.min(
     1,
-    yawAmount * 1.5
+    yawAmount * 1.65
   );
 
-  this.ctx.translate(
-    hingeX,
-    hingeY
-  );
-
-  // A haste deixa de parecer aberta lateralmente:
-  // fica comprimida quando quase frontal e ganha
-  // profundidade conforme a cabeça gira.
-  const depthScale =
-    0.20 + yawAmount * 0.80;
-
-  // Inclinação em direção à orelha.
+  // Inclinação discreta para trás, em direção à orelha.
   this.ctx.rotate(
-    -side * (0.10 + yawAmount * 0.10)
+    side * (0.02 + yawAmount * 0.035)
   );
 
-  // Asset original: dobradiça na direita e ponta na esquerda.
-  // Espelha quando necessário.
+  // O PNG possui a dobradiça na extremidade direita.
+  // Espelha para reutilizar a mesma peça no lado oposto.
   if (side > 0) {
     this.ctx.scale(-1, 1);
   }
 
-  this.ctx.scale(
-    depthScale,
-    1
-  );
+  // Perspectiva: a profundidade cresce com o giro da cabeça.
+  const depthScale =
+    0.10 + yawAmount * 0.58;
+
+  this.ctx.scale(depthScale, 1);
 
   this.ctx.drawImage(
     this.templeImage,
     -templeWidth,
-    -templeHeight * 0.35,
+    -templeHeight * 0.42,
     templeWidth,
     templeHeight
   );
 
   this.ctx.restore();
 }
+
     // ============================
     // FRENTE DA ARMAÇÃO
     // ============================
