@@ -176,9 +176,8 @@ export class TryOnEngine {
 // HASTE LATERAL DINÂMICA
 // ============================
 
-// Revela a haste apenas quando há rotação lateral suficiente.
-// A câmera frontal funciona como espelho, por isso o lado visível
-// é o oposto do sinal bruto do yaw.
+// A haste aparece apenas quando a rotação lateral é suficiente.
+// O lado visível é invertido porque a câmera frontal é espelhada.
 const yawAbs = Math.abs(yaw);
 const yawAmount = Math.min(
   1,
@@ -194,16 +193,15 @@ if (
   const frontHalfWidth =
     (glassesWidth * perspectiveScaleX) / 2;
 
-  // Dobradiça: permanece presa à borda da armação.
+  // Dobradiça fixa na borda externa da armação.
   const hingeX =
-    side * frontHalfWidth * 0.97;
+    side * frontHalfWidth * 0.985;
   const hingeY =
-    -glassesHeight * 0.20;
+    -glassesHeight * 0.17;
 
-  // A haste fica curta em pequenos giros e ganha profundidade
-  // progressivamente. O limite evita o efeito de "asa aberta".
+  // Comprimento visual da haste.
   const templeWidth =
-    glassesWidth * (0.10 + yawAmount * 0.31);
+    glassesWidth * (0.18 + yawAmount * 0.34);
 
   const templeAspect =
     this.templeImage.naturalHeight /
@@ -215,33 +213,34 @@ if (
   this.ctx.save();
   this.ctx.translate(hingeX, hingeY);
 
-  // Entrada suave da haste.
   this.ctx.globalAlpha = Math.min(
     1,
-    yawAmount * 1.65
+    yawAmount * 1.8
   );
 
-  // Inclinação discreta para trás, em direção à orelha.
+  // Mantém a haste praticamente alinhada com a linha dos olhos.
+  // A queda vertical é pequena e cresce suavemente com o giro.
   this.ctx.rotate(
-    side * (0.02 + yawAmount * 0.035)
+    side * (0.005 + yawAmount * 0.018)
   );
 
-  // O PNG possui a dobradiça na extremidade direita.
-  // Espelha para reutilizar a mesma peça no lado oposto.
+  // O PNG tem a dobradiça na direita. Para o lado direito
+  // da tela, espelhamos mantendo a dobradiça presa em x=0.
   if (side > 0) {
     this.ctx.scale(-1, 1);
   }
 
-  // Perspectiva: a profundidade cresce com o giro da cabeça.
+  // Não comprime excessivamente a haste: nas fotos de teste
+  // ela estava curta demais e terminava antes da região da orelha.
   const depthScale =
-    0.10 + yawAmount * 0.58;
+    0.48 + yawAmount * 0.42;
 
   this.ctx.scale(depthScale, 1);
 
   this.ctx.drawImage(
     this.templeImage,
     -templeWidth,
-    -templeHeight * 0.42,
+    -templeHeight * 0.48,
     templeWidth,
     templeHeight
   );
