@@ -138,7 +138,7 @@ export class TryOnEngine {
 
     const angle = Math.atan2(y2 - y1, x2 - x1);
 
-    const glassesWidth = faceWidth * 0.92;
+    const glassesWidth = faceWidth * 1.04;
 
     const perspectiveScaleX = Math.max(
       0.72,
@@ -197,7 +197,7 @@ if (
   const hingeX =
     side * frontHalfWidth * 0.99;
   const hingeY =
-    -glassesHeight * 0.16;
+    -glassesHeight * 0.27;
 
   const templeAspect =
     this.templeImage.naturalHeight /
@@ -205,7 +205,7 @@ if (
 
   // Comprimento suficiente para alcançar visualmente a região da orelha.
   const templeWidth =
-    glassesWidth * (0.34 + yawAmount * 0.38);
+    glassesWidth * (0.42 + yawAmount * 0.42);
 
   const templeHeight =
     templeWidth * templeAspect;
@@ -220,7 +220,7 @@ if (
 
   // Mantém a haste quase horizontal, como nas referências reais.
   this.ctx.rotate(
-    side * (0.003 + yawAmount * 0.012)
+    side * (0.001 + yawAmount * 0.008)
   );
 
   // O PNG possui a dobradiça na direita.
