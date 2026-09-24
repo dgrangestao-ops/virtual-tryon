@@ -1,20 +1,17 @@
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+import { Glasses3D } from "./Glasses3D.js";
 
 export class TryOnEngine {
-  constructor(video, canvas, onStatus = () => {}) {
+  constructor(video, canvas2d, canvas3d, onStatus = () => {}) {
     this.video = video;
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+    this.canvas = canvas2d;
+    this.canvas3d = canvas3d;
+    this.ctx = canvas2d.getContext("2d");
+    this.glasses3d = new Glasses3D(canvas3d);
     this.onStatus = onStatus;
     this.landmarker = null;
     this.lastVideoTime = -1;
     this.running = false;
-
-    this.glassesImage = new Image();
-    this.glassesImage.src = "/armacao-fremi-teste.png";
-
-    this.templeImage = new Image();
-    this.templeImage.src = "/haste-fremi-esquerda.png";
   }
 
   async init() {
@@ -34,7 +31,7 @@ export class TryOnEngine {
       outputFacialTransformationMatrixes: true,
     });
 
-    this.onStatus("Rastreamento pronto");
+    this.onStatus("Rastreamento 3D pronto");
   }
 
   async startCamera() {
@@ -55,8 +52,13 @@ export class TryOnEngine {
   }
 
   resize() {
-    this.canvas.width = this.video.videoWidth || 1280;
-    this.canvas.height = this.video.videoHeight || 960;
+    const width = this.video.videoWidth || 1280;
+    const height = this.video.videoHeight || 960;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.canvas3d.width = width;
+    this.canvas3d.height = height;
+    this.glasses3d.resize(width, height);
   }
 
   loop() {
@@ -81,11 +83,11 @@ export class TryOnEngine {
     const faceMatrix = result.facialTransformationMatrixes?.[0];
 
     if (!face) {
+      this.glasses3d.hide();
+      this.glasses3d.render();
       this.onStatus("Posicione seu rosto na câmera");
       return;
     }
-
-    this.onStatus("Rosto detectado ✓");
 
     const leftEye = face[33];
     const rightEye = face[263];
@@ -103,8 +105,6 @@ export class TryOnEngine {
     const templeX2 = rightTemple.x * this.canvas.width;
     const templeY2 = rightTemple.y * this.canvas.height;
 
-    const noseX = nose.x * this.canvas.width;
-
     const faceWidth = Math.hypot(
       templeX2 - templeX1,
       templeY2 - templeY1
@@ -113,127 +113,36 @@ export class TryOnEngine {
     const eyeDistance = Math.hypot(x2 - x1, y2 - y1);
     const centerX = (x1 + x2) / 2;
     const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
+    const roll = Math.atan2(y2 - y1, x2 - x1);
 
+    const noseX = nose.x * this.canvas.width;
     const landmarkYaw = (noseX - centerX) / eyeDistance;
     const matrixData = faceMatrix?.data;
-    const matrixYaw =
+
+    const yaw =
       matrixData?.length >= 16
         ? Math.atan2(matrixData[8], matrixData[10])
-        : null;
+        : landmarkYaw;
 
-    const yaw = Number.isFinite(matrixYaw)
-      ? matrixYaw
-      : landmarkYaw;
+    // Pitch aproximado da matriz 3D do MediaPipe.
+    const pitch =
+      matrixData?.length >= 16
+        ? Math.atan2(
+            -matrixData[9],
+            Math.hypot(matrixData[8], matrixData[10])
+          )
+        : 0;
 
-    const angle = Math.atan2(y2 - y1, x2 - x1);
-    const glassesWidth = faceWidth * 1.04;
-    const perspectiveScaleX = Math.max(
-      0.72,
-      1 - Math.abs(yaw) * 0.55
-    );
-    const perspectiveShiftX = yaw * glassesWidth * 0.12;
-    const perspectiveSkew = yaw * 0.18;
+    this.glasses3d.setPose({
+      x: centerX,
+      y: centerY,
+      scale: faceWidth * 0.62,
+      roll,
+      yaw,
+      pitch,
+    });
 
-    if (!this.glassesImage.complete || !this.glassesImage.naturalWidth) {
-      return;
-    }
-
-    const aspect =
-      this.glassesImage.naturalHeight /
-      this.glassesImage.naturalWidth;
-    const glassesHeight = glassesWidth * aspect;
-
-    this.ctx.save();
-    this.ctx.translate(centerX + perspectiveShiftX, centerY);
-    this.ctx.rotate(angle);
-
-    // HASTE 2.5D: a dobradiça fica fixa na frente e a profundidade
-    // é simulada comprimindo a haste conforme o giro da cabeça.
-    const yawAbs = Math.abs(yaw);
-    const yawAmount = Math.min(
-      1,
-      Math.max(0, (yawAbs - 0.08) / 0.34)
-    );
-
-    if (
-      yawAmount > 0.035 &&
-      this.templeImage.complete &&
-      this.templeImage.naturalWidth
-    ) {
-      const side = yaw >= 0 ? -1 : 1;
-      const frontHalfWidth =
-        (glassesWidth * perspectiveScaleX) / 2;
-
-      // Sobreposição real na dobradiça: elimina o vão entre os PNGs.
-      const hingeX =
-        side * (frontHalfWidth - glassesWidth * 0.135);
-      const hingeY =
-        -glassesHeight * 0.335;
-
-      const templeAspect =
-        this.templeImage.naturalHeight /
-        this.templeImage.naturalWidth;
-
-      // Comprimento físico base; a projeção em tela é controlada
-      // separadamente pelo depthScale.
-      const physicalLength = faceWidth * 1.12;
-      const templeHeight = physicalLength * templeAspect;
-
-      // Quanto mais lateral o rosto, maior a projeção visível em profundidade.
-      const depthScale = 0.44 + yawAmount * 0.42;
-      const projectedLength = physicalLength * depthScale;
-
-      this.ctx.save();
-      this.ctx.translate(hingeX, hingeY);
-      this.ctx.globalAlpha = Math.min(1, yawAmount * 1.9);
-
-      // A parte rígida sai quase horizontal; a curva do PNG faz a descida.
-      this.ctx.rotate(side * (0.004 + yawAmount * 0.010));
-
-      if (side > 0) {
-        this.ctx.scale(-1, 1);
-      }
-
-      // Recorta alguns pixels da extremidade da dobradiça do PNG.
-      // A própria frente será desenhada depois por cima desta região,
-      // fazendo as duas peças parecerem uma única armação.
-      const sourceCrop = this.templeImage.naturalWidth * 0.045;
-      const sourceWidth =
-        this.templeImage.naturalWidth - sourceCrop;
-
-      this.ctx.drawImage(
-        this.templeImage,
-        0,
-        0,
-        sourceWidth,
-        this.templeImage.naturalHeight,
-        -projectedLength,
-        -templeHeight * 0.47,
-        projectedLength,
-        templeHeight
-      );
-
-      this.ctx.restore();
-    }
-
-    // FRENTE DA ARMAÇÃO
-    this.ctx.transform(
-      1,
-      0,
-      perspectiveSkew,
-      1,
-      0,
-      0
-    );
-
-    this.ctx.drawImage(
-      this.glassesImage,
-      -(glassesWidth * perspectiveScaleX) / 2,
-      -glassesHeight / 2,
-      glassesWidth * perspectiveScaleX,
-      glassesHeight
-    );
-
-    this.ctx.restore();
+    this.glasses3d.render();
+    this.onStatus("Rosto detectado ✓ · modo 3D");
   }
 }
