@@ -10,18 +10,15 @@ export class TryOnEngine {
     this.lastVideoTime = -1;
     this.running = false;
 
-    // Frente da armação
     this.glassesImage = new Image();
     this.glassesImage.src = "/armacao-fremi-teste.png";
 
-    // Haste real Fremi
     this.templeImage = new Image();
     this.templeImage.src = "/haste-fremi-esquerda.png";
   }
 
   async init() {
     this.onStatus("Carregando rastreamento facial…");
-
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
     );
@@ -52,10 +49,8 @@ export class TryOnEngine {
 
     this.video.srcObject = stream;
     await this.video.play();
-
     this.resize();
     this.running = true;
-
     requestAnimationFrame(() => this.loop());
   }
 
@@ -69,12 +64,10 @@ export class TryOnEngine {
 
     if (this.video.currentTime !== this.lastVideoTime) {
       this.lastVideoTime = this.video.currentTime;
-
       const result = this.landmarker.detectForVideo(
         this.video,
         performance.now()
       );
-
       this.draw(result);
     }
 
@@ -118,15 +111,11 @@ export class TryOnEngine {
     );
 
     const eyeDistance = Math.hypot(x2 - x1, y2 - y1);
-
     const centerX = (x1 + x2) / 2;
-    const centerY =
-      (y1 + y2) / 2 + eyeDistance * 0.04;
+    const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
 
-    // Yaw 3D real
     const landmarkYaw = (noseX - centerX) / eyeDistance;
     const matrixData = faceMatrix?.data;
-
     const matrixYaw =
       matrixData?.length >= 16
         ? Math.atan2(matrixData[8], matrixData[10])
@@ -137,113 +126,86 @@ export class TryOnEngine {
       : landmarkYaw;
 
     const angle = Math.atan2(y2 - y1, x2 - x1);
-
     const glassesWidth = faceWidth * 1.04;
-
     const perspectiveScaleX = Math.max(
       0.72,
       1 - Math.abs(yaw) * 0.55
     );
-
-    const perspectiveShiftX =
-      yaw * glassesWidth * 0.12;
-
+    const perspectiveShiftX = yaw * glassesWidth * 0.12;
     const perspectiveSkew = yaw * 0.18;
 
-    if (
-      !this.glassesImage.complete ||
-      !this.glassesImage.naturalWidth
-    ) {
+    if (!this.glassesImage.complete || !this.glassesImage.naturalWidth) {
       return;
     }
 
     const aspect =
       this.glassesImage.naturalHeight /
       this.glassesImage.naturalWidth;
-
     const glassesHeight = glassesWidth * aspect;
 
     this.ctx.save();
-
-    this.ctx.translate(
-      centerX + perspectiveShiftX,
-      centerY
-    );
-
+    this.ctx.translate(centerX + perspectiveShiftX, centerY);
     this.ctx.rotate(angle);
 
-// ============================
-// HASTE LATERAL — ENCAIXE PELA DOBRADIÇA
-// ============================
+    // HASTE 2.5D: a dobradiça fica fixa na frente e a profundidade
+    // é simulada comprimindo a haste conforme o giro da cabeça.
+    const yawAbs = Math.abs(yaw);
+    const yawAmount = Math.min(
+      1,
+      Math.max(0, (yawAbs - 0.08) / 0.34)
+    );
 
-// O PNG da haste tem a dobradiça na extremidade direita.
-// Em vez de posicionar a imagem pela caixa inteira, ancoramos essa
-// extremidade dentro da frente da armação e dimensionamos a haste
-// pela largura real da cabeça.
-const yawAbs = Math.abs(yaw);
-const yawAmount = Math.min(
-  1,
-  Math.max(0, (yawAbs - 0.08) / 0.34)
-);
+    if (
+      yawAmount > 0.035 &&
+      this.templeImage.complete &&
+      this.templeImage.naturalWidth
+    ) {
+      const side = yaw >= 0 ? -1 : 1;
+      const frontHalfWidth =
+        (glassesWidth * perspectiveScaleX) / 2;
 
-if (
-  yawAmount > 0.035 &&
-  this.templeImage.complete &&
-  this.templeImage.naturalWidth
-) {
-  const side = yaw >= 0 ? -1 : 1;
-  const frontHalfWidth =
-    (glassesWidth * perspectiveScaleX) / 2;
+      // Sobreposição real na dobradiça: elimina o vão entre os PNGs.
+      const hingeX =
+        side * (frontHalfWidth - glassesWidth * 0.075);
+      const hingeY =
+        -glassesHeight * 0.365;
 
-  // A âncora entra na armação para garantir união visual.
-  const hingeInset = glassesWidth * 0.055;
-  const hingeX =
-    side * (frontHalfWidth - hingeInset);
-  const hingeY =
-    -glassesHeight * 0.405;
+      const templeAspect =
+        this.templeImage.naturalHeight /
+        this.templeImage.naturalWidth;
 
-  // Usa a largura facial como escala estável e dá alcance suficiente
-  // para que a curva ultrapasse a região da orelha.
-  const templeLength =
-    faceWidth * (0.78 + yawAmount * 0.18);
+      // Comprimento físico base; a projeção em tela é controlada
+      // separadamente pelo depthScale.
+      const physicalLength = faceWidth * 0.88;
+      const templeHeight = physicalLength * templeAspect;
 
-  const templeAspect =
-    this.templeImage.naturalHeight /
-    this.templeImage.naturalWidth;
-  const templeHeight =
-    templeLength * templeAspect;
+      // Quanto mais lateral o rosto, maior a projeção visível em profundidade.
+      const depthScale = 0.30 + yawAmount * 0.36;
+      const projectedLength = physicalLength * depthScale;
 
-  // Pequena inclinação apenas; a curvatura do próprio asset faz
-  // a descida na ponta.
-  const templeTilt =
-    side * (0.005 + yawAmount * 0.018);
+      this.ctx.save();
+      this.ctx.translate(hingeX, hingeY);
+      this.ctx.globalAlpha = Math.min(1, yawAmount * 1.9);
 
-  this.ctx.save();
-  this.ctx.translate(hingeX, hingeY);
-  this.ctx.rotate(templeTilt);
-  this.ctx.globalAlpha = Math.min(1, yawAmount * 1.9);
+      // A parte rígida sai quase horizontal; a curva do PNG faz a descida.
+      this.ctx.rotate(side * (0.004 + yawAmount * 0.010));
 
-  // O asset estende-se da dobradiça (direita) para a ponta (esquerda).
-  // Espelha somente para reutilizá-lo no lado oposto.
-  if (side > 0) {
-    this.ctx.scale(-1, 1);
-  }
+      if (side > 0) {
+        this.ctx.scale(-1, 1);
+      }
 
-  this.ctx.drawImage(
-    this.templeImage,
-    -templeLength,
-    -templeHeight * 0.50,
-    templeLength,
-    templeHeight
-  );
+      this.ctx.drawImage(
+        this.templeImage,
+        -projectedLength,
+        -templeHeight * 0.47,
+        projectedLength,
+        templeHeight
+      );
 
-  this.ctx.restore();
-}
+      this.ctx.restore();
+    }
 
-    // ============================
     // FRENTE DA ARMAÇÃO
-    // ============================
-
     this.ctx.transform(
       1,
       0,
