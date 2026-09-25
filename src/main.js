@@ -15,7 +15,10 @@ const productName = document.querySelector("#product-name");
 const params=new URLSearchParams(location.search);
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
-const activeProduct = findProduct({sku:requestedSku,id:requestedProduct}) || findProduct();
+const requestedKey=requestedSku||requestedProduct;
+const matchedProduct=findProduct({sku:requestedSku,id:requestedProduct});
+const activeProduct = matchedProduct || findProduct();
+const unknownProduct=Boolean(requestedKey && !matchedProduct);
 const backStore=document.querySelector("#back-store");
 const buyProduct=document.querySelector("#buy-product");
 const returnUrl=params.get("return") || activeProduct.productUrl || null;
@@ -33,6 +36,13 @@ const setStatus=(message)=>{
   if(message.includes("✓")) statusTimer=setTimeout(()=>status.classList.remove("visible"),1800);
 };
 
+if(unknownProduct){
+  productName.textContent="Produto não disponível no provador";
+  start.disabled=true;
+  start.textContent="Produto indisponível";
+  setStatus("Este SKU ainda não está disponível para prova virtual");
+}
+
 const engine = new TryOnEngine(
   video,
   canvas,
@@ -41,6 +51,7 @@ const engine = new TryOnEngine(
 );
 
 start.addEventListener("click", async () => {
+  if(unknownProduct) return;
   start.disabled = true;
   setStatus("Preparando câmera…");
   try {
