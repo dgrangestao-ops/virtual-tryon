@@ -74,7 +74,7 @@ export class Glasses3D {
     group.add(rightRim);
 
     // Barra superior característica do modelo.
-    const brow=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.105,0.075),frameMat);
+    const brow=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.070,0.065),frameMat);
     brow.position.set(0,0.245,0.015);
     group.add(brow);
 
@@ -169,8 +169,10 @@ export class Glasses3D {
     const aspect=width/height;
     const next={
       x:(target.x*2-1)*aspect,
-      y:-(target.y*2-1),
-      scale:(target.scale*2*aspect)/1.66,
+      // Sobe levemente a armação: o centro geométrico dos olhos não coincide
+      // com o centro óptico deste modelo Fremi mais alto na sobrancelha.
+      y:-(target.y*2-1)+0.035,
+      scale:((target.scale*2*aspect)/1.66)*0.93,
       roll:target.roll||0,
       yaw:target.yaw||0,
       pitch:target.pitch||0
@@ -185,8 +187,8 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.pose.yaw*0.60;
-    const visualPitch=this.pose.pitch*0.68;
+    const visualYaw=this.pose.yaw*0.54;
+    const visualPitch=this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(!this.usingExternalModel){
