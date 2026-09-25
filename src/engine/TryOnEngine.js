@@ -71,7 +71,7 @@ export class TryOnEngine {
         return true;
       }catch(error){
         console.warn("Falha ao preparar foto do catálogo",error);
-        this.status?.("Não foi possível preparar a imagem deste produto");
+        this.setStatus("Não foi possível preparar a imagem deste produto");
         return false;
       }
     }
@@ -179,10 +179,16 @@ export class TryOnEngine {
       rightTemple.y-leftTemple.y
     );
 
-    const roll=Math.atan2(
-      rightEye.y-leftEye.y,
-      rightEye.x-leftEye.x
-    );
+    // Roll robusto: usa vários pares simétricos do rosto, em vez de depender
+    // apenas dos cantos dos olhos (que podem introduzir inclinação constante).
+    const rollPairs=[
+      [face[33],face[263]],   // olhos
+      [face[130],face[359]],  // região externa dos olhos
+      [face[127],face[356]]   // laterais superiores do rosto
+    ];
+    const rollSamples=rollPairs.map(([a,b])=>Math.atan2(b.y-a.y,b.x-a.x));
+    rollSamples.sort((a,b)=>a-b);
+    const roll=rollSamples[1];
 
     const yaw=matrix?.length>=16
       ? Math.atan2(matrix[8],matrix[10])
