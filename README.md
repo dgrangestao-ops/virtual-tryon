@@ -48,3 +48,9 @@ A segmentação atual é determinística e local, adequada para validar o fluxo.
 A experiência pública não pede upload ao consumidor. A loja abre o provador informando o SKU pela URL, por exemplo `?sku=FREMI-PILOTO`. O catálogo resolve o SKU para um asset previamente processado e o motor o aplica automaticamente.
 
 Opcionalmente, a loja pode enviar `return=<URL HTTPS codificada>`; nesse caso o provador oferece retorno à página de compra. O processamento de fotografias pertence ao fluxo administrativo/catalogação, não ao fluxo do comprador.
+
+## Validação do primeiro SKU real
+- Produto: Óculos esportivo preto lente preta (98un1)
+- Fluxo validado: catálogo → cópia local → processamento automático → seleção por SKU → rastreamento facial.
+- Calibração visual piloto: scale 0.84; offset Y -0.072.
+- Limitação conhecida: asset frontal é 2D/2.5D; vistas laterais de alta fidelidade exigirão múltiplas fotos ou modelo 3D.
