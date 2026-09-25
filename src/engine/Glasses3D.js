@@ -31,6 +31,7 @@ export class Glasses3D {
     this.root.visible=false;
     this.pose=null;
     this.imageFrame=null;
+    this.imageFrameBaseX=0;
   }
 
   setImageFrame(asset, calibration={}){
@@ -64,6 +65,7 @@ export class Glasses3D {
     const pos=calibration.position||[0,0,0];
     this.imageFrame.position.set(pos[0]||0,0.015+(pos[1]||0),0.055+(pos[2]||0));
     this.imageFrame.userData.aspect=asset.aspect||2.2;
+    this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
     this.fallback.visible=false;
     this.leftTemple.visible=false;
@@ -276,6 +278,13 @@ export class Glasses3D {
     const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.34 : this.pose.yaw*0.50;
     const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
+
+    if(this.usingExternalModel && this.imageFrame){
+      // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
+      // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
+      const parallax=Math.sin(imageYaw)*0.055;
+      this.imageFrame.position.x=this.imageFrameBaseX-parallax;
+    }
 
     if(!this.usingExternalModel){
       const templeToe=0.075;
