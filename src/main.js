@@ -50,6 +50,7 @@ switchCamera.addEventListener("click", async () => {
   switchCamera.disabled=true;
   try{
     const mode=await engine.switchCamera();
+    document.querySelector(".mirror-layer").classList.toggle("unmirrored",mode==="environment");
     switchCamera.textContent=mode==="user"?"Trocar câmera":"Usar câmera frontal";
   }catch(error){
     console.error(error);
@@ -77,8 +78,10 @@ snapshot.addEventListener("click", () => {
 
   // Reproduz exatamente a visualização espelhada do provador.
   ctx.save();
-  ctx.translate(out.width,0);
-  ctx.scale(-1,1);
+  if(engine.facingMode==="user"){
+    ctx.translate(out.width,0);
+    ctx.scale(-1,1);
+  }
   ctx.drawImage(video,0,0,out.width,out.height);
   ctx.drawImage(canvas3d,0,0,out.width,out.height);
   ctx.restore();
