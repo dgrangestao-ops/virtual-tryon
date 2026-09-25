@@ -55,8 +55,12 @@ export class FrameAssetProcessor {
       }
     }
     const bg=[0,1,2].map(c=>samples.reduce((a,p)=>a+p[c],0)/samples.length);
+    // Adapta a tolerância à variação real do fundo. Fundo branco puro usa
+    // corte mais conservador; fotos com compressão/sombra recebem tolerância maior.
+    const spread=Math.sqrt(samples.reduce((sum,p)=>sum+
+      ((p[0]-bg[0])**2+(p[1]-bg[1])**2+(p[2]-bg[2])**2)/3,0)/samples.length);
     let minX=work.width,minY=work.height,maxX=0,maxY=0,count=0;
-    const threshold=64;
+    const threshold=Math.max(38,Math.min(82,38+spread*2.2));
     const w=work.width,h=work.height;
     const seen=new Uint8Array(w*h);
     const queue=[];
@@ -67,7 +71,8 @@ export class FrameAssetProcessor {
       const k=queue[qi],x=k%w,y=(k/w)|0,i=k*4;
       const dist=Math.hypot(d[i]-bg[0],d[i+1]-bg[1],d[i+2]-bg[2]);
       if(dist>=threshold) continue;
-      d[i+3]=0;
+      // Suaviza a borda em vez de produzir recorte serrilhado.
+      d[i+3]=dist>threshold*.72 ? Math.round(255*(dist-threshold*.72)/(threshold*.28)) : 0;
       if(x>0) enqueue(x-1,y); if(x<w-1) enqueue(x+1,y);
       if(y>0) enqueue(x,y-1); if(y<h-1) enqueue(x,y+1);
     }
