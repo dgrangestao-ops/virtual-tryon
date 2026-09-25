@@ -69,7 +69,9 @@ export class TryOnEngine {
         this.glasses3d.setImageFrame(asset);
         return true;
       }catch(error){
-        console.warn("Falha ao preparar foto do catálogo; usando fallback",error);
+        console.warn("Falha ao preparar foto do catálogo",error);
+        this.status?.("Não foi possível preparar a imagem deste produto");
+        return false;
       }
     }
     this.glasses3d.fallback.visible=true;
