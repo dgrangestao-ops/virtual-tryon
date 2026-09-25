@@ -1,13 +1,35 @@
 export class FrameAssetProcessor {
+  constructor(){
+    this.cache=new Map();
+  }
+
   async fromUrl(url){
+    if(this.cache.has(url)) return this.cache.get(url);
     const response=await fetch(url,{mode:"cors"});
     if(!response.ok) throw new Error("Falha ao carregar imagem do catálogo");
     const blob=await response.blob();
-    return this.fromImage(blob);
+    const promise=this.fromImage(blob);
+    this.cache.set(url,promise);
+    try{return await promise;}catch(error){this.cache.delete(url);throw error;}
+  }
+
+  async decodeImage(file){
+    if("createImageBitmap" in window) return createImageBitmap(file);
+    const url=URL.createObjectURL(file);
+    try{
+      const img=new Image();
+      img.decoding="async";
+      img.src=url;
+      await img.decode();
+      return img;
+    }finally{
+      // Revogação após decode é segura: os pixels já estão disponíveis para drawImage.
+      URL.revokeObjectURL(url);
+    }
   }
 
   async fromImage(file){
-    const bitmap=await createImageBitmap(file);
+    const bitmap=await this.decodeImage(file);
     const maxSide=1600;
     const ratio=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
     const work=document.createElement("canvas");
