@@ -27,24 +27,6 @@ export class Glasses3D {
     key.position.set(1.5,2,4);
     this.scene.add(key);
 
-    // Oclusor facial invisível: escreve apenas no depth buffer.
-    // A primeira versão usa uma superfície elíptica ajustada pelos landmarks;
-    // depois pode ser substituída pela triangulação completa do Face Mesh.
-    const occMat=new THREE.MeshBasicMaterial({
-      colorWrite:false,
-      depthWrite:true,
-      depthTest:true,
-      side:THREE.DoubleSide
-    });
-    this.occluder=new THREE.Mesh(
-      new THREE.SphereGeometry(1,32,20,0,Math.PI*2,0,Math.PI*0.62),
-      occMat
-    );
-    this.occluder.scale.set(0.72,0.92,0.48);
-    this.occluder.position.z=-0.16;
-    this.occluder.renderOrder=-1;
-    this.root.add(this.occluder);
-
     this.root.visible=false;
     this.pose=null;
   }
@@ -171,11 +153,6 @@ export class Glasses3D {
     const visualYaw=this.pose.yaw*0.60;
     const visualPitch=this.pose.pitch*0.68;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
-
-    // Mantém o oclusor alinhado à cabeça. Ele não aparece na imagem,
-    // mas impede que partes traseiras das hastes atravessem visualmente
-    // a superfície frontal/lateral da cabeça.
-    this.occluder.visible=true;
 
     if(!this.usingExternalModel){
       const templeToe=0.075;
