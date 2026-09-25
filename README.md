@@ -14,6 +14,8 @@ MVP de provador virtual de óculos no navegador, preparado como base para um pro
 - layout responsivo
 - processamento local da câmera
 - fallback de rastreamento GPU → CPU
+- catálogo desacoplado de produtos/SKUs
+- API de troca de produto preparada para GLB/GLTF por armação
 
 ## Executar
 ```bash
@@ -33,3 +35,6 @@ Tracking e encaixe frontal/3/4 validados em câmera real. O modelo procedural pe
 Adicionar modelos GLB/GLTF reais das armações, catálogo/SKUs, calibração por produto, oclusão avançada rosto/haste, analytics e integração com a loja.
 
 > O MVP atual não envia vídeo da câmera para servidor.
+
+## Arquitetura para expansão
+O arquivo `src/products.js` concentra os SKUs e calibrações. O motor recebe o produto pela API `setProduct`, permitindo que a mesma experiência seja reutilizada para novas armações e, posteriormente, para múltiplas lojas sem duplicar o motor de tracking.
