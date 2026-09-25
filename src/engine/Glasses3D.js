@@ -49,6 +49,7 @@ export class Glasses3D {
     });
     this.imageFrame=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);
     this.imageFrame.position.set(0,0.015,0.055);
+    this.imageFrame.userData.aspect=asset.aspect||2.2;
     this.modelRoot.add(this.imageFrame);
     this.fallback.visible=false;
     this.usingExternalModel=true;
@@ -250,8 +251,8 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.pose.yaw*0.50;
-    const visualPitch=this.pose.pitch*0.62;
+    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.34 : this.pose.yaw*0.50;
+    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.42 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(!this.usingExternalModel){
