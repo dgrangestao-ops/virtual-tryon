@@ -17,7 +17,7 @@ const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
 const activeProduct = PRODUCTS.find(p=>p.sku===requestedSku || p.id===requestedSku || p.id===requestedProduct) || PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
 const backStore=document.querySelector("#back-store");
-const returnUrl=params.get("return");
+const returnUrl=params.get("return") || activeProduct.productUrl || null;
 productName.textContent=activeProduct.name;
 
 let statusTimer=null;
