@@ -58,6 +58,13 @@ export class TryOnEngine {
     if(product.modelUrl){
       return this.glasses3d.loadModel(product.modelUrl,product.calibration||{});
     }
+    if(product.imageAssetUrl){
+      this.glasses3d.setImageFrame({
+        url:product.imageAssetUrl,
+        aspect:product.imageAspect||2.2
+      });
+      return true;
+    }
     this.glasses3d.fallback.visible=true;
     this.glasses3d.usingExternalModel=false;
     return true;
