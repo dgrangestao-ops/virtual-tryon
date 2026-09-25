@@ -14,17 +14,18 @@ export class Glasses3D {
     this.root=new THREE.Group();
     this.scene.add(this.root);
 
-    const material=new THREE.MeshStandardMaterial({
-      color:0x171311,roughness:0.35,metalness:0.08
+    const frameMat=new THREE.MeshStandardMaterial({
+      color:0x171311,roughness:0.28,metalness:0.12
+    });
+    const lensMat=new THREE.MeshPhysicalMaterial({
+      color:0xdde8ee,transparent:true,opacity:0.16,
+      roughness:0.05,metalness:0,depthWrite:false
     });
 
-    const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.07,0.08),material);
-    bridge.position.y=0.02;
-    this.root.add(bridge);
-
-    const rimGeometry=new THREE.TorusGeometry(0.36,0.035,10,40);
-    const leftRim=new THREE.Mesh(rimGeometry,material);
-    leftRim.scale.set(1.12,0.78,1);
+    // Frente: proporção mais próxima de uma armação real.
+    const rimGeo=new THREE.TorusGeometry(0.36,0.027,12,56);
+    const leftRim=new THREE.Mesh(rimGeo,frameMat);
+    leftRim.scale.set(1.18,0.72,1);
     leftRim.position.x=-0.43;
     this.root.add(leftRim);
 
@@ -32,18 +33,44 @@ export class Glasses3D {
     rightRim.position.x=0.43;
     this.root.add(rightRim);
 
-    const templeGeometry=new THREE.BoxGeometry(0.07,0.07,1.45);
-    const leftTemple=new THREE.Mesh(templeGeometry,material);
-    leftTemple.position.set(-0.79,0.03,-0.68);
-    leftTemple.rotation.x=-0.035;
-    this.root.add(leftTemple);
+    // Lentes transparentes provisórias para leitura de profundidade.
+    const lensGeo=new THREE.CircleGeometry(0.335,48);
+    const leftLens=new THREE.Mesh(lensGeo,lensMat);
+    leftLens.scale.set(1.18,0.72,1);
+    leftLens.position.set(-0.43,0,-0.018);
+    this.root.add(leftLens);
+    const rightLens=leftLens.clone();
+    rightLens.position.x=0.43;
+    this.root.add(rightLens);
 
+    // Ponte e pequenos conectores nas dobradiças.
+    const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.20,0.045,0.055),frameMat);
+    bridge.position.set(0,0.025,0);
+    this.root.add(bridge);
+
+    const hingeGeo=new THREE.BoxGeometry(0.10,0.055,0.09);
+    const leftHinge=new THREE.Mesh(hingeGeo,frameMat);
+    leftHinge.position.set(-0.83,0.02,-0.015);
+    this.root.add(leftHinge);
+    const rightHinge=leftHinge.clone();
+    rightHinge.position.x=0.83;
+    this.root.add(rightHinge);
+
+    // Hastes conectadas fisicamente às dobradiças e avançando para trás.
+    const templeGeo=new THREE.BoxGeometry(0.055,0.055,1.42);
+    const leftTemple=new THREE.Mesh(templeGeo,frameMat);
+    leftTemple.position.set(-0.83,0.02,-0.74);
+    leftTemple.rotation.x=-0.025;
+    this.root.add(leftTemple);
     const rightTemple=leftTemple.clone();
-    rightTemple.position.x=0.79;
+    rightTemple.position.x=0.83;
     this.root.add(rightTemple);
 
     this.scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
     this.root.visible=false;
+
+    // Suavização evita vibração sem introduzir atraso perceptível.
+    this.pose=null;
   }
 
   resize(width,height){
@@ -57,25 +84,35 @@ export class Glasses3D {
     this.camera.updateProjectionMatrix();
   }
 
-  setPose({x,y,scale,roll=0,yaw=0,pitch=0}){
+  setPose(target){
     const width=this.canvas.width||1;
     const height=this.canvas.height||1;
     const aspect=width/height;
+    const next={
+      x:(target.x*2-1)*aspect,
+      y:-(target.y*2-1),
+      scale:(target.scale*2*aspect)/1.66,
+      roll:target.roll||0,
+      yaw:target.yaw||0,
+      pitch:target.pitch||0
+    };
 
-    // x/y/scale chegam normalizados (0..1), no MESMO frame do vídeo.
-    this.root.position.set(
-      (x*2-1)*aspect,
-      -(y*2-1),
-      0
-    );
+    if(!this.pose) this.pose={...next};
+    const a=0.38;
+    for(const key of Object.keys(next)){
+      this.pose[key]+= (next[key]-this.pose[key])*a;
+    }
 
-    // largura local aproximada da frente = 1.66.
-    const normalizedScale=(scale*2*aspect)/1.66;
-    this.root.scale.setScalar(normalizedScale);
-    this.root.rotation.set(pitch,yaw,roll);
+    this.root.position.set(this.pose.x,this.pose.y,0);
+    this.root.scale.setScalar(this.pose.scale);
+    this.root.rotation.set(this.pose.pitch,this.pose.yaw,this.pose.roll);
     this.root.visible=true;
   }
 
-  hide(){this.root.visible=false}
+  hide(){
+    this.root.visible=false;
+    this.pose=null;
+  }
+
   render(){this.renderer.render(this.scene,this.camera)}
 }
