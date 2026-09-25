@@ -54,3 +54,6 @@ Opcionalmente, a loja pode enviar `return=<URL HTTPS codificada>`; nesse caso o 
 - Fluxo validado: catálogo → cópia local → processamento automático → seleção por SKU → rastreamento facial.
 - Calibração visual piloto: scale 0.84; offset Y -0.072.
 - Limitação conhecida: asset frontal é 2D/2.5D; vistas laterais de alta fidelidade exigirão múltiplas fotos ou modelo 3D.
+
+## Integração na loja
+O arquivo `/embed.js` cria o botão “Experimentar no meu rosto” na página do produto. A loja informa apenas o SKU no atributo `data-sku`; o provador recebe o SKU e a URL de retorno automaticamente. Isso mantém o motor desacoplado da plataforma de e-commerce.
