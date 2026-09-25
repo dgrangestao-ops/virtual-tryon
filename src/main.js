@@ -40,7 +40,11 @@ start.addEventListener("click", async () => {
   setStatus("Preparando câmera…");
   try {
     await engine.init();
-    await engine.setProduct(activeProduct);
+    const productReady=await engine.setProduct(activeProduct);
+    if(productReady===false){
+      setStatus("Produto indisponível para prova virtual");
+      return;
+    }
     await engine.startCamera();
     document.querySelector(".mirror-layer").classList.remove("unmirrored");
     start.textContent = "Câmera ativa";
