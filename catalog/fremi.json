@@ -7,7 +7,25 @@
       "name": "Óculos esportivo preto lente preta",
       "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-esportivo-preto-lente-preta-98un1/",
       "sourceImageUrl": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp",
-      "localSourceUrl": "/products/98un1/source.webp"
+      "localSourceUrl": "/products/98un1/source.webp",
+      "brand": "Fremi",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 0.84,
+        "position": [
+          0,
+          -0.072,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
     },
     {
       "id": "oculos-policarbonato-preto-lente-espelhada-q7by3",
@@ -15,7 +33,27 @@
       "name": "Óculos policarbonato preto lente espelhada",
       "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-policarbonato-preto-lente-espelhada-q7by3/",
       "sourceImageUrl": "AUTO:og:image",
-      "localSourceUrl": "/products/q7by3/source.webp"
+      "localSourceUrl": "/products/q7by3/source.webp",
+      "brand": "Fremi",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
     }
-  ]
+  ],
+  "brand": "Fremi",
+  "defaultProductId": "oculos-esportivo-preto-lente-preta-98un1"
 }
