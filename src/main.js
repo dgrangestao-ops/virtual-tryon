@@ -17,8 +17,13 @@ const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
 const activeProduct = PRODUCTS.find(p=>p.sku===requestedSku || p.id===requestedSku || p.id===requestedProduct) || PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
 const backStore=document.querySelector("#back-store");
+const buyProduct=document.querySelector("#buy-product");
 const returnUrl=params.get("return") || activeProduct.productUrl || null;
 productName.textContent=activeProduct.name;
+if(activeProduct.productUrl){
+  buyProduct.href=activeProduct.productUrl;
+  buyProduct.hidden=false;
+}
 
 let statusTimer=null;
 const setStatus=(message)=>{
