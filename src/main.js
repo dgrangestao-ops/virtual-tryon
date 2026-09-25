@@ -1,6 +1,7 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
 import { PRODUCTS, DEFAULT_PRODUCT_ID } from "./products.js";
+import { FrameAssetProcessor } from "./engine/FrameAssetProcessor.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -13,6 +14,8 @@ const fullscreen = document.querySelector("#fullscreen");
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
 const activeProduct = PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
+const frameUpload=document.querySelector("#frame-upload");
+const assetProcessor=new FrameAssetProcessor();
 productName.textContent=activeProduct.name;
 
 let statusTimer=null;
@@ -122,4 +125,21 @@ fullscreen.addEventListener("click", async ()=>{
 document.addEventListener("fullscreenchange",()=>{
   if(!document.fullscreenElement) fullscreen.textContent="Tela cheia";
   if(engine.running) setTimeout(()=>engine.resize(),80);
+});
+
+frameUpload.addEventListener("change",async()=>{
+  const file=frameUpload.files?.[0];
+  if(!file) return;
+  setStatus("Preparando armação automaticamente…");
+  try{
+    const asset=await assetProcessor.fromImage(file);
+    await engine.setImageFrame(asset);
+    productName.textContent=file.name.replace(/\.[^.]+$/,"");
+    setStatus("Armação preparada ✓");
+  }catch(error){
+    console.error(error);
+    setStatus("Use uma foto frontal com fundo uniforme");
+  }finally{
+    frameUpload.value="";
+  }
 });
