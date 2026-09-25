@@ -30,3 +30,6 @@ button:disabled{opacity:.65;cursor:default}
 
 .compat{margin:4px auto 0;font-size:11px;color:#8a847c}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;background:#000}
+.stage:fullscreen video,.stage:fullscreen canvas{object-fit:contain}
