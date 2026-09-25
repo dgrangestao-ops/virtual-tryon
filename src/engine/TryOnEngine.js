@@ -31,7 +31,11 @@ export class TryOnEngine {
     });
     // Se existir um modelo real em /public/models/frame.glb ele entra
     // automaticamente; enquanto não existir, mantemos o fallback procedural.
-    await this.glasses3d.loadModel("/models/frame.glb");
+    await this.glasses3d.loadModel("/models/frame.glb", {
+      scale: 1,
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+    });
     this.onStatus("Rastreamento 3D pronto");
   }
 
