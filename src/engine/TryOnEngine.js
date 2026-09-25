@@ -53,11 +53,18 @@ export class TryOnEngine {
 
   async startCamera(facingMode=this.facingMode) {
     this.stopCamera();
-    this.facingMode=facingMode;
-    const stream = await navigator.mediaDevices.getUserMedia({
+    const previousMode=this.facingMode;
+    let stream;
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({
       video:{facingMode:{ideal:facingMode},width:{ideal:1280},height:{ideal:960}},
       audio:false,
-    });
+      });
+    }catch(error){
+      this.facingMode=previousMode;
+      throw error;
+    }
+    this.facingMode=facingMode;
     this.stream=stream;
     this.video.srcObject = stream;
     await new Promise((resolve,reject)=>{
