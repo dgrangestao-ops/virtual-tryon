@@ -219,7 +219,7 @@ export class Glasses3D {
     };
 
     if(!this.pose) this.pose={...next};
-    const a=0.38;
+    const a=0.42;
     for(const key of Object.keys(next)){
       this.pose[key]+=(next[key]-this.pose[key])*a;
     }
