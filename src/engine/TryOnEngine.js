@@ -15,6 +15,7 @@ export class TryOnEngine {
     this.running = false;
     this.stream = null;
     this.facingMode = "user";
+    this.initialized = false;
   }
 
   setStatus(message){
@@ -24,6 +25,7 @@ export class TryOnEngine {
   }
 
   async init() {
+    if(this.initialized) return;
     this.setStatus("Carregando rastreamento facial…");
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
@@ -45,6 +47,7 @@ export class TryOnEngine {
       position: [0, 0, 0],
       rotation: [0, 0, 0],
     });
+    this.initialized = true;
     this.setStatus("Rastreamento 3D pronto");
   }
 
@@ -57,6 +60,17 @@ export class TryOnEngine {
     });
     this.stream=stream;
     this.video.srcObject = stream;
+    await new Promise((resolve,reject)=>{
+      if(this.video.readyState>=1 && this.video.videoWidth) return resolve();
+      const ok=()=>{cleanup();resolve();};
+      const fail=()=>{cleanup();reject(new Error("Falha ao carregar vídeo da câmera"));};
+      const cleanup=()=>{
+        this.video.removeEventListener("loadedmetadata",ok);
+        this.video.removeEventListener("error",fail);
+      };
+      this.video.addEventListener("loadedmetadata",ok,{once:true});
+      this.video.addEventListener("error",fail,{once:true});
+    });
     await this.video.play();
     this.resize();
     this.running = true;
@@ -69,6 +83,7 @@ export class TryOnEngine {
       this.stream=null;
     }
     this.running=false;
+    this.lastVideoTime=-1;
   }
 
   async switchCamera(){
