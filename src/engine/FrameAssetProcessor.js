@@ -16,16 +16,14 @@ export class FrameAssetProcessor {
   async decodeImage(file){
     if("createImageBitmap" in window) return createImageBitmap(file);
     const url=URL.createObjectURL(file);
-    try{
-      const img=new Image();
-      img.decoding="async";
-      img.src=url;
-      await img.decode();
-      return img;
-    }finally{
-      // Revogação após decode é segura: os pixels já estão disponíveis para drawImage.
-      URL.revokeObjectURL(url);
-    }
+    const img=new Image();
+    img.decoding="async";
+    img.src=url;
+    await img.decode();
+    // Safari pode ainda depender do object URL no drawImage. Mantemos a URL
+    // viva até o processamento terminar e a liberamos em fromImage.
+    img.__objectUrl=url;
+    return img;
   }
 
   async fromImage(file){
@@ -121,11 +119,14 @@ export class FrameAssetProcessor {
     const out=document.createElement("canvas");
     out.width=maxX-minX+1;out.height=maxY-minY+1;
     out.getContext("2d").drawImage(work,minX,minY,out.width,out.height,0,0,out.width,out.height);
-    return {
+    const result={
       url:out.toDataURL("image/png"),
       aspect:out.width/out.height,
       sourceWidth:bitmap.width,
       sourceHeight:bitmap.height
     };
+    bitmap.close?.();
+    if(bitmap.__objectUrl) URL.revokeObjectURL(bitmap.__objectUrl);
+    return result;
   }
 }
