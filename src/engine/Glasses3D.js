@@ -33,7 +33,7 @@ export class Glasses3D {
     this.imageFrame=null;
   }
 
-  setImageFrame(asset){
+  setImageFrame(asset, calibration={}){
     if(this.imageFrame){
       this.modelRoot.remove(this.imageFrame);
       this.imageFrame.material?.map?.dispose();
@@ -42,13 +42,14 @@ export class Glasses3D {
     }
     const texture=new THREE.TextureLoader().load(asset.url,()=>this.render());
     texture.colorSpace=THREE.SRGBColorSpace;
-    const width=1.78;
+    const width=1.78*(calibration.scale||1);
     const height=width/Math.max(asset.aspect||2.2,1.2);
     const material=new THREE.MeshBasicMaterial({
       map:texture,transparent:true,depthWrite:false,side:THREE.DoubleSide
     });
     this.imageFrame=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);
-    this.imageFrame.position.set(0,0.015,0.055);
+    const pos=calibration.position||[0,0,0];
+    this.imageFrame.position.set(pos[0]||0,0.015+(pos[1]||0),0.055+(pos[2]||0));
     this.imageFrame.userData.aspect=asset.aspect||2.2;
     this.modelRoot.add(this.imageFrame);
     this.fallback.visible=false;
