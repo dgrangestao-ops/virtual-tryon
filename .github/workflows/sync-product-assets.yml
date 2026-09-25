@@ -7,6 +7,7 @@ on:
       - "catalog/**"
       - "scripts/sync-catalog.mjs"
       - "scripts/validate-catalog.mjs"
+      - "scripts/import-products.mjs"
       - ".github/workflows/sync-product-assets.yml"
 jobs:
   sync:
