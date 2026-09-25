@@ -111,8 +111,14 @@ export class TryOnEngine {
     );
 
     const eyeDistance = Math.hypot(x2 - x1, y2 - y1);
-    const centerX = (x1 + x2) / 2;
-    const centerY = (y1 + y2) / 2 + eyeDistance * 0.04;
+    // O FaceLandmarker devolve x/y normalizados (0..1).
+    // x1..y2 já estão em pixels; o centro precisa usar a média
+    // dos landmarks normalizados antes da conversão para pixels.
+    const centerX =
+      ((leftEye.x + rightEye.x) / 2) * this.canvas.width;
+    const centerY =
+      ((leftEye.y + rightEye.y) / 2) * this.canvas.height +
+      eyeDistance * 0.04;
     const roll = Math.atan2(y2 - y1, x2 - x1);
 
     const noseX = nose.x * this.canvas.width;
