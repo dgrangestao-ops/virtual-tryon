@@ -38,3 +38,8 @@ Adicionar modelos GLB/GLTF reais das armações, catálogo/SKUs, calibração po
 
 ## Arquitetura para expansão
 O arquivo `src/products.js` concentra os SKUs e calibrações. O motor recebe o produto pela API `setProduct`, permitindo que a mesma experiência seja reutilizada para novas armações e, posteriormente, para múltiplas lojas sem duplicar o motor de tracking.
+
+## Pipeline automático por fotografia
+O MVP agora aceita uma foto frontal de armação em fundo uniforme. O navegador estima o fundo, recorta a armação, cria um asset transparente e o injeta diretamente no motor facial. Esse fluxo é a base do cadastro em escala: foto → processamento → asset → try-on, sem exigir medição manual por SKU.
+
+A segmentação atual é determinística e local, adequada para validar o fluxo. A etapa seguinte é substituir/acompanhar esse segmentador por visão computacional robusta para fundos e fotografias variadas e adicionar inferência automática de pontos estruturais (lentes, ponte e dobradiças).
