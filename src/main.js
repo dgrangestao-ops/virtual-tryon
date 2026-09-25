@@ -9,11 +9,19 @@ const start = document.querySelector("#start");
 const switchCamera = document.querySelector("#switch-camera");
 const snapshot = document.querySelector("#snapshot");
 
+let statusTimer=null;
+const setStatus=(message)=>{
+  status.textContent=message;
+  status.classList.add("visible");
+  clearTimeout(statusTimer);
+  if(message.includes("✓")) statusTimer=setTimeout(()=>status.classList.remove("visible"),1800);
+};
+
 const engine = new TryOnEngine(
   video,
   canvas,
   canvas3d,
-  (message) => (status.textContent = message)
+  setStatus
 );
 
 start.addEventListener("click", async () => {
@@ -26,7 +34,7 @@ start.addEventListener("click", async () => {
     snapshot.hidden = false;
   } catch (error) {
     console.error(error);
-    status.textContent = "Não foi possível iniciar a câmera";
+    setStatus("Não foi possível iniciar a câmera");
     start.disabled = false;
   }
 });
@@ -38,7 +46,7 @@ switchCamera.addEventListener("click", async () => {
     switchCamera.textContent=mode==="user"?"Trocar câmera":"Usar câmera frontal";
   }catch(error){
     console.error(error);
-    status.textContent="Não foi possível trocar a câmera";
+    setStatus("Não foi possível trocar a câmera");
   }finally{
     switchCamera.disabled=false;
   }
@@ -64,5 +72,5 @@ snapshot.addEventListener("click", () => {
   link.download="fremi-provador.png";
   link.href=out.toDataURL("image/png");
   link.click();
-  status.textContent="Foto salva ✓";
+  setStatus("Foto salva ✓");
 });
