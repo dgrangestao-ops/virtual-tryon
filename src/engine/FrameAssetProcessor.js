@@ -80,8 +80,41 @@ export class FrameAssetProcessor {
       const i=(y*w+x)*4;
       if(d[i+3]>8){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);count++;}
     }
-    ctx.putImageData(img,0,0);
     if(!count) throw new Error("Não foi possível separar a armação do fundo.");
+
+    // Fotos de catálogo em 3/4 frequentemente trazem as hastes projetadas para
+    // cima. Para o modo foto/2.5D isso vira um arco sobre a sobrancelha.
+    // Detectamos automaticamente a faixa principal da frente da armação pela
+    // largura ocupada em cada linha e eliminamos somente apêndices muito acima
+    // dela, preservando a barra superior e armações altas.
+    const rowSpan=new Int32Array(h);
+    for(let y=0;y<h;y++){
+      let lo=w,hi=-1;
+      for(let x=0;x<w;x++){
+        if(d[(y*w+x)*4+3]>24){lo=Math.min(lo,x);hi=Math.max(hi,x);}
+      }
+      rowSpan[y]=hi>=lo?hi-lo+1:0;
+    }
+    let peakY=minY,peakSpan=0;
+    for(let y=minY;y<=maxY;y++){
+      if(rowSpan[y]>peakSpan){peakSpan=rowSpan[y];peakY=y;}
+    }
+    const objectH=Math.max(1,maxY-minY+1);
+    const trimAbove=Math.max(minY,Math.round(peakY-objectH*.30));
+    if(peakSpan>(maxX-minX)*.55 && trimAbove>minY){
+      for(let y=minY;y<trimAbove;y++){
+        const fadeStart=Math.max(minY,trimAbove-Math.round(objectH*.05));
+        const fade=y>=fadeStart?(y-fadeStart)/Math.max(1,trimAbove-fadeStart):0;
+        for(let x=minX;x<=maxX;x++){
+          const i=(y*w+x)*4;
+          if(y<fadeStart) d[i+3]=0;
+          else d[i+3]=Math.round(d[i+3]*fade);
+        }
+      }
+      minY=trimAbove;
+    }
+
+    ctx.putImageData(img,0,0);
     const pad=Math.round(Math.max(maxX-minX,maxY-minY)*.04);
     minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
     maxX=Math.min(work.width-1,maxX+pad);maxY=Math.min(work.height-1,maxY+pad);
