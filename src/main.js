@@ -83,3 +83,5 @@ document.addEventListener("visibilitychange",()=>{
   if(document.hidden) return;
   if(engine.running) engine.resize();
 });
+
+window.addEventListener("beforeunload",()=>engine.stopCamera());
