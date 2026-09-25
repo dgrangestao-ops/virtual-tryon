@@ -97,8 +97,8 @@ export class Glasses3D {
     const normalizedScale = ((scale / width) * 2 * aspect) / 1.6;
     this.root.scale.setScalar(normalizedScale);
 
-    // Compensa o espelhamento visual no eixo horizontal.
-    this.root.rotation.set(pitch, yaw, roll);
+    // No modo espelho, yaw e roll também mudam de sinal.
+    this.root.rotation.set(pitch, -yaw, -roll);
   }
 
   hide() {
