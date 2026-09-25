@@ -2,8 +2,10 @@ name: Sync product assets
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - "catalog/**"
+      - ".github/workflows/sync-product-assets.yml"
 jobs:
   sync:
     runs-on: ubuntu-latest
