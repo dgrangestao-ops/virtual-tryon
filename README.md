@@ -43,3 +43,8 @@ O arquivo `src/products.js` concentra os SKUs e calibrações. O motor recebe o 
 O MVP agora aceita uma foto frontal de armação em fundo uniforme. O navegador estima o fundo, recorta a armação, cria um asset transparente e o injeta diretamente no motor facial. Esse fluxo é a base do cadastro em escala: foto → processamento → asset → try-on, sem exigir medição manual por SKU.
 
 A segmentação atual é determinística e local, adequada para validar o fluxo. A etapa seguinte é substituir/acompanhar esse segmentador por visão computacional robusta para fundos e fotografias variadas e adicionar inferência automática de pontos estruturais (lentes, ponte e dobradiças).
+
+## Integração com e-commerce
+A experiência pública não pede upload ao consumidor. A loja abre o provador informando o SKU pela URL, por exemplo `?sku=FREMI-PILOTO`. O catálogo resolve o SKU para um asset previamente processado e o motor o aplica automaticamente.
+
+Opcionalmente, a loja pode enviar `return=<URL HTTPS codificada>`; nesse caso o provador oferece retorno à página de compra. O processamento de fotografias pertence ao fluxo administrativo/catalogação, não ao fluxo do comprador.
