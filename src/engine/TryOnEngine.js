@@ -111,6 +111,7 @@ export class TryOnEngine {
       roll,
       yaw,
       pitch,
+      face,
     });
 
     this.glasses3d.render();
