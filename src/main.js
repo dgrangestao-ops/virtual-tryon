@@ -28,7 +28,7 @@ if(activeProduct.productUrl){
   buyProduct.href=activeProduct.productUrl;
   buyProduct.hidden=false;
 }
-if(!requestedKey && PRODUCTS.length>1){
+if(PRODUCTS.filter(p=>p.available).length>1){
   testProduct.hidden=false;
   for(const p of PRODUCTS.filter(p=>p.available)){
     const option=document.createElement("option");
