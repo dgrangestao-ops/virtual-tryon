@@ -1,4 +1,11 @@
 export class FrameAssetProcessor {
+  async fromUrl(url){
+    const response=await fetch(url,{mode:"cors"});
+    if(!response.ok) throw new Error("Falha ao carregar imagem do catálogo");
+    const blob=await response.blob();
+    return this.fromImage(blob);
+  }
+
   async fromImage(file){
     const bitmap=await createImageBitmap(file);
     const work=document.createElement("canvas");
