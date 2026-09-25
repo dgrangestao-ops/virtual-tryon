@@ -52,6 +52,8 @@ export class Glasses3D {
     this.imageFrame.userData.aspect=asset.aspect||2.2;
     this.modelRoot.add(this.imageFrame);
     this.fallback.visible=false;
+    this.leftTemple.visible=false;
+    this.rightTemple.visible=false;
     this.usingExternalModel=true;
     this.model=null;
   }
