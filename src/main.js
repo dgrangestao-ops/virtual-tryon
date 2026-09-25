@@ -56,9 +56,17 @@ switchCamera.addEventListener("click", async () => {
   }
 });
 
-window.addEventListener("resize",()=>engine.resize());
+let resizeTimer=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{ if(engine.running) engine.resize(); },120);
+});
 
 snapshot.addEventListener("click", () => {
+  if(!engine.running || !video.videoWidth){
+    setStatus("Ative a câmera antes de salvar a foto");
+    return;
+  }
   const out=document.createElement("canvas");
   out.width=video.videoWidth||canvas3d.width;
   out.height=video.videoHeight||canvas3d.height;
