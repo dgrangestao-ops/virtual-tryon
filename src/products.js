@@ -1,5 +1,18 @@
 export const PRODUCTS = [
   {
+    id: "oculos-policarbonato-preto-lente-espelhada-q7by3",
+    brand: "Fremi",
+    name: "Óculos policarbonato preto lente espelhada",
+    sku: "q7by3",
+    productUrl: "https://www.fremieyewear.com.br/produtos/oculos-policarbonato-preto-lente-espelhada-q7by3/",
+    sourceImageUrl: "/products/q7by3/source.webp",
+    modelUrl: null,
+    imageAssetUrl: null,
+    assetStatus: "source-photo",
+    calibration: { scale: 1, position: [0,0,0], rotation: [0,0,0] },
+    available: true
+  },
+  {
     id: "oculos-esportivo-preto-lente-preta-98un1",
     brand: "Fremi",
     name: "Óculos esportivo preto lente preta",
