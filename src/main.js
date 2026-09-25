@@ -1,6 +1,6 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
-import { PRODUCTS, DEFAULT_PRODUCT_ID } from "./products.js";
+import { findProduct } from "./products.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -15,7 +15,7 @@ const productName = document.querySelector("#product-name");
 const params=new URLSearchParams(location.search);
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
-const activeProduct = PRODUCTS.find(p=>p.sku===requestedSku || p.id===requestedSku || p.id===requestedProduct) || PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
+const activeProduct = findProduct({sku:requestedSku,id:requestedProduct}) || findProduct();
 const backStore=document.querySelector("#back-store");
 const buyProduct=document.querySelector("#buy-product");
 const returnUrl=params.get("return") || activeProduct.productUrl || null;
