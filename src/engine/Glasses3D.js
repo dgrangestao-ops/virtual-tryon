@@ -33,12 +33,30 @@ export class Glasses3D {
   }
 
   buildFallback(){
-    const frameMat=new THREE.MeshStandardMaterial({
-      color:0x171311,roughness:0.28,metalness:0.12
+    // Materiais provisórios aproximando o acabamento do modelo Fremi:
+    // acetato preto/café brilhante e lente fumê com leve transparência.
+    const frameMat=new THREE.MeshPhysicalMaterial({
+      color:0x160f0d,
+      roughness:0.20,
+      metalness:0.02,
+      clearcoat:0.55,
+      clearcoatRoughness:0.18
+    });
+    const amberMat=new THREE.MeshPhysicalMaterial({
+      color:0x5a250b,
+      roughness:0.24,
+      metalness:0.01,
+      clearcoat:0.45,
+      transparent:true,
+      opacity:0.78
     });
     const lensMat=new THREE.MeshPhysicalMaterial({
-      color:0xdde8ee,transparent:true,opacity:0.16,
-      roughness:0.05,metalness:0,depthWrite:false
+      color:0x56606b,
+      transparent:true,
+      opacity:0.30,
+      roughness:0.08,
+      metalness:0,
+      depthWrite:false
     });
 
     const group=new THREE.Group();
@@ -73,6 +91,18 @@ export class Glasses3D {
     rightRim.position.x=0.46;
     group.add(rightRim);
 
+    // Detalhe âmbar inferior observado nas fotos do modelo piloto.
+    const lowerTrimGeo=new THREE.TorusGeometry(0.29,0.020,8,48,Math.PI*0.92);
+    const leftTrim=new THREE.Mesh(lowerTrimGeo,amberMat);
+    leftTrim.scale.set(1.35,0.72,1);
+    leftTrim.rotation.z=Math.PI*0.04;
+    leftTrim.position.set(-0.46,-0.115,0.012);
+    group.add(leftTrim);
+    const rightTrim=leftTrim.clone();
+    rightTrim.position.x=0.46;
+    rightTrim.scale.x=-1.35;
+    group.add(rightTrim);
+
     // Barra superior característica do modelo.
     const brow=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.070,0.065),frameMat);
     brow.position.set(0,0.245,0.015);
@@ -82,6 +112,7 @@ export class Glasses3D {
     bridge.position.set(0,0.07,0);
     group.add(bridge);
 
+    const metalMat=new THREE.MeshStandardMaterial({color:0xd7d2c8,roughness:0.22,metalness:0.85});
     const hingeGeo=new THREE.BoxGeometry(0.10,0.055,0.09);
     const leftHinge=new THREE.Mesh(hingeGeo,frameMat);
     leftHinge.position.set(-0.88,0.10,-0.015);
@@ -89,6 +120,15 @@ export class Glasses3D {
     const rightHinge=leftHinge.clone();
     rightHinge.position.x=0.88;
     group.add(rightHinge);
+
+    // Rebites metálicos frontais característicos.
+    const rivetGeo=new THREE.BoxGeometry(0.075,0.028,0.018);
+    const leftRivet=new THREE.Mesh(rivetGeo,metalMat);
+    leftRivet.position.set(-0.80,0.18,0.055);
+    group.add(leftRivet);
+    const rightRivet=leftRivet.clone();
+    rightRivet.position.x=0.80;
+    group.add(rightRivet);
 
     const templeGeo=new THREE.BoxGeometry(0.055,0.055,1.42);
     this.leftTemple=new THREE.Mesh(templeGeo,frameMat);
