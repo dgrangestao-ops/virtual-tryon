@@ -111,13 +111,13 @@ export class Glasses3D {
     this.root.scale.setScalar(this.pose.scale);
     // A matriz do MediaPipe fornece a pose, mas o modelo procedural precisa
     // de uma resposta visual menos agressiva para não "abrir" a frente.
-    const visualYaw=this.pose.yaw*0.72;
-    const visualPitch=this.pose.pitch*0.72;
+    const visualYaw=this.pose.yaw*0.60;
+    const visualPitch=this.pose.pitch*0.68;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     // As hastes permanecem ligadas às dobradiças e convergem levemente
     // para trás, aproximando o encaixe nas laterais da cabeça.
-    const templeToe=0.055;
+    const templeToe=0.075;
     this.leftTemple.rotation.y=-templeToe;
     this.rightTemple.rotation.y=templeToe;
     this.root.visible=true;
