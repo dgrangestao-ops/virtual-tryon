@@ -18,7 +18,7 @@ const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
 const requestedKey=requestedSku||requestedProduct;
 const matchedProduct=findProduct({sku:requestedSku,id:requestedProduct});
-const activeProduct = matchedProduct || findProduct();
+let activeProduct = matchedProduct || findProduct();
 const unknownProduct=Boolean(requestedKey && !matchedProduct);
 const backStore=document.querySelector("#back-store");
 const buyProduct=document.querySelector("#buy-product");
@@ -35,10 +35,25 @@ if(PRODUCTS.filter(p=>p.available).length>1){
     option.value=p.sku; option.textContent=p.name; option.selected=p.id===activeProduct.id;
     testProduct.appendChild(option);
   }
-  testProduct.addEventListener("change",()=>{
-    const url=new URL(location.href);
-    url.searchParams.set("sku",testProduct.value);
-    location.href=url.href;
+  testProduct.addEventListener("change",async()=>{
+    const next=findProduct({sku:testProduct.value});
+    if(!next) return;
+    testProduct.disabled=true;
+    setStatus("Trocando armação…");
+    try{
+      const ready=await engine.setProduct(next);
+      if(ready===false) throw new Error("Produto indisponível");
+      activeProduct=next;
+      productName.textContent=next.name;
+      if(next.productUrl){buyProduct.href=next.productUrl;buyProduct.hidden=false;}
+      const url=new URL(location.href);
+      url.searchParams.set("sku",next.sku);
+      history.replaceState(null,"",url);
+      setStatus("Armação carregada ✓");
+    }catch(error){
+      console.warn(error);
+      setStatus("Não foi possível carregar esta armação");
+    }finally{testProduct.disabled=false;}
   });
 }
 
