@@ -24,3 +24,5 @@ button:disabled{opacity:.65;cursor:default}
   h1{font-size:28px}
 }
 .secondary{width:auto;margin:10px 0 0;background:transparent;color:#171717;border:1px solid #c9c4bc;box-shadow:none;padding:10px 16px;font-size:13px}
+
+.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
