@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "catalog/**"
+      - "scripts/sync-catalog.mjs"
       - ".github/workflows/sync-product-assets.yml"
 jobs:
   sync:
@@ -13,15 +14,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Download catalog source images
-        run: |
-          mkdir -p public/products/98un1
-          curl -L --fail --retry 3 "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp" -o public/products/98un1/source.webp
-          mkdir -p public/products/q7by3
-          curl -L --fail --retry 3 "https://www.fremieyewear.com.br/produtos/oculos-policarbonato-preto-lente-espelhada-q7by3/" -o /tmp/q7by3.html
-          IMAGE_URL=$(grep -oiE '<meta[^>]+(property|name)=["'\'' ]*og:image["'\'' ]*[^>]*>' /tmp/q7by3.html | head -1 | sed -nE 's/.*content=["'\'']([^"'\'']+)["'\''].*/\1/p')
-          test -n "$IMAGE_URL"
-          curl -L --fail --retry 3 "$IMAGE_URL" -o public/products/q7by3/source.webp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Sync all catalog products
+        run: node scripts/sync-catalog.mjs catalog/fremi.json
       - name: Commit refreshed assets
         run: |
           git config user.name "github-actions[bot]"
