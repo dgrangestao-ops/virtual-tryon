@@ -29,6 +29,9 @@ export class TryOnEngine {
       numFaces: 1,
       outputFacialTransformationMatrixes: true,
     });
+    // Se existir um modelo real em /public/models/frame.glb ele entra
+    // automaticamente; enquanto não existir, mantemos o fallback procedural.
+    await this.glasses3d.loadModel("/models/frame.glb");
     this.onStatus("Rastreamento 3D pronto");
   }
 
