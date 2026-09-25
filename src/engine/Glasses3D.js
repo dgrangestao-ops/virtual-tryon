@@ -92,18 +92,20 @@ export class Glasses3D {
 
     this.root.visible = true;
     this.debugMarker.visible = true;
-    // O vídeo é espelhado no CSS, enquanto o canvas WebGL não é.
-    // Espelhamos apenas X para sobrepor a pose ao vídeo exibido.
+    // A câmera ortográfica usa altura vertical = 2 unidades.
+    // Portanto pixels devem ser normalizados pela ALTURA do frame,
+    // não pela largura. Isso preserva a correspondência pixel-a-pixel
+    // entre o vídeo 4:3 e o canvas WebGL.
     const mirroredX = width - x;
-    const webglX = (mirroredX / width * 2 - 1) * aspect;
-    const webglY = -(y / height * 2 - 1);
+    const webglX = (mirroredX - width / 2) * (2 / height);
+    const webglY = (height / 2 - y) * (2 / height);
 
     this.root.position.set(webglX, webglY, 0);
     this.debugMarker.position.set(webglX, webglY, 2);
 
     // A geometria procedural tem largura local ~1.6 unidades.
     // Normalizamos pela largura real do rosto para o primeiro encaixe.
-    const normalizedScale = ((scale / width) * 2 * aspect) / 1.6;
+    const normalizedScale = ((scale / height) * 2) / 1.6;
     this.root.scale.setScalar(normalizedScale);
 
     // No modo espelho, yaw e roll também mudam de sinal.
