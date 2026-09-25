@@ -27,3 +27,6 @@ button:disabled{opacity:.65;cursor:default}
 .secondary{width:auto;margin:10px 0 0;background:transparent;color:#171717;border:1px solid #c9c4bc;box-shadow:none;padding:10px 16px;font-size:13px}
 
 .actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+
+.compat{margin:4px auto 0;font-size:11px;color:#8a847c}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
