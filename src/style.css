@@ -33,3 +33,5 @@ button:disabled{opacity:.65;cursor:default}
 
 .stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;background:#000}
 .stage:fullscreen video,.stage:fullscreen canvas{object-fit:contain}
+
+.mirror-layer.unmirrored{transform:none}
