@@ -8,6 +8,8 @@ const status = document.querySelector("#status");
 const start = document.querySelector("#start");
 const switchCamera = document.querySelector("#switch-camera");
 const snapshot = document.querySelector("#snapshot");
+const fullscreen = document.querySelector("#fullscreen");
+const stage = document.querySelector(".stage");
 
 let statusTimer=null;
 const setStatus=(message)=>{
@@ -33,6 +35,7 @@ start.addEventListener("click", async () => {
     start.textContent = "Câmera ativa";
     switchCamera.hidden = false;
     snapshot.hidden = false;
+    fullscreen.hidden = false;
   } catch (error) {
     console.error(error);
     const denied=error?.name==="NotAllowedError" || error?.name==="PermissionDeniedError";
@@ -93,3 +96,21 @@ document.addEventListener("visibilitychange",()=>{
 });
 
 window.addEventListener("beforeunload",()=>engine.stopCamera());
+
+fullscreen.addEventListener("click", async ()=>{
+  try{
+    if(!document.fullscreenElement){
+      await stage.requestFullscreen?.();
+      fullscreen.textContent="Sair da tela cheia";
+    }else{
+      await document.exitFullscreen?.();
+    }
+  }catch(error){
+    console.warn(error);
+    setStatus("Tela cheia não disponível neste navegador");
+  }
+});
+document.addEventListener("fullscreenchange",()=>{
+  if(!document.fullscreenElement) fullscreen.textContent="Tela cheia";
+  if(engine.running) setTimeout(()=>engine.resize(),80);
+});
