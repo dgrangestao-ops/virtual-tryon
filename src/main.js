@@ -1,5 +1,6 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
+import { PRODUCTS, DEFAULT_PRODUCT_ID } from "./products.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -10,6 +11,9 @@ const switchCamera = document.querySelector("#switch-camera");
 const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
 const stage = document.querySelector(".stage");
+const productName = document.querySelector("#product-name");
+const activeProduct = PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
+productName.textContent=activeProduct.name;
 
 let statusTimer=null;
 const setStatus=(message)=>{
@@ -31,6 +35,7 @@ start.addEventListener("click", async () => {
   setStatus("Preparando câmera…");
   try {
     await engine.init();
+    await engine.setProduct(activeProduct);
     await engine.startCamera();
     document.querySelector(".mirror-layer").classList.remove("unmirrored");
     start.textContent = "Câmera ativa";
