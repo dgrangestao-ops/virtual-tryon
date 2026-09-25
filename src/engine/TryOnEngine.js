@@ -174,7 +174,7 @@ export class TryOnEngine {
       rightEye.y-leftEye.y
     )*0.04;
 
-    const faceWidth=Math.hypot(
+    const rawFaceWidth=Math.hypot(
       rightTemple.x-leftTemple.x,
       rightTemple.y-leftTemple.y
     );
@@ -198,6 +198,11 @@ export class TryOnEngine {
     const pitch=matrix?.length>=16
       ? Math.atan2(-matrix[9],Math.hypot(matrix[8],matrix[10]))
       : 0;
+
+    // Compensa a largura aparente do rosto quando ele gira. Sem isso a
+    // distância 2D entre as têmporas encolhe e o óculos fica artificialmente menor.
+    const yawCos=Math.max(0.72,Math.cos(Math.min(Math.abs(yaw),0.75)));
+    const faceWidth=rawFaceWidth/yawCos;
 
     this.glasses3d.setPose({
       x:centerX,
