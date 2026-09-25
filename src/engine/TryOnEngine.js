@@ -17,6 +17,7 @@ export class TryOnEngine {
     this.stream = null;
     this.facingMode = "user";
     this.initialized = false;
+    this.assetProcessor = new FrameAssetProcessor();
   }
 
   setStatus(message){
