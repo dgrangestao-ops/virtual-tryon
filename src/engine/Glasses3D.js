@@ -47,7 +47,19 @@ export class Glasses3D {
     const material=new THREE.MeshBasicMaterial({
       map:texture,transparent:true,depthWrite:false,side:THREE.DoubleSide
     });
-    this.imageFrame=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);
+    // Geometria 2.5D: uma curvatura leve evita o efeito de "cartão plano"
+    // quando a cabeça gira, sem exigir um modelo 3D manual por SKU.
+    const geometry=new THREE.PlaneGeometry(width,height,24,2);
+    const posAttr=geometry.attributes.position;
+    const half=width/2;
+    for(let i=0;i<posAttr.count;i++){
+      const x=posAttr.getX(i);
+      const nx=Math.min(1,Math.abs(x)/Math.max(half,0.001));
+      posAttr.setZ(i,-0.11*nx*nx);
+    }
+    posAttr.needsUpdate=true;
+    geometry.computeVertexNormals();
+    this.imageFrame=new THREE.Mesh(geometry,material);
     const pos=calibration.position||[0,0,0];
     this.imageFrame.position.set(pos[0]||0,0.015+(pos[1]||0),0.055+(pos[2]||0));
     this.imageFrame.userData.aspect=asset.aspect||2.2;
@@ -256,7 +268,7 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.26 : this.pose.yaw*0.50;
+    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.42 : this.pose.yaw*0.50;
     const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
