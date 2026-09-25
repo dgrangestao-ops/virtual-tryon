@@ -44,6 +44,7 @@ export class Glasses3D {
     texture.colorSpace=THREE.SRGBColorSpace;
     const width=1.78*(calibration.scale||1);
     const height=width/Math.max(asset.aspect||2.2,1.2);
+    const curvature=Math.max(0.035,Math.min(0.085,0.13/Math.max(asset.aspect||2.2,1.2)));
     const material=new THREE.MeshBasicMaterial({
       map:texture,transparent:true,depthWrite:false,side:THREE.DoubleSide
     });
@@ -55,7 +56,7 @@ export class Glasses3D {
     for(let i=0;i<posAttr.count;i++){
       const x=posAttr.getX(i);
       const nx=Math.min(1,Math.abs(x)/Math.max(half,0.001));
-      posAttr.setZ(i,-0.11*nx*nx);
+      posAttr.setZ(i,-curvature*nx*nx);
     }
     posAttr.needsUpdate=true;
     geometry.computeVertexNormals();
@@ -268,7 +269,11 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.42 : this.pose.yaw*0.50;
+    // A foto 2D não contém informação real da lateral. Limitamos a rotação
+    // para evitar deformação excessiva em ângulos grandes e usamos a curvatura
+    // apenas como pista de profundidade.
+    const imageYaw=Math.max(-0.48,Math.min(0.48,this.pose.yaw));
+    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.34 : this.pose.yaw*0.50;
     const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
