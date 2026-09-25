@@ -30,23 +30,24 @@ export class TryOnEngine {
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
     );
-    this.landmarker = await FaceLandmarker.createFromOptions(vision, {
+    const options=(delegate)=>({
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-        delegate: "GPU",
+        delegate,
       },
       runningMode: "VIDEO",
       numFaces: 1,
       outputFacialTransformationMatrixes: true,
     });
-    // Se existir um modelo real em /public/models/frame.glb ele entra
-    // automaticamente; enquanto não existir, mantemos o fallback procedural.
-    await this.glasses3d.loadModel("/models/frame.glb", {
-      scale: 1,
-      position: [0, 0, 0],
-      rotation: [0, 0, 0],
-    });
+    try{
+      this.landmarker = await FaceLandmarker.createFromOptions(vision, options("GPU"));
+    }catch(error){
+      console.warn("GPU indisponível; usando CPU para rastreamento.", error);
+      this.landmarker = await FaceLandmarker.createFromOptions(vision, options("CPU"));
+    }
+    // O modelo procedural Fremi é o ativo no MVP. Quando houver um GLB final,
+    // basta chamar glasses3d.loadModel(url, calibracao) a partir do catálogo.
     this.initialized = true;
     this.setStatus("Rastreamento 3D pronto");
   }
