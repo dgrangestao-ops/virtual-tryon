@@ -240,7 +240,9 @@ export class Glasses3D {
       // com o centro óptico deste modelo Fremi mais alto na sobrancelha.
       y:-(target.y*2-1)+0.018,
       scale:((target.scale*2*aspect)/1.66)*0.89,
-      roll:target.roll||0,
+      // Reduz microinclinações naturais/ruído dos landmarks para evitar
+      // que a armação pareça torta quando o usuário está praticamente frontal.
+      roll:(target.roll||0)*0.45,
       yaw:target.yaw||0,
       pitch:target.pitch||0
     };
