@@ -32,6 +32,7 @@ start.addEventListener("click", async () => {
   try {
     await engine.init();
     await engine.startCamera();
+    document.querySelector(".mirror-layer").classList.remove("unmirrored");
     start.textContent = "Câmera ativa";
     switchCamera.hidden = false;
     snapshot.hidden = false;
@@ -98,7 +99,7 @@ document.addEventListener("visibilitychange",()=>{
   if(engine.running) engine.resize();
 });
 
-window.addEventListener("beforeunload",()=>engine.stopCamera());
+window.addEventListener("pagehide",()=>engine.stopCamera());
 
 fullscreen.addEventListener("click", async ()=>{
   try{
