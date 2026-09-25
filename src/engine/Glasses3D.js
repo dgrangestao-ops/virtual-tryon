@@ -254,8 +254,8 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.34 : this.pose.yaw*0.50;
-    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.42 : this.pose.pitch*0.62;
+    const visualYaw=this.usingExternalModel && this.imageFrame ? this.pose.yaw*0.26 : this.pose.yaw*0.50;
+    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(!this.usingExternalModel){
