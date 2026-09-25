@@ -98,6 +98,28 @@ export class FrameAssetProcessor {
       if(rowSpan[y]>peakSpan){peakSpan=rowSpan[y];peakY=y;}
     }
     const objectH=Math.max(1,maxY-minY+1);
+
+    // Remove extensões estreitas acima da frente principal (normalmente hastes
+    // vistas em perspectiva). A frente da armação forma uma faixa horizontal
+    // larga; as hastes superiores aparecem como trechos curtos separados.
+    // Fazemos o corte linha a linha para não depender de um modelo/SKU específico.
+    for(let y=minY;y<peakY;y++){
+      const relativeSpan=rowSpan[y]/Math.max(1,peakSpan);
+      if(relativeSpan<0.52){
+        for(let x=minX;x<=maxX;x++) d[(y*w+x)*4+3]=0;
+      }
+    }
+    // Recalcula o topo após remover os apêndices.
+    let cleanedMinY=maxY;
+    for(let y=minY;y<=maxY;y++){
+      let occupied=false;
+      for(let x=minX;x<=maxX;x++){
+        if(d[(y*w+x)*4+3]>24){occupied=true;break;}
+      }
+      if(occupied){cleanedMinY=y;break;}
+    }
+    minY=cleanedMinY;
+
     const trimAbove=Math.max(minY,Math.round(peakY-objectH*.30));
     if(peakSpan>(maxX-minX)*.55 && trimAbove>minY){
       for(let y=minY;y<trimAbove;y++){
