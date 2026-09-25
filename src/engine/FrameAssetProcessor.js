@@ -24,12 +24,24 @@ export class FrameAssetProcessor {
     }
     const bg=[0,1,2].map(c=>samples.reduce((a,p)=>a+p[c],0)/samples.length);
     let minX=work.width,minY=work.height,maxX=0,maxY=0,count=0;
-    const threshold=58;
-    for(let y=0;y<work.height;y++) for(let x=0;x<work.width;x++){
-      const i=(y*work.width+x)*4;
+    const threshold=64;
+    const w=work.width,h=work.height;
+    const seen=new Uint8Array(w*h);
+    const queue=[];
+    const enqueue=(x,y)=>{const k=y*w+x;if(!seen[k]){seen[k]=1;queue.push(k);}};
+    for(let x=0;x<w;x++){enqueue(x,0);enqueue(x,h-1);}
+    for(let y=0;y<h;y++){enqueue(0,y);enqueue(w-1,y);}
+    for(let qi=0;qi<queue.length;qi++){
+      const k=queue[qi],x=k%w,y=(k/w)|0,i=k*4;
       const dist=Math.hypot(d[i]-bg[0],d[i+1]-bg[1],d[i+2]-bg[2]);
-      if(dist<threshold){ d[i+3]=0; }
-      else { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);count++; }
+      if(dist>=threshold) continue;
+      d[i+3]=0;
+      if(x>0) enqueue(x-1,y); if(x<w-1) enqueue(x+1,y);
+      if(y>0) enqueue(x,y-1); if(y<h-1) enqueue(x,y+1);
+    }
+    for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+      const i=(y*w+x)*4;
+      if(d[i+3]>8){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);count++;}
     }
     ctx.putImageData(img,0,0);
     if(!count) throw new Error("Não foi possível separar a armação do fundo.");
