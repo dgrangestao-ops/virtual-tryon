@@ -12,7 +12,8 @@ header p{margin:0;font-size:15px}
 video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 canvas{pointer-events:none}
 #overlay{z-index:2}
-#status{position:absolute;z-index:3;left:50%;bottom:14px;transform:translateX(-50%);max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;background:#000a;backdrop-filter:blur(8px);color:#fff;padding:8px 13px;border-radius:999px;font-size:12px;white-space:nowrap}
+#status{position:absolute;z-index:3;left:50%;bottom:14px;transform:translate(-50%,8px);max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;background:#000a;backdrop-filter:blur(8px);color:#fff;padding:8px 13px;border-radius:999px;font-size:12px;white-space:nowrap;opacity:0;transition:.22s ease}
+#status.visible{opacity:1;transform:translate(-50%,0)}
 button{width:min(360px,100%);margin-top:18px;border:0;border-radius:999px;padding:15px 24px;background:#171717;color:#fff;font-weight:750;font-size:16px;cursor:pointer;box-shadow:0 8px 22px #0002}
 button:disabled{opacity:.65;cursor:default}
 .privacy{font-size:12px;line-height:1.4;margin:11px auto 0;max-width:460px}
