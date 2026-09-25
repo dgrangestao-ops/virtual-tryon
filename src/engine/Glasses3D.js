@@ -291,14 +291,17 @@ export class Glasses3D {
     // para evitar deformação excessiva em ângulos grandes e usamos a curvatura
     // apenas como pista de profundidade.
     const imageYaw=Math.max(-0.48,Math.min(0.48,this.pose.yaw));
-    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.34 : this.pose.yaw*0.50;
+    // Ativos derivados de uma única foto frontal não possuem a geometria das
+    // hastes. Mantemos apenas uma rotação visual discreta para preservar o
+    // encaixe na ponte e evitar que a frente "descole" do rosto.
+    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.24 : this.pose.yaw*0.50;
     const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(this.usingExternalModel && this.imageFrame){
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
       // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
-      const parallax=Math.sin(imageYaw)*0.055;
+      const parallax=Math.sin(imageYaw)*0.085;
       this.imageFrame.position.x=this.imageFrameBaseX-parallax;
     }
 
