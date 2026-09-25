@@ -1,6 +1,6 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
-import { findProduct } from "./products.generated.js";
+import { PRODUCTS, findProduct } from "./products.generated.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -12,6 +12,7 @@ const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
+const testProduct=document.querySelector("#test-product");
 const params=new URLSearchParams(location.search);
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
@@ -26,6 +27,19 @@ productName.textContent=activeProduct.name;
 if(activeProduct.productUrl){
   buyProduct.href=activeProduct.productUrl;
   buyProduct.hidden=false;
+}
+if(!requestedKey && PRODUCTS.length>1){
+  testProduct.hidden=false;
+  for(const p of PRODUCTS.filter(p=>p.available)){
+    const option=document.createElement("option");
+    option.value=p.sku; option.textContent=p.name; option.selected=p.id===activeProduct.id;
+    testProduct.appendChild(option);
+  }
+  testProduct.addEventListener("change",()=>{
+    const url=new URL(location.href);
+    url.searchParams.set("sku",testProduct.value);
+    location.href=url.href;
+  });
 }
 
 let statusTimer=null;
