@@ -133,20 +133,6 @@ export class TryOnEngine {
           )
         : 0;
 
-    // Diagnóstico visual: marca exatamente onde o MediaPipe localiza
-    // o centro dos olhos no frame bruto e no frame espelhado.
-    const mirroredCenterX = this.canvas.width - centerX;
-    this.ctx.save();
-    this.ctx.fillStyle = "#ff2d2d";
-    this.ctx.beginPath();
-    this.ctx.arc(centerX, centerY, 10, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.fillStyle = "#00e676";
-    this.ctx.beginPath();
-    this.ctx.arc(mirroredCenterX, centerY, 10, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.restore();
-
     this.glasses3d.setPose({
       x: centerX,
       y: centerY,
