@@ -1,5 +1,6 @@
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { Glasses3D } from "./Glasses3D.js";
+import { FrameAssetProcessor } from "./FrameAssetProcessor.js";
 
 export class TryOnEngine {
   constructor(video, canvas2d, canvas3d, onStatus = () => {}) {
@@ -59,11 +60,17 @@ export class TryOnEngine {
       return this.glasses3d.loadModel(product.modelUrl,product.calibration||{});
     }
     if(product.imageAssetUrl){
-      this.glasses3d.setImageFrame({
-        url:product.imageAssetUrl,
-        aspect:product.imageAspect||2.2
-      });
+      this.glasses3d.setImageFrame({url:product.imageAssetUrl,aspect:product.imageAspect||2.2});
       return true;
+    }
+    if(product.sourceImageUrl){
+      try{
+        const asset=await this.assetProcessor.fromUrl(product.sourceImageUrl);
+        this.glasses3d.setImageFrame(asset);
+        return true;
+      }catch(error){
+        console.warn("Falha ao preparar foto do catálogo; usando fallback",error);
+      }
     }
     this.glasses3d.fallback.visible=true;
     this.glasses3d.usingExternalModel=false;
