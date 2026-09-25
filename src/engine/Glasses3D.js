@@ -211,8 +211,8 @@ export class Glasses3D {
       x:(target.x*2-1)*aspect,
       // Sobe levemente a armação: o centro geométrico dos olhos não coincide
       // com o centro óptico deste modelo Fremi mais alto na sobrancelha.
-      y:-(target.y*2-1)+0.035,
-      scale:((target.scale*2*aspect)/1.66)*0.93,
+      y:-(target.y*2-1)+0.018,
+      scale:((target.scale*2*aspect)/1.66)*0.89,
       roll:target.roll||0,
       yaw:target.yaw||0,
       pitch:target.pitch||0
@@ -227,7 +227,7 @@ export class Glasses3D {
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
 
-    const visualYaw=this.pose.yaw*0.54;
+    const visualYaw=this.pose.yaw*0.50;
     const visualPitch=this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
