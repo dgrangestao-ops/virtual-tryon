@@ -67,7 +67,7 @@ export class TryOnEngine {
     if(product.sourceImageUrl){
       try{
         const asset=await this.assetProcessor.fromUrl(product.sourceImageUrl);
-        this.glasses3d.setImageFrame(asset);
+        this.glasses3d.setImageFrame(asset,product.calibration||{});
         return true;
       }catch(error){
         console.warn("Falha ao preparar foto do catálogo",error);
