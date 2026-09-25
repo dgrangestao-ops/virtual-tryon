@@ -12,6 +12,8 @@ export class TryOnEngine {
     this.landmarker = null;
     this.lastVideoTime = -1;
     this.running = false;
+    this.stream = null;
+    this.facingMode = "user";
   }
 
   async init() {
@@ -39,16 +41,33 @@ export class TryOnEngine {
     this.onStatus("Rastreamento 3D pronto");
   }
 
-  async startCamera() {
+  async startCamera(facingMode=this.facingMode) {
+    this.stopCamera();
+    this.facingMode=facingMode;
     const stream = await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:"user",width:{ideal:1280},height:{ideal:960}},
+      video:{facingMode:{ideal:facingMode},width:{ideal:1280},height:{ideal:960}},
       audio:false,
     });
+    this.stream=stream;
     this.video.srcObject = stream;
     await this.video.play();
     this.resize();
     this.running = true;
     requestAnimationFrame(() => this.loop());
+  }
+
+  stopCamera(){
+    if(this.stream){
+      this.stream.getTracks().forEach(track=>track.stop());
+      this.stream=null;
+    }
+    this.running=false;
+  }
+
+  async switchCamera(){
+    const next=this.facingMode==="user"?"environment":"user";
+    await this.startCamera(next);
+    return next;
   }
 
   resize() {
