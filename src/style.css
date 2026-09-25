@@ -42,3 +42,6 @@ button:disabled{opacity:.65;cursor:default}
 
 .buy-product{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:800;border-radius:999px;padding:.78rem 1.05rem;background:#111;color:#fff}
 .buy-product[hidden]{display:none}
+
+.test-product{max-width:260px;border:1px solid #cfc9c0;border-radius:999px;background:#fff;padding:8px 11px;font:600 12px system-ui;color:#171717}
+@media(max-width:600px){.product-bar{flex-wrap:wrap;gap:8px}.test-product{width:100%;max-width:none}}
