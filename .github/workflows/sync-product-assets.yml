@@ -6,6 +6,7 @@ on:
     paths:
       - "catalog/**"
       - "scripts/sync-catalog.mjs"
+      - "scripts/validate-catalog.mjs"
       - ".github/workflows/sync-product-assets.yml"
 jobs:
   sync:
@@ -17,6 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Validate catalog
+        run: node scripts/validate-catalog.mjs catalog/fremi.json
       - name: Sync all catalog products
         run: node scripts/sync-catalog.mjs catalog/fremi.json
       - name: Commit refreshed assets
