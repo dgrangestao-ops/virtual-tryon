@@ -26,3 +26,9 @@ export const PRODUCTS = [
 ];
 
 export const DEFAULT_PRODUCT_ID = "oculos-esportivo-preto-lente-preta-98un1";
+
+export function findProduct({sku,id}={}){
+  const key=(sku||id||"").trim().toLowerCase();
+  if(!key) return PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
+  return PRODUCTS.find(p=>p.available && [p.sku,p.id].some(v=>String(v||"").toLowerCase()===key)) || null;
+}
