@@ -10,7 +10,7 @@ export const PRODUCTS = [
     modelUrl: null,
     imageAssetUrl: null,
     assetStatus: "source-photo",
-    calibration: { scale: 0.86, position: [0,-0.052,0], rotation: [0,0,0] },
+    calibration: { scale: 0.84, position: [0,-0.072,0], rotation: [0,0,0] },
     available: true
   },
   {
