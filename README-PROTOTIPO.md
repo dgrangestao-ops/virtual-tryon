@@ -1,12 +1,7 @@
-# Virtual Try-On V0.1
-Primeiro protótipo do motor próprio de provador virtual.
+# Virtual Try-On — marco do MVP
 
-## Nesta versão
-- câmera frontal
-- MediaPipe Face Landmarker
-- detecção facial em tempo real
-- landmarks-chave
-- processamento no dispositivo
-- base separada do Try-On Engine
+O protótipo inicial evoluiu para um MVP 3D demonstrável.
 
-Próximo marco: substituir os pontos de diagnóstico pela primeira armação calibrada da Fremi.
+Concluído: câmera, landmarks, tracking facial, pose 3D, armação Fremi procedural, suavização, captura de foto, responsividade e suporte arquitetural a GLB/GLTF.
+
+Pendente para a etapa comercial: ativos 3D reais de cada SKU, oclusão avançada, catálogo de armações, analytics, integração com e-commerce e painel multi-tenant.
