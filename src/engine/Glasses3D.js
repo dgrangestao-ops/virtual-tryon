@@ -26,6 +26,14 @@ export class Glasses3D {
     this.root = new THREE.Group();
     this.scene.add(this.root);
 
+    // Marcador WebGL temporário: mostra a origem exata usada pelo objeto 3D.
+    this.debugMarker = new THREE.Mesh(
+      new THREE.CircleGeometry(0.045, 24),
+      new THREE.MeshBasicMaterial({ color: 0xff1744, depthTest: false })
+    );
+    this.debugMarker.position.z = 2;
+    this.scene.add(this.debugMarker);
+
     const material = new THREE.MeshStandardMaterial({
       color: 0x171311,
       roughness: 0.35,
@@ -83,6 +91,7 @@ export class Glasses3D {
     const aspect = width / height;
 
     this.root.visible = true;
+    this.debugMarker.visible = true;
     // O MediaPipe entrega coordenadas normalizadas no mesmo referencial
     // do frame capturado. Como vídeo e canvas recebem o mesmo espelhamento
     // via CSS, ambos devem usar a mesma coordenada X aqui.
@@ -103,6 +112,7 @@ export class Glasses3D {
 
   hide() {
     this.root.visible = false;
+    this.debugMarker.visible = false;
   }
 
   render() {
