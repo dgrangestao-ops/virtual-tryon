@@ -63,6 +63,12 @@ export class TryOnEngine {
     return true;
   }
 
+  async setImageFrame(asset){
+    if(!asset?.url) return false;
+    this.glasses3d.setImageFrame?.(asset);
+    return true;
+  }
+
   async startCamera(facingMode=this.facingMode) {
     this.stopCamera();
     const previousMode=this.facingMode;
