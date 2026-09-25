@@ -1,6 +1,6 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
-import { findProduct } from "./products.js";
+import { findProduct } from "./products.generated.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
