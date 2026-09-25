@@ -92,14 +92,14 @@ export class Glasses3D {
 
     this.root.visible = true;
     this.debugMarker.visible = true;
-    // O MediaPipe entrega coordenadas normalizadas no mesmo referencial
-    // do frame capturado. Como vídeo e canvas recebem o mesmo espelhamento
-    // via CSS, ambos devem usar a mesma coordenada X aqui.
-    this.root.position.set(
-      (x / width * 2 - 1) * aspect,
-      -(y / height * 2 - 1),
-      0
-    );
+    // O vídeo é espelhado no CSS, enquanto o canvas WebGL não é.
+    // Espelhamos apenas X para sobrepor a pose ao vídeo exibido.
+    const mirroredX = width - x;
+    const webglX = (mirroredX / width * 2 - 1) * aspect;
+    const webglY = -(y / height * 2 - 1);
+
+    this.root.position.set(webglX, webglY, 0);
+    this.debugMarker.position.set(webglX, webglY, 2);
 
     // A geometria procedural tem largura local ~1.6 unidades.
     // Normalizamos pela largura real do rosto para o primeiro encaixe.
