@@ -26,6 +26,9 @@ Build de produção:
 npm run build
 ```
 
+## Validação do MVP
+Tracking e encaixe frontal/3/4 validados em câmera real. O modelo procedural permanece como ativo provisório até a chegada dos ativos 3D finais dos SKUs Fremi.
+
 ## Próximas etapas de produto
 Adicionar modelos GLB/GLTF reais das armações, catálogo/SKUs, calibração por produto, oclusão avançada rosto/haste, analytics e integração com a loja.
 
