@@ -1,35 +1,79 @@
 import { readFile, mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, extname } from "node:path";
 
 const manifestPath=process.argv[2] || "catalog/fremi.json";
 const manifest=JSON.parse(await readFile(manifestPath,"utf8"));
+const UA={"user-agent":"Mozilla/5.0 VirtualTryOnCatalogBot/2.0"};
 
 async function fetchText(url){
-  const r=await fetch(url,{redirect:"follow",headers:{"user-agent":"Mozilla/5.0 VirtualTryOnCatalogBot/1.0"}});
+  const r=await fetch(url,{redirect:"follow",headers:UA});
   if(!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
   return r.text();
 }
-function ogImage(html){
-  const tags=html.match(/<meta\b[^>]*>/gi)||[];
-  for(const tag of tags){
-    if(!/(?:property|name)\s*=\s*["']og:image["']/i.test(tag)) continue;
-    const m=tag.match(/content\s*=\s*["']([^"']+)["']/i);
-    if(m) return m[1].replaceAll("&amp;","&");
+function decode(v=""){return v.replaceAll("&amp;","&").replaceAll("\\/","/");}
+function collectImages(html){
+  const found=[];
+  const push=(u,source)=>{
+    u=decode(u||"").trim();
+    if(!/^https?:\/\//i.test(u)) return;
+    if(!/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(u)) return;
+    if(!found.some(x=>x.url===u)) found.push({url:u,source});
+  };
+  for(const tag of html.match(/<meta\b[^>]*>/gi)||[]){
+    if(/(?:property|name)\s*=\s*["']og:image(?::secure_url)?["']/i.test(tag)){
+      push(tag.match(/content\s*=\s*["']([^"']+)["']/i)?.[1],"og");
+    }
   }
-  return null;
+  for(const m of html.matchAll(/<img\b[^>]*(?:src|data-src)\s*=\s*["']([^"']+)["'][^>]*>/gi)) push(m[1],"img");
+  // Nuvemshop/JSON-LD normalmente expõe a galeria inteira em Product.image.
+  for(const m of html.matchAll(/https?:\\?\/\\?\/[^"'\s<>]+?\.(?:jpe?g|png|webp)(?:\?[^"'\s<>]*)?/gi)) push(m[0],"embedded");
+  return found;
+}
+function scoreCandidate(c,index){
+  const u=c.url.toLowerCase();
+  let score=0;
+  if(c.source==="og") score+=30;
+  if(c.source==="embedded") score+=10;
+  if(/1024|1080|1200|1500|2048/.test(u)) score+=8;
+  if(/frente|front|frontal/.test(u)) score+=50;
+  if(/lado|side|lateral|detail|detalhe|case|estojo|modelo|rosto/.test(u)) score-=35;
+  score-=index*.05;
+  return score;
+}
+async function download(url,target){
+  const r=await fetch(url,{redirect:"follow",headers:UA});
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  await mkdir(dirname(target),{recursive:true});
+  await writeFile(target,Buffer.from(await r.arrayBuffer()));
 }
 for(const product of manifest.products||[]){
   if(!product.sku || !product.localSourceUrl) continue;
-  let url=product.sourceImageUrl;
-  if(!url || url.startsWith("AUTO:")){
-    if(!product.productUrl) throw new Error(`Sem productUrl para ${product.sku}`);
-    url=ogImage(await fetchText(product.productUrl));
+  let candidates=[];
+  if(product.productUrl){
+    const html=await fetchText(product.productUrl);
+    candidates=collectImages(html);
   }
-  if(!url) throw new Error(`Imagem principal não encontrada para ${product.sku}`);
-  const r=await fetch(url,{redirect:"follow",headers:{"user-agent":"Mozilla/5.0 VirtualTryOnCatalogBot/1.0"}});
-  if(!r.ok) throw new Error(`Falha ao baixar ${product.sku}: HTTP ${r.status}`);
-  const target="public"+product.localSourceUrl;
-  await mkdir(dirname(target),{recursive:true});
-  await writeFile(target,Buffer.from(await r.arrayBuffer()));
-  console.log(`✓ ${product.sku} -> ${target}`);
+  if(product.sourceImageUrl && !product.sourceImageUrl.startsWith("AUTO:")){
+    candidates.unshift({url:product.sourceImageUrl,source:"manifest"});
+  }
+  candidates=candidates
+    .filter((x,i,a)=>a.findIndex(y=>y.url===x.url)===i)
+    .sort((a,b)=>scoreCandidate(b,0)-scoreCandidate(a,0))
+    .slice(0,8);
+  if(!candidates.length) throw new Error(`Nenhuma imagem encontrada para ${product.sku}`);
+
+  const galleryDir=`public/products/${product.sku}/gallery`;
+  const saved=[];
+  for(let i=0;i<candidates.length;i++){
+    const c=candidates[i];
+    const ext=(extname(new URL(c.url).pathname)||".webp").toLowerCase();
+    const target=`${galleryDir}/${String(i+1).padStart(2,"0")}${ext}`;
+    try{await download(c.url,target);saved.push({...c,target});}catch(e){console.warn("ignorado",c.url,e.message);}
+  }
+  if(!saved.length) throw new Error(`Falha ao baixar galeria de ${product.sku}`);
+  // Compatibilidade: mantém source.* apontando para a melhor candidata enquanto
+  // a etapa seguinte faz a seleção visual por silhueta/simetria.
+  await download(saved[0].url,"public"+product.localSourceUrl);
+  await writeFile(`public/products/${product.sku}/gallery.json`,JSON.stringify(saved,null,2));
+  console.log(`✓ ${product.sku}: ${saved.length} imagens candidatas`);
 }
