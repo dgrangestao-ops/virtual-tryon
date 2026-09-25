@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export class Glasses3D {
   constructor(canvas){
@@ -13,7 +14,24 @@ export class Glasses3D {
 
     this.root=new THREE.Group();
     this.scene.add(this.root);
+    this.modelRoot=new THREE.Group();
+    this.root.add(this.modelRoot);
 
+    this.loader=new GLTFLoader();
+    this.model=null;
+    this.usingExternalModel=false;
+
+    this.buildFallback();
+    this.scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
+    const key=new THREE.DirectionalLight(0xffffff,1.15);
+    key.position.set(1.5,2,4);
+    this.scene.add(key);
+
+    this.root.visible=false;
+    this.pose=null;
+  }
+
+  buildFallback(){
     const frameMat=new THREE.MeshStandardMaterial({
       color:0x171311,roughness:0.28,metalness:0.12
     });
@@ -22,59 +40,81 @@ export class Glasses3D {
       roughness:0.05,metalness:0,depthWrite:false
     });
 
-    // Frente: proporção mais próxima de uma armação real.
+    const group=new THREE.Group();
+    group.name="procedural-fallback";
+
     const rimGeo=new THREE.TorusGeometry(0.36,0.027,12,56);
     const leftRim=new THREE.Mesh(rimGeo,frameMat);
     leftRim.scale.set(1.18,0.72,1);
     leftRim.position.x=-0.43;
-    this.root.add(leftRim);
-
+    group.add(leftRim);
     const rightRim=leftRim.clone();
     rightRim.position.x=0.43;
-    this.root.add(rightRim);
+    group.add(rightRim);
 
-    // Lentes transparentes provisórias para leitura de profundidade.
     const lensGeo=new THREE.CircleGeometry(0.335,48);
     const leftLens=new THREE.Mesh(lensGeo,lensMat);
     leftLens.scale.set(1.18,0.72,1);
     leftLens.position.set(-0.43,0,-0.018);
-    this.root.add(leftLens);
+    group.add(leftLens);
     const rightLens=leftLens.clone();
     rightLens.position.x=0.43;
-    this.root.add(rightLens);
+    group.add(rightLens);
 
-    // Ponte e pequenos conectores nas dobradiças.
     const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.20,0.045,0.055),frameMat);
     bridge.position.set(0,0.025,0);
-    this.root.add(bridge);
+    group.add(bridge);
 
     const hingeGeo=new THREE.BoxGeometry(0.10,0.055,0.09);
     const leftHinge=new THREE.Mesh(hingeGeo,frameMat);
     leftHinge.position.set(-0.83,0.02,-0.015);
-    this.root.add(leftHinge);
+    group.add(leftHinge);
     const rightHinge=leftHinge.clone();
     rightHinge.position.x=0.83;
-    this.root.add(rightHinge);
+    group.add(rightHinge);
 
-    // Hastes conectadas fisicamente às dobradiças e avançando para trás.
     const templeGeo=new THREE.BoxGeometry(0.055,0.055,1.42);
-    const leftTemple=new THREE.Mesh(templeGeo,frameMat);
-    leftTemple.position.set(-0.83,0.02,-0.74);
-    leftTemple.rotation.x=-0.025;
-    this.root.add(leftTemple);
-    const rightTemple=leftTemple.clone();
-    rightTemple.position.x=0.83;
-    this.root.add(rightTemple);
+    this.leftTemple=new THREE.Mesh(templeGeo,frameMat);
+    this.leftTemple.position.set(-0.83,0.02,-0.74);
+    this.leftTemple.rotation.x=-0.025;
+    group.add(this.leftTemple);
+    this.rightTemple=this.leftTemple.clone();
+    this.rightTemple.position.x=0.83;
+    group.add(this.rightTemple);
 
-    // Guardamos as hastes para ajustar abertura conforme a rotação da cabeça.
-    this.leftTemple=leftTemple;
-    this.rightTemple=rightTemple;
+    this.fallback=group;
+    this.modelRoot.add(group);
+  }
 
-    this.scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
-    this.root.visible=false;
+  async loadModel(url){
+    try{
+      const gltf=await this.loader.loadAsync(url);
+      const model=gltf.scene;
+      model.updateMatrixWorld(true);
 
-    // Suavização evita vibração sem introduzir atraso perceptível.
-    this.pose=null;
+      // Centraliza e normaliza qualquer GLB/GLTF para a mesma unidade lógica
+      // usada pelo tracking. Assim modelos de fornecedores diferentes podem
+      // compartilhar a mesma calibração facial.
+      const box=new THREE.Box3().setFromObject(model);
+      const size=new THREE.Vector3();
+      const center=new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+      model.position.sub(center);
+      const width=Math.max(size.x,0.0001);
+      model.scale.setScalar(1.66/width);
+
+      this.modelRoot.add(model);
+      this.model=model;
+      this.fallback.visible=false;
+      this.usingExternalModel=true;
+      return true;
+    }catch(error){
+      console.warn("GLB/GLTF não carregado; usando armação procedural.",error);
+      this.fallback.visible=true;
+      this.usingExternalModel=false;
+      return false;
+    }
   }
 
   resize(width,height){
@@ -104,22 +144,21 @@ export class Glasses3D {
     if(!this.pose) this.pose={...next};
     const a=0.38;
     for(const key of Object.keys(next)){
-      this.pose[key]+= (next[key]-this.pose[key])*a;
+      this.pose[key]+=(next[key]-this.pose[key])*a;
     }
 
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
-    // A matriz do MediaPipe fornece a pose, mas o modelo procedural precisa
-    // de uma resposta visual menos agressiva para não "abrir" a frente.
+
     const visualYaw=this.pose.yaw*0.60;
     const visualPitch=this.pose.pitch*0.68;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
-    // As hastes permanecem ligadas às dobradiças e convergem levemente
-    // para trás, aproximando o encaixe nas laterais da cabeça.
-    const templeToe=0.075;
-    this.leftTemple.rotation.y=-templeToe;
-    this.rightTemple.rotation.y=templeToe;
+    if(!this.usingExternalModel){
+      const templeToe=0.075;
+      this.leftTemple.rotation.y=-templeToe;
+      this.rightTemple.rotation.y=templeToe;
+    }
     this.root.visible=true;
   }
 
