@@ -5,6 +5,7 @@ export const PRODUCTS = [
     name: "Fremi Piloto",
     sku: "FREMI-PILOTO",
     modelUrl: null,
+    imageAssetUrl: null,
     calibration: { scale: 1, position: [0,0,0], rotation: [0,0,0] },
     available: true
   }
