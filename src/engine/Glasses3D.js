@@ -35,6 +35,15 @@ export class Glasses3D {
   }
 
   setImageFrame(asset, calibration={}){
+    if(this.model){
+      this.modelRoot.remove(this.model);
+      this.model.traverse?.(node=>{
+        node.geometry?.dispose?.();
+        if(Array.isArray(node.material)) node.material.forEach(mat=>mat?.dispose?.());
+        else node.material?.dispose?.();
+      });
+      this.model=null;
+    }
     if(this.imageFrame){
       this.modelRoot.remove(this.imageFrame);
       this.imageFrame.material?.map?.dispose();
@@ -204,6 +213,13 @@ export class Glasses3D {
 
   async loadModel(url,calibration={}){
     try{
+      if(this.imageFrame){
+        this.modelRoot.remove(this.imageFrame);
+        this.imageFrame.material?.map?.dispose();
+        this.imageFrame.material?.dispose();
+        this.imageFrame.geometry?.dispose();
+        this.imageFrame=null;
+      }
       const gltf=await this.loader.loadAsync(url);
       const model=gltf.scene;
       model.updateMatrixWorld(true);
