@@ -44,43 +44,59 @@ export class Glasses3D {
     const group=new THREE.Group();
     group.name="procedural-fallback";
 
-    const rimGeo=new THREE.TorusGeometry(0.36,0.027,12,56);
-    const leftRim=new THREE.Mesh(rimGeo,frameMat);
-    leftRim.scale.set(1.18,0.72,1);
-    leftRim.position.x=-0.43;
-    group.add(leftRim);
-    const rightRim=leftRim.clone();
-    rightRim.position.x=0.43;
-    group.add(rightRim);
+    // Fallback visual inspirado no primeiro modelo Fremi piloto:
+    // frente retangular ampla, topo mais espesso e cantos inferiores suaves.
+    const lensShape=new THREE.Shape();
+    lensShape.moveTo(-0.39,0.24);
+    lensShape.bezierCurveTo(-0.18,0.29,0.25,0.28,0.40,0.20);
+    lensShape.bezierCurveTo(0.43,0.02,0.39,-0.24,0.27,-0.32);
+    lensShape.bezierCurveTo(0.05,-0.38,-0.28,-0.36,-0.38,-0.23);
+    lensShape.bezierCurveTo(-0.45,-0.08,-0.45,0.10,-0.39,0.24);
 
-    const lensGeo=new THREE.CircleGeometry(0.335,48);
+    const lensGeo=new THREE.ShapeGeometry(lensShape);
     const leftLens=new THREE.Mesh(lensGeo,lensMat);
-    leftLens.scale.set(1.18,0.72,1);
-    leftLens.position.set(-0.43,0,-0.018);
+    leftLens.position.set(-0.46,-0.035,-0.025);
     group.add(leftLens);
     const rightLens=leftLens.clone();
-    rightLens.position.x=0.43;
+    rightLens.position.x=0.46;
     group.add(rightLens);
 
-    const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.20,0.045,0.055),frameMat);
-    bridge.position.set(0,0.025,0);
+    // Aros acompanham o contorno das lentes.
+    const rimPts=lensShape.getPoints(64).map(p=>new THREE.Vector3(p.x,p.y,0));
+    rimPts.push(rimPts[0].clone());
+    const rimCurve=new THREE.CatmullRomCurve3(rimPts,true);
+    const rimGeo=new THREE.TubeGeometry(rimCurve,96,0.032,8,true);
+    const leftRim=new THREE.Mesh(rimGeo,frameMat);
+    leftRim.position.set(-0.46,-0.035,0);
+    group.add(leftRim);
+    const rightRim=leftRim.clone();
+    rightRim.position.x=0.46;
+    group.add(rightRim);
+
+    // Barra superior característica do modelo.
+    const brow=new THREE.Mesh(new THREE.BoxGeometry(1.78,0.105,0.075),frameMat);
+    brow.position.set(0,0.245,0.015);
+    group.add(brow);
+
+    const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.055,0.065),frameMat);
+    bridge.position.set(0,0.07,0);
     group.add(bridge);
 
     const hingeGeo=new THREE.BoxGeometry(0.10,0.055,0.09);
     const leftHinge=new THREE.Mesh(hingeGeo,frameMat);
-    leftHinge.position.set(-0.83,0.02,-0.015);
+    leftHinge.position.set(-0.88,0.10,-0.015);
     group.add(leftHinge);
     const rightHinge=leftHinge.clone();
-    rightHinge.position.x=0.83;
+    rightHinge.position.x=0.88;
     group.add(rightHinge);
 
     const templeGeo=new THREE.BoxGeometry(0.055,0.055,1.42);
     this.leftTemple=new THREE.Mesh(templeGeo,frameMat);
-    this.leftTemple.position.set(-0.83,0.02,-0.74);
+    this.leftTemple.position.set(-0.88,0.10,-0.74);
     this.leftTemple.rotation.x=-0.025;
     group.add(this.leftTemple);
     this.rightTemple=this.leftTemple.clone();
-    this.rightTemple.position.x=0.83;
+    this.rightTemple.position.x=0.88;
     group.add(this.rightTemple);
 
     this.fallback=group;
