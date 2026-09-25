@@ -26,6 +26,7 @@ const engine = new TryOnEngine(
 
 start.addEventListener("click", async () => {
   start.disabled = true;
+  setStatus("Preparando câmera…");
   try {
     await engine.init();
     await engine.startCamera();
@@ -34,7 +35,10 @@ start.addEventListener("click", async () => {
     snapshot.hidden = false;
   } catch (error) {
     console.error(error);
-    setStatus("Não foi possível iniciar a câmera");
+    const denied=error?.name==="NotAllowedError" || error?.name==="PermissionDeniedError";
+    const missing=error?.name==="NotFoundError" || error?.name==="DevicesNotFoundError";
+    setStatus(denied ? "Permita o acesso à câmera no navegador" : missing ? "Nenhuma câmera foi encontrada" : "Não foi possível iniciar a câmera");
+    start.textContent="Tentar novamente";
     start.disabled = false;
   }
 });
@@ -73,4 +77,9 @@ snapshot.addEventListener("click", () => {
   link.href=out.toDataURL("image/png");
   link.click();
   setStatus("Foto salva ✓");
+});
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden) return;
+  if(engine.running) engine.resize();
 });
