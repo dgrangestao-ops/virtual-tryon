@@ -1,0 +1,42 @@
+[
+  {
+    "url": "http://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_123424_-db78dd53481bfd4b5e17630022012869-640-0.webp",
+    "source": "og",
+    "target": "public/products/q7by3/gallery/01.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_123424_-db78dd53481bfd4b5e17630022012869-640-0.webp",
+    "source": "og",
+    "target": "public/products/q7by3/gallery/02.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/themes/common/logo-1266626455-1741305601-fccd6dfca6023fc18f8b104b4d5fa5c91741305601.jpg?0",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/03.jpg"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_123424_-db78dd53481bfd4b5e17630022012869-480-0.webp",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/04.webp"
+  },
+  {
+    "url": "http://pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.fremieyewear.com.br%2Fprodutos%2Foculos-policarbonato-preto-lente-espelhada-q7by3%2F&media=https%3A%2F%2Fdcdn-us.mitiendanube.com%2Fstores%2F005%2F876%2F852%2Fproducts%2F20251112_123424_-db78dd53481bfd4b5e17630022012869-480-0.webp",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/05.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_2660e20a-01cb-4bbe-b4dd-3137e8651e59_5876852_6089436-6657223a320da5a71817802801663974-480-0.webp",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/06.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_ec71baf2-9e2e-4eb0-b30d-a09096e40f24_5876852_6089436-9c2316916305784ad117802800285699-480-0.webp",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/07.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_5efad2fb-88d6-48fd-9c80-fe0a44404f60_5876852_6089436-3e1412952addea27db17854638456149-480-0.webp",
+    "source": "embedded",
+    "target": "public/products/q7by3/gallery/08.webp"
+  }
+]
