@@ -1,7 +1,6 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
 import { PRODUCTS, DEFAULT_PRODUCT_ID } from "./products.js";
-import { FrameAssetProcessor } from "./engine/FrameAssetProcessor.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -13,9 +12,11 @@ const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
-const activeProduct = PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
-const frameUpload=document.querySelector("#frame-upload");
-const assetProcessor=new FrameAssetProcessor();
+const params=new URLSearchParams(location.search);
+const requestedSku=params.get("sku");
+const activeProduct = PRODUCTS.find(p=>p.sku===requestedSku || p.id===requestedSku) || PRODUCTS.find(p=>p.id===DEFAULT_PRODUCT_ID) || PRODUCTS[0];
+const backStore=document.querySelector("#back-store");
+const returnUrl=params.get("return");
 productName.textContent=activeProduct.name;
 
 let statusTimer=null;
@@ -45,6 +46,7 @@ start.addEventListener("click", async () => {
     switchCamera.hidden = false;
     snapshot.hidden = false;
     fullscreen.hidden = false;
+    if(returnUrl) backStore.hidden=false;
   } catch (error) {
     console.error(error);
     const denied=error?.name==="NotAllowedError" || error?.name==="PermissionDeniedError";
@@ -127,19 +129,13 @@ document.addEventListener("fullscreenchange",()=>{
   if(engine.running) setTimeout(()=>engine.resize(),80);
 });
 
-frameUpload.addEventListener("change",async()=>{
-  const file=frameUpload.files?.[0];
-  if(!file) return;
-  setStatus("Preparando armação automaticamente…");
+
+backStore.addEventListener("click",()=>{
+  if(!returnUrl) return;
   try{
-    const asset=await assetProcessor.fromImage(file);
-    await engine.setImageFrame(asset);
-    productName.textContent=file.name.replace(/\.[^.]+$/,"");
-    setStatus("Armação preparada ✓");
+    const target=new URL(returnUrl,location.origin);
+    if(target.protocol==="https:" || target.origin===location.origin) location.href=target.href;
   }catch(error){
-    console.error(error);
-    setStatus("Use uma foto frontal com fundo uniforme");
-  }finally{
-    frameUpload.value="";
+    console.warn("URL de retorno inválida",error);
   }
 });
