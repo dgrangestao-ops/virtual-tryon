@@ -28,6 +28,30 @@ if(activeProduct.productUrl){
   buyProduct.href=activeProduct.productUrl;
   buyProduct.hidden=false;
 }
+
+
+let statusTimer=null;
+const setStatus=(message)=>{
+  status.textContent=message;
+  status.classList.add("visible");
+  clearTimeout(statusTimer);
+  if(message.includes("✓")) statusTimer=setTimeout(()=>status.classList.remove("visible"),1800);
+};
+
+if(unknownProduct){
+  productName.textContent="Produto não disponível no provador";
+  start.disabled=true;
+  start.textContent="Produto indisponível";
+  setStatus("Este SKU ainda não está disponível para prova virtual");
+}
+
+const engine = new TryOnEngine(
+  video,
+  canvas,
+  canvas3d,
+  setStatus
+);
+
 if(PRODUCTS.filter(p=>p.available).length>1){
   testProduct.hidden=false;
   for(const p of PRODUCTS.filter(p=>p.available)){
@@ -56,28 +80,6 @@ if(PRODUCTS.filter(p=>p.available).length>1){
     }finally{testProduct.disabled=false;}
   });
 }
-
-let statusTimer=null;
-const setStatus=(message)=>{
-  status.textContent=message;
-  status.classList.add("visible");
-  clearTimeout(statusTimer);
-  if(message.includes("✓")) statusTimer=setTimeout(()=>status.classList.remove("visible"),1800);
-};
-
-if(unknownProduct){
-  productName.textContent="Produto não disponível no provador";
-  start.disabled=true;
-  start.textContent="Produto indisponível";
-  setStatus("Este SKU ainda não está disponível para prova virtual");
-}
-
-const engine = new TryOnEngine(
-  video,
-  canvas,
-  canvas3d,
-  setStatus
-);
 
 start.addEventListener("click", async () => {
   if(unknownProduct) return;
