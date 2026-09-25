@@ -11,13 +11,20 @@ export class TryOnEngine {
     this.onStatus = onStatus;
     this.landmarker = null;
     this.lastVideoTime = -1;
+    this.lastStatus = "";
     this.running = false;
     this.stream = null;
     this.facingMode = "user";
   }
 
+  setStatus(message){
+    if(message===this.lastStatus) return;
+    this.lastStatus=message;
+    this.onStatus(message);
+  }
+
   async init() {
-    this.onStatus("Carregando rastreamento facial…");
+    this.setStatus("Carregando rastreamento facial…");
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
     );
@@ -38,7 +45,7 @@ export class TryOnEngine {
       position: [0, 0, 0],
       rotation: [0, 0, 0],
     });
-    this.onStatus("Rastreamento 3D pronto");
+    this.setStatus("Rastreamento 3D pronto");
   }
 
   async startCamera(facingMode=this.facingMode) {
@@ -94,7 +101,7 @@ export class TryOnEngine {
     if(!face){
       this.glasses3d.hide();
       this.glasses3d.render();
-      this.onStatus("Posicione seu rosto na câmera");
+      this.setStatus("Posicione seu rosto na câmera");
       return;
     }
 
@@ -138,6 +145,6 @@ export class TryOnEngine {
     });
 
     this.glasses3d.render();
-    this.onStatus("Rosto detectado ✓ · modo 3D");
+    this.setStatus("Rosto detectado ✓ · modo 3D");
   }
 }
