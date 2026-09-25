@@ -20,6 +20,7 @@ export class Glasses3D {
     this.loader=new GLTFLoader();
     this.model=null;
     this.usingExternalModel=false;
+    this.modelCalibration={scale:1,position:[0,0,0],rotation:[0,0,0]};
 
     this.buildFallback();
     this.scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
@@ -86,7 +87,24 @@ export class Glasses3D {
     this.modelRoot.add(group);
   }
 
-  async loadModel(url){
+  setModelCalibration(calibration={}){
+    this.modelCalibration={
+      scale:calibration.scale ?? 1,
+      position:calibration.position ?? [0,0,0],
+      rotation:calibration.rotation ?? [0,0,0],
+    };
+    this.applyModelCalibration();
+  }
+
+  applyModelCalibration(){
+    if(!this.model) return;
+    const c=this.modelCalibration;
+    this.modelRoot.position.set(...c.position);
+    this.modelRoot.rotation.set(...c.rotation);
+    this.modelRoot.scale.setScalar(c.scale);
+  }
+
+  async loadModel(url,calibration={}){
     try{
       const gltf=await this.loader.loadAsync(url);
       const model=gltf.scene;
@@ -106,6 +124,7 @@ export class Glasses3D {
 
       this.modelRoot.add(model);
       this.model=model;
+      this.setModelCalibration(calibration);
       this.fallback.visible=false;
       this.usingExternalModel=true;
       return true;
