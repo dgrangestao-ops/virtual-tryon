@@ -18,6 +18,7 @@ export class TryOnEngine {
     this.facingMode = "user";
     this.initialized = false;
     this.assetProcessor = new FrameAssetProcessor();
+    this.faceSeenAt=0;
   }
 
   setStatus(message){
@@ -157,12 +158,18 @@ export class TryOnEngine {
     const matrix=result.facialTransformationMatrixes?.[0]?.data;
 
     if(!face){
+      // Evita piscar o óculos em perdas isoladas de um frame.
+      if(performance.now()-this.faceSeenAt<180){
+        this.glasses3d.render();
+        return;
+      }
       this.glasses3d.hide();
       this.glasses3d.render();
       this.setStatus("Posicione seu rosto na câmera");
       return;
     }
 
+    this.faceSeenAt=performance.now();
     const leftEye=face[33], rightEye=face[263];
     const leftTemple=face[234], rightTemple=face[454];
 
