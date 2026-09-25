@@ -30,6 +30,29 @@ export class Glasses3D {
 
     this.root.visible=false;
     this.pose=null;
+    this.imageFrame=null;
+  }
+
+  setImageFrame(asset){
+    if(this.imageFrame){
+      this.modelRoot.remove(this.imageFrame);
+      this.imageFrame.material?.map?.dispose();
+      this.imageFrame.material?.dispose();
+      this.imageFrame.geometry?.dispose();
+    }
+    const texture=new THREE.TextureLoader().load(asset.url,()=>this.render());
+    texture.colorSpace=THREE.SRGBColorSpace;
+    const width=1.78;
+    const height=width/Math.max(asset.aspect||2.2,1.2);
+    const material=new THREE.MeshBasicMaterial({
+      map:texture,transparent:true,depthWrite:false,side:THREE.DoubleSide
+    });
+    this.imageFrame=new THREE.Mesh(new THREE.PlaneGeometry(width,height),material);
+    this.imageFrame.position.set(0,0.015,0.055);
+    this.modelRoot.add(this.imageFrame);
+    this.fallback.visible=false;
+    this.usingExternalModel=true;
+    this.model=null;
   }
 
   buildFallback(){
