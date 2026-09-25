@@ -93,8 +93,9 @@ export class TryOnEngine {
   }
 
   resize() {
-    const width=this.video.videoWidth||1280;
-    const height=this.video.videoHeight||960;
+    if(!this.video.videoWidth || !this.video.videoHeight) return;
+    const width=this.video.videoWidth;
+    const height=this.video.videoHeight;
     this.canvas.width=width; this.canvas.height=height;
     this.glasses3d.resize(width,height);
   }
