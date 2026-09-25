@@ -23,4 +23,4 @@ export const PRODUCTS = [
   }
 ];
 
-export const DEFAULT_PRODUCT_ID = "fremi-piloto";
+export const DEFAULT_PRODUCT_ID = "oculos-esportivo-preto-lente-preta-98un1";
