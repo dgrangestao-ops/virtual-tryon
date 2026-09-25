@@ -108,9 +108,9 @@ export class FrameAssetProcessor {
     // nas fotos de catálogo, tipicamente haste/temple em perspectiva.
     let frontTop=peakY;
     for(let y=minY;y<=peakY;y++){
-      if(rowSpan[y]>=peakSpan*.68){frontTop=y;break;}
+      if(rowSpan[y]>=peakSpan*.82){frontTop=y;break;}
     }
-    const feather=Math.max(2,Math.round(objectH*.025));
+    const feather=Math.max(2,Math.round(objectH*.018));
     for(let y=minY;y<frontTop;y++){
       for(let x=minX;x<=maxX;x++) d[(y*w+x)*4+3]=0;
     }
