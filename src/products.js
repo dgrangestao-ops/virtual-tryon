@@ -8,6 +8,7 @@ export const PRODUCTS = [
     sourceImageUrl: "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp",
     modelUrl: null,
     imageAssetUrl: null,
+    assetStatus: "source-photo",
     calibration: { scale: 1, position: [0,0,0], rotation: [0,0,0] },
     available: true
   },
