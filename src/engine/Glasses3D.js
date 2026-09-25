@@ -92,12 +92,11 @@ export class Glasses3D {
 
     this.root.visible = true;
     this.debugMarker.visible = true;
-    // A câmera ortográfica usa altura vertical = 2 unidades.
-    // Portanto pixels devem ser normalizados pela ALTURA do frame,
-    // não pela largura. Isso preserva a correspondência pixel-a-pixel
-    // entre o vídeo 4:3 e o canvas WebGL.
-    const mirroredX = width - x;
-    const webglX = (mirroredX - width / 2) * (2 / height);
+    // O canvas WebGL não é espelhado. Os landmarks do MediaPipe
+    // correspondem ao frame bruto da câmera, então usamos x/y diretamente.
+    // O vídeo é espelhado apenas visualmente via CSS; como o rosto é
+    // aproximadamente simétrico, a pose frontal deve coincidir no centro.
+    const webglX = (x - width / 2) * (2 / height);
     const webglY = (height / 2 - y) * (2 / height);
 
     this.root.position.set(webglX, webglY, 0);
@@ -108,8 +107,7 @@ export class Glasses3D {
     const normalizedScale = ((scale / height) * 2) / 1.6;
     this.root.scale.setScalar(normalizedScale);
 
-    // No modo espelho, yaw e roll também mudam de sinal.
-    this.root.rotation.set(pitch, -yaw, -roll);
+    this.root.rotation.set(pitch, yaw, roll);
   }
 
   hide() {
