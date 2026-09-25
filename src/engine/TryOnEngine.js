@@ -52,6 +52,17 @@ export class TryOnEngine {
     this.setStatus("Rastreamento 3D pronto");
   }
 
+  async setProduct(product){
+    if(!product) return false;
+    this.product=product;
+    if(product.modelUrl){
+      return this.glasses3d.loadModel(product.modelUrl,product.calibration||{});
+    }
+    this.glasses3d.fallback.visible=true;
+    this.glasses3d.usingExternalModel=false;
+    return true;
+  }
+
   async startCamera(facingMode=this.facingMode) {
     this.stopCamera();
     const previousMode=this.facingMode;
