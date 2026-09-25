@@ -8,10 +8,13 @@ export class FrameAssetProcessor {
 
   async fromImage(file){
     const bitmap=await createImageBitmap(file);
+    const maxSide=1600;
+    const ratio=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
     const work=document.createElement("canvas");
-    work.width=bitmap.width; work.height=bitmap.height;
+    work.width=Math.max(1,Math.round(bitmap.width*ratio));
+    work.height=Math.max(1,Math.round(bitmap.height*ratio));
     const ctx=work.getContext("2d",{willReadFrequently:true});
-    ctx.drawImage(bitmap,0,0);
+    ctx.drawImage(bitmap,0,0,work.width,work.height);
     const img=ctx.getImageData(0,0,work.width,work.height);
     const d=img.data;
 
