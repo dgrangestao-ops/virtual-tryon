@@ -19,19 +19,9 @@ jobs:
           curl -L --fail --retry 3 "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp" -o public/products/98un1/source.webp
           mkdir -p public/products/q7by3
           curl -L --fail --retry 3 "https://www.fremieyewear.com.br/produtos/oculos-policarbonato-preto-lente-espelhada-q7by3/" -o /tmp/q7by3.html
-          python - <<'PY'
-import re,html
-s=open('/tmp/q7by3.html',encoding='utf-8').read()
-patterns=[r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)',r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']']
-for pat in patterns:
-    m=re.search(pat,s,re.I)
-    if m:
-        print(html.unescape(m.group(1)))
-        open('/tmp/q7by3-url','w').write(html.unescape(m.group(1)))
-        break
-else: raise SystemExit("og:image not found")
-PY
-          curl -L --fail --retry 3 "$(cat /tmp/q7by3-url)" -o public/products/q7by3/source.webp
+          IMAGE_URL=$(grep -oiE '<meta[^>]+(property|name)=["'\'' ]*og:image["'\'' ]*[^>]*>' /tmp/q7by3.html | head -1 | sed -nE 's/.*content=["'\'']([^"'\'']+)["'\''].*/\1/p')
+          test -n "$IMAGE_URL"
+          curl -L --fail --retry 3 "$IMAGE_URL" -o public/products/q7by3/source.webp
       - name: Commit refreshed assets
         run: |
           git config user.name "github-actions[bot]"
