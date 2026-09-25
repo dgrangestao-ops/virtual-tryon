@@ -16,7 +16,10 @@ export class Glasses3D {
       alpha: true,
       antialias: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    // O canvas já recebe explicitamente as dimensões reais do vídeo.
+    // Pixel ratio > 1 fazia o drawing buffer interno ficar maior que o
+    // sistema de coordenadas usado pelo tracking, deslocando o overlay.
+    this.renderer.setPixelRatio(1);
     this.renderer.setClearColor(0x000000, 0);
 
     this.scene = new THREE.Scene();
@@ -76,6 +79,7 @@ export class Glasses3D {
   }
 
   resize(width, height) {
+    this.renderer.setPixelRatio(1);
     this.renderer.setSize(width, height, false);
     const aspect = width / height;
     this.camera.left = -aspect;
