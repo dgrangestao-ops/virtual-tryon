@@ -1,0 +1,23 @@
+name: Sync product assets
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "catalog/**"
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download catalog source images
+        run: |
+          mkdir -p public/products/98un1
+          curl -L --fail --retry 3 "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp" -o public/products/98un1/source.webp
+      - name: Commit refreshed assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/products
+          git diff --cached --quiet || (git commit -m "Atualiza assets locais do catálogo" && git push)
