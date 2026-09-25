@@ -179,16 +179,17 @@ export class TryOnEngine {
       rightTemple.y-leftTemple.y
     );
 
-    // Roll robusto: usa vários pares simétricos do rosto, em vez de depender
-    // apenas dos cantos dos olhos (que podem introduzir inclinação constante).
-    const rollPairs=[
-      [face[33],face[263]],   // olhos
-      [face[130],face[359]],  // região externa dos olhos
-      [face[127],face[356]]   // laterais superiores do rosto
-    ];
-    const rollSamples=rollPairs.map(([a,b])=>Math.atan2(b.y-a.y,b.x-a.x));
-    rollSamples.sort((a,b)=>a-b);
-    const roll=rollSamples[1];
+    // A matriz 3D do FaceLandmarker representa a orientação rígida da cabeça.
+    // Usá-la para o roll evita que assimetrias naturais dos olhos/sobrancelhas
+    // façam a armação parecer torta quando o rosto está frontal.
+    const landmarkRoll=Math.atan2(
+      rightEye.y-leftEye.y,
+      rightEye.x-leftEye.x
+    );
+    const matrixRoll=matrix?.length>=16
+      ? Math.atan2(matrix[4],matrix[0])
+      : landmarkRoll;
+    const roll=matrixRoll;
 
     const yaw=matrix?.length>=16
       ? Math.atan2(matrix[8],matrix[10])
