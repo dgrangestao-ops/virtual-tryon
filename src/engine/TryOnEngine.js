@@ -19,7 +19,6 @@ export class TryOnEngine {
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
     );
-
     this.landmarker = await FaceLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath:
@@ -30,20 +29,14 @@ export class TryOnEngine {
       numFaces: 1,
       outputFacialTransformationMatrixes: true,
     });
-
     this.onStatus("Rastreamento 3D pronto");
   }
 
   async startCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: "user",
-        width: { ideal: 1280 },
-        height: { ideal: 960 },
-      },
-      audio: false,
+      video:{facingMode:"user",width:{ideal:1280},height:{ideal:960}},
+      audio:false,
     });
-
     this.video.srcObject = stream;
     await this.video.play();
     this.resize();
@@ -52,97 +45,66 @@ export class TryOnEngine {
   }
 
   resize() {
-    const width = this.video.videoWidth || 1280;
-    const height = this.video.videoHeight || 960;
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.canvas3d.width = width;
-    this.canvas3d.height = height;
-    this.glasses3d.resize(width, height);
+    const width=this.video.videoWidth||1280;
+    const height=this.video.videoHeight||960;
+    this.canvas.width=width; this.canvas.height=height;
+    this.glasses3d.resize(width,height);
   }
 
   loop() {
-    if (!this.running) return;
-
-    if (this.video.currentTime !== this.lastVideoTime) {
-      this.lastVideoTime = this.video.currentTime;
-      const result = this.landmarker.detectForVideo(
-        this.video,
-        performance.now()
-      );
-      this.draw(result);
+    if(!this.running) return;
+    if(this.video.currentTime!==this.lastVideoTime){
+      this.lastVideoTime=this.video.currentTime;
+      this.draw(this.landmarker.detectForVideo(this.video,performance.now()));
     }
-
-    requestAnimationFrame(() => this.loop());
+    requestAnimationFrame(()=>this.loop());
   }
 
   draw(result) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    const face=result.faceLandmarks?.[0];
+    const matrix=result.facialTransformationMatrixes?.[0]?.data;
 
-    const face = result.faceLandmarks?.[0];
-    const faceMatrix = result.facialTransformationMatrixes?.[0];
-
-    if (!face) {
+    if(!face){
       this.glasses3d.hide();
       this.glasses3d.render();
       this.onStatus("Posicione seu rosto na câmera");
       return;
     }
 
-    const leftEye = face[33];
-    const rightEye = face[263];
-    const leftTemple = face[234];
-    const rightTemple = face[454];
-    const nose = face[1];
+    const leftEye=face[33], rightEye=face[263];
+    const leftTemple=face[234], rightTemple=face[454];
 
-    const x1 = leftEye.x * this.canvas.width;
-    const y1 = leftEye.y * this.canvas.height;
-    const x2 = rightEye.x * this.canvas.width;
-    const y2 = rightEye.y * this.canvas.height;
+    // Trabalhamos em coordenadas NORMALIZADAS do MediaPipe até o WebGL.
+    // Isso elimina mistura entre pixels, CSS, DPR e object-fit.
+    const centerX=(leftEye.x+rightEye.x)/2;
+    const centerY=(leftEye.y+rightEye.y)/2 + Math.hypot(
+      rightEye.x-leftEye.x,
+      rightEye.y-leftEye.y
+    )*0.04;
 
-    const templeX1 = leftTemple.x * this.canvas.width;
-    const templeY1 = leftTemple.y * this.canvas.height;
-    const templeX2 = rightTemple.x * this.canvas.width;
-    const templeY2 = rightTemple.y * this.canvas.height;
-
-    const faceWidth = Math.hypot(
-      templeX2 - templeX1,
-      templeY2 - templeY1
+    const faceWidth=Math.hypot(
+      rightTemple.x-leftTemple.x,
+      rightTemple.y-leftTemple.y
     );
 
-    const eyeDistance = Math.hypot(x2 - x1, y2 - y1);
-    // O FaceLandmarker devolve x/y normalizados (0..1).
-    // x1..y2 já estão em pixels; o centro precisa usar a média
-    // dos landmarks normalizados antes da conversão para pixels.
-    const centerX =
-      ((leftEye.x + rightEye.x) / 2) * this.canvas.width;
-    const centerY =
-      ((leftEye.y + rightEye.y) / 2) * this.canvas.height +
-      eyeDistance * 0.04;
-    const roll = Math.atan2(y2 - y1, x2 - x1);
+    const roll=Math.atan2(
+      rightEye.y-leftEye.y,
+      rightEye.x-leftEye.x
+    );
 
-    const noseX = nose.x * this.canvas.width;
-    const landmarkYaw = (noseX - centerX) / eyeDistance;
-    const matrixData = faceMatrix?.data;
+    const yaw=matrix?.length>=16
+      ? Math.atan2(matrix[8],matrix[10])
+      : 0;
 
-    const yaw =
-      matrixData?.length >= 16
-        ? Math.atan2(matrixData[8], matrixData[10])
-        : landmarkYaw;
-
-    // Pitch aproximado da matriz 3D do MediaPipe.
-    const pitch =
-      matrixData?.length >= 16
-        ? Math.atan2(
-            -matrixData[9],
-            Math.hypot(matrixData[8], matrixData[10])
-          )
-        : 0;
+    const pitch=matrix?.length>=16
+      ? Math.atan2(-matrix[9],Math.hypot(matrix[8],matrix[10]))
+      : 0;
 
     this.glasses3d.setPose({
-      x: centerX,
-      y: centerY,
-      scale: faceWidth * 0.62,
+      x:centerX,
+      y:centerY,
+      scale:faceWidth,
       roll,
       yaw,
       pitch,
