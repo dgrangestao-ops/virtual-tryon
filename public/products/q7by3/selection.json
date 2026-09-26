@@ -19,7 +19,18 @@
     "frontTop": 250,
     "aspect": 2.9324324324324325,
     "width": 434,
-    "height": 148
+    "height": 148,
+    "geometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9976958525345622,
+      "opticalCenterY": 0.08783783783783784,
+      "bbox": {
+        "left": 0,
+        "right": 0.9976958525345622,
+        "top": 0,
+        "bottom": 0.9932432432432432
+      }
+    }
   },
   "ranked": [
     {
