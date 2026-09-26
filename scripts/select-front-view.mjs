@@ -79,21 +79,20 @@ async function makeTryOnAsset(source,out){
     spans[y]={lo,hi,count,span:hi>=lo?hi-lo+1:0};
   }
   const peak=Math.max(...spans.map(r=>r.span));
-  // Detecta a frente pela primeira faixa horizontal sustentada. Hastes abertas
-  // podem ter grande largura entre as pontas, mas poucos pixels por linha; por
-  // isso exigimos simultaneamente largura e densidade durante várias linhas.
+  const peakCount=Math.max(...spans.map(r=>r.count));
+  // A frente real concentra muito mais pixels escuros por linha que as hastes
+  // abertas. Usamos contagem absoluta, não apenas distância entre pontas.
   let frontTop=0;
-  const minSpan=peak*.62, minDensity=.30;
-  const sustained=Math.max(3,Math.round(h*.012));
+  const sustained=Math.max(4,Math.round(h*.015));
   outer: for(let y=0;y<h-sustained;y++){
     for(let k=0;k<sustained;k++){
       const r=spans[y+k];
-      if(r.span<minSpan || r.count/Math.max(1,r.span)<minDensity) continue outer;
+      if(r.count<peakCount*.48 || r.span<peak*.50) continue outer;
     }
     frontTop=y; break;
   }
-  // Pequena margem para não cortar a borda superior real da armação.
-  frontTop=Math.max(0,frontTop-Math.round(h*.006));
+  // Margem mínima: evita reintroduzir a curva superior das hastes.
+  frontTop=Math.max(0,frontTop-Math.round(h*.002));
   const feather=Math.max(2,Math.round(h*.006));
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
     const i=(y*w+x)*4;
