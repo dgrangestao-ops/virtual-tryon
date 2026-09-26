@@ -97,6 +97,7 @@ start.addEventListener("click", async () => {
     }
     await engine.startCamera();
     document.querySelector(".mirror-layer").classList.remove("unmirrored");
+    stage.classList.add("camera-active");
     start.textContent = "Câmera ativa";
     switchCamera.hidden = false;
     snapshot.hidden = false;
@@ -165,6 +166,8 @@ document.addEventListener("visibilitychange",()=>{
 });
 
 window.addEventListener("pagehide",()=>engine.stopCamera());
+window.addEventListener("error",()=>setStatus("Ocorreu um erro. Recarregue a página."));
+window.addEventListener("unhandledrejection",()=>setStatus("Não foi possível concluir esta ação."));
 
 fullscreen.addEventListener("click", async ()=>{
   try{
