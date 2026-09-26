@@ -1,24 +1,28 @@
 *{box-sizing:border-box}
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f6f4f0}
-body{margin:0;min-height:100vh;background:linear-gradient(180deg,#fbfaf8,#f1eee8)}
-.shell{width:min(760px,100%);margin:auto;padding:28px 18px max(24px,env(safe-area-inset-bottom));text-align:center}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#e9e5de}
+body{margin:0;min-height:100vh;background:
+radial-gradient(circle at 15% 12%,#fff9 0 12%,transparent 34%),
+linear-gradient(135deg,#ded8cf 0%,#f8f6f2 42%,#d8d0c5 100%);background-attachment:fixed}
+.shell{position:relative;width:min(800px,calc(100% - 24px));margin:18px auto;padding:28px 22px max(24px,env(safe-area-inset-bottom));text-align:center;background:#fff9;backdrop-filter:blur(18px);border:1px solid #fff9;border-radius:32px;box-shadow:0 24px 80px #392d201c;overflow:hidden}
+.ambient{position:absolute;inset:-35% -20% auto;height:330px;background:radial-gradient(ellipse,#bda98f30,transparent 66%);pointer-events:none}
+header,.product-bar,.stage,#start,.actions,.privacy,.compat{position:relative;z-index:1}
 header{margin:0 auto 18px}
-.brand{font-size:14px;font-weight:800;letter-spacing:.38em;margin-left:.38em}
+.brand-wrap{display:inline-flex;flex-direction:column;align-items:center;line-height:1}.brand{font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:700;letter-spacing:.28em;margin-left:.28em}.brand-wrap span{font-size:8px;letter-spacing:.48em;margin:7px 0 0 .48em;color:#756b60}
 h1{margin:10px 0 5px;font-size:clamp(26px,5vw,42px);line-height:1.05}
 header p,.privacy{color:#69645e}
 header p{margin:0;font-size:15px}
-.stage{position:relative;overflow:hidden;border-radius:24px;background:#111;aspect-ratio:4/3;box-shadow:0 18px 55px #0002}
+.stage{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(145deg,#1c1a18,#050505);aspect-ratio:4/3;box-shadow:0 20px 60px #0003;border:1px solid #fff5}
 .mirror-layer{position:absolute;inset:0;transform:scaleX(-1);transform-origin:center}
 video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 canvas{pointer-events:none}
 #overlay{z-index:2}
 #status{position:absolute;z-index:3;left:50%;bottom:14px;transform:translate(-50%,8px);max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;background:#000a;backdrop-filter:blur(8px);color:#fff;padding:8px 13px;border-radius:999px;font-size:12px;white-space:nowrap;opacity:0;transition:.22s ease}
 #status.visible{opacity:1;transform:translate(-50%,0)}
-button{width:min(360px,100%);margin-top:18px;border:0;border-radius:999px;padding:15px 24px;background:#171717;color:#fff;font-weight:750;font-size:16px;cursor:pointer;box-shadow:0 8px 22px #0002}
+button{width:min(360px,100%);margin-top:18px;border:0;border-radius:999px;padding:15px 24px;background:linear-gradient(135deg,#181512,#40372f);color:#fff;font-weight:750;font-size:16px;cursor:pointer;box-shadow:0 9px 24px #2d241c30}
 button:disabled{opacity:.65;cursor:default}
 .privacy{font-size:12px;line-height:1.4;margin:11px auto 0;max-width:460px}
 @media(max-width:600px){
-  .shell{padding:18px 10px max(18px,env(safe-area-inset-bottom))}
+  .shell{width:100%;margin:0;padding:18px 10px max(18px,env(safe-area-inset-bottom));border-radius:0;min-height:100vh}
   header{margin-bottom:12px}
   .stage{border-radius:18px;aspect-ratio:3/4}
   video,canvas{object-fit:cover}
