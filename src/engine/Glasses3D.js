@@ -36,6 +36,7 @@ export class Glasses3D {
     this.imageFrameWidth=0;
     this.imageFrameHeight=0;
     this.templeOccluders=null;
+    this.templeMaterial=null;
   }
 
   setImageFrame(asset, calibration={}){
@@ -57,6 +58,8 @@ export class Glasses3D {
       this.modelRoot.remove(this.imageTemples.left,this.imageTemples.right);
       for(const g of [this.imageTemples.left,this.imageTemples.right]) g.traverse(n=>{n.geometry?.dispose?.();n.material?.dispose?.();});
       this.imageTemples=null;
+      this.templeMaterial?.dispose?.();
+      this.templeMaterial=null;
     }
     if(this.imageFrame){
       this.modelRoot.remove(this.imageFrame);
@@ -94,7 +97,7 @@ export class Glasses3D {
     // Hastes 2.5D independentes. A geometria é criada em coordenadas locais
     // da armação e reposicionada dinamicamente para manter a dobradiça ligada
     // à frente conforme a cabeça gira.
-    const templeMat=new THREE.MeshPhysicalMaterial({
+    this.templeMaterial=new THREE.MeshPhysicalMaterial({
       color:0x241714,roughness:0.30,metalness:0.02,clearcoat:0.32,
       transparent:true,opacity:0
     });
@@ -387,7 +390,7 @@ export class Glasses3D {
             g.userData.mesh.material.dispose();
           }
           const curve=new THREE.CatmullRomCurve3(points);
-          const mat=templeMat.clone();
+          const mat=this.templeMaterial.clone();
           mat.opacity=.10+.68*amount;
           mat.depthWrite=true;
           mat.depthTest=true;
