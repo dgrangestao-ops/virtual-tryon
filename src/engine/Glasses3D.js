@@ -421,8 +421,6 @@ export class Glasses3D {
             earX:detectedEarX
           });
           const earX=solvedTemple.endX;
-          const earY=solvedTemple.endY;
-          const rearZ=solvedTemple.rearZ;
           const bucket=`${Math.round(amount*12)}:${Math.round(localX*24)}:${Math.round(earX*24)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
