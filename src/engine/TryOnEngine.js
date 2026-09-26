@@ -21,6 +21,7 @@ export class TryOnEngine {
     this.assetProcessor = new FrameAssetProcessor();
     this.faceSeenAt=0;
     this.faceScaleState=createStableFaceScale();
+    this.missedFaceFrames=0;
   }
 
   setStatus(message){
@@ -133,6 +134,7 @@ export class TryOnEngine {
     this.running=false;
     this.lastVideoTime=-1;
     this.faceScaleState=createStableFaceScale();
+    this.missedFaceFrames=0;
   }
 
   async switchCamera(){
@@ -164,8 +166,10 @@ export class TryOnEngine {
     const matrix=result.facialTransformationMatrixes?.[0]?.data;
 
     if(!face){
-      // Evita piscar o óculos em perdas isoladas de um frame.
-      if(performance.now()-this.faceSeenAt<180){
+      this.missedFaceFrames++;
+      // Tolerância híbrida por frames + tempo: evita piscadas em oclusões
+      // instantâneas sem deixar a armação flutuando quando o rosto realmente sai.
+      if(this.missedFaceFrames<=4 && performance.now()-this.faceSeenAt<220){
         this.glasses3d.render();
         return;
       }
@@ -176,6 +180,7 @@ export class TryOnEngine {
     }
 
     this.faceSeenAt=performance.now();
+    this.missedFaceFrames=0;
     const leftEye=face[33], rightEye=face[263];
     const leftTemple=face[234], rightTemple=face[454];
     // Landmarks auriculares do FaceMesh (127/356) ficam atrás das têmporas
