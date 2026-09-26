@@ -7,16 +7,18 @@ const checks=[
  ["tracking anchor has no visual Y offset",/const centerY=\(leftEye\.y\+rightEye\.y\)\/2;/.test(t)],
  ["photo front yaw is fixed",/const visualYaw=this\.usingExternalModel && this\.imageFrame \? 0 :/.test(g)],
  ["photo front pitch is fixed",/const visualPitch=this\.usingExternalModel && this\.imageFrame \? 0 :/.test(g)],
- ["photo front has no yaw parallax",/this\.imageFrame\.position\.x=this\.imageFrameBaseX;/.test(g)],
- ["frontal yaw dead-zone exists",/Math\.abs\(this\.pose\.yaw\)<0\.10 \? 0/.test(g)],
- ["frontal roll dead-zone exists",/Math\.abs\(target\.roll\|\|0\)<0\.035 \? 0/.test(g)],
- ["optical fit uses neutral low offset",/this\.modelRoot\.position\.y=0\.015;/.test(g)],
- ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.07/.test(g)],
- ["temples start at hinge and extend rearward",g.includes("const hingeX=sx*this.imageFrameWidth*.485;") && g.includes("const z3=-this.imageFrameWidth*(.28+.12*amount);")],
- ["photo temples are not swallowed by occluders",g.includes("this.templeOccluders.left.visible=false;") && g.includes("this.templeOccluders.right.visible=false;")],
- ["temple material is instance state",/this\.templeMaterial=new THREE\.MeshPhysicalMaterial/.test(g) && /this\.templeMaterial\.clone\(\)/.test(g)],
- ["hybrid stable face scale exists",/const faceWidth=rawFaceWidth\*\.35\+eyeBasedWidth\*\.65;/.test(t)]
-];
+ ["photo front has no yaw parallax",g.includes("this.imageFrame.position.x=this.imageFrameBaseX;")],
+ ["frontal yaw dead-zone exists",g.includes("Math.abs(this.pose.yaw)<0.10 ? 0")],
+ ["frontal roll dead-zone exists",g.includes("Math.abs(target.roll||0)<0.035 ? 0")],
+ ["optical fit uses neutral low offset",g.includes("this.modelRoot.position.y=0.015;")],
+ ["temple landmarks are forwarded",t.includes("templeAnchors") && t.includes("left:{x:leftTemple.x") && t.includes("right:{x:rightTemple.x")],
+ ["temples are a separate face-anchored layer",g.includes("const anchor=this.templePose?.") && g.includes("const localX=(anchorWorldX-this.pose.x)")],
+ ["temples originate at frame hinge",g.includes("const hingeX=sx*this.imageFrameWidth*.485;")],
+ ["temples extend toward ear region",g.includes("const earX=localX-sx*this.imageFrameWidth") && g.includes("new THREE.Vector3(earX,earY,rearZ)")],
+ ["photo temple occluders stay disabled",g.includes("this.templeOccluders.left.visible=false;") && g.includes("this.templeOccluders.right.visible=false;")],
+ ["temple material is instance state",g.includes("this.templeMaterial=new THREE.MeshPhysicalMaterial") && g.includes("this.templeMaterial.clone()")],
+ ["hybrid stable face scale exists",g.length>0 && t.includes("const faceWidth=rawFaceWidth*.35+eyeBasedWidth*.65;")]
+]
 let fail=false;
 for(const [name,ok] of checks){console.log(`${ok?"✓":"✗"} ${name}`);if(!ok)fail=true;}
 if(fail)process.exit(1);
