@@ -93,18 +93,8 @@ export class Glasses3D {
       transparent:true,opacity:0
     });
     const makeTemple=(side)=>{
-      const geometry=new THREE.BufferGeometry();
-      const positions=new Float32Array(4*3);
-      geometry.setAttribute("position",new THREE.BufferAttribute(positions,3));
-      const line=new THREE.Line(geometry,new THREE.LineBasicMaterial({
-        color:0x241714,transparent:true,opacity:0
-      }));
-      // Um tubo curto na dobradiça dá espessura visual; a linha longa garante
-      // continuidade até a têmpora sem criar arcos sobre a testa.
-      const stub=new THREE.Mesh(new THREE.CylinderGeometry(.014*width,.018*width,.18*width,7),templeMat.clone());
-      stub.rotation.x=Math.PI/2;
-      const group=new THREE.Group(); group.add(line,stub);
-      group.userData={side,line,stub};
+      const group=new THREE.Group();
+      group.userData={side,mesh:null};
       return group;
     };
     const left=makeTemple(-1),right=makeTemple(1);
@@ -352,18 +342,26 @@ export class Glasses3D {
           const z1=-this.imageFrameWidth*(.08+.05*amount);
           const z2=-this.imageFrameWidth*(.34+.18*amount);
           const z3=-this.imageFrameWidth*(.58+.25*amount);
-          const a=g.userData.line.geometry.attributes.position;
-          a.setXYZ(0,hingeX,y,0.015);
-          a.setXYZ(1,hingeX-sx*this.imageFrameWidth*.025,y-.006,z1);
-          a.setXYZ(2,endX+sx*this.imageFrameWidth*.035,y-.025,z2);
-          a.setXYZ(3,endX,y-.055,z3);
-          a.needsUpdate=true;
-          const opacity=.18+.72*amount;
-          g.userData.line.material.opacity=opacity;
-          const stub=g.userData.stub;
-          stub.material.opacity=opacity;
-          stub.position.set(hingeX-sx*this.imageFrameWidth*.012,y-.004,z1*.48);
-          stub.scale.y=1+.8*amount;
+          const points=[
+            new THREE.Vector3(hingeX,y,0.012),
+            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.018,y-.004,z1),
+            new THREE.Vector3(endX+sx*this.imageFrameWidth*.028,y-.020,z2),
+            new THREE.Vector3(endX,y-.050,z3)
+          ];
+          if(g.userData.mesh){
+            g.remove(g.userData.mesh);
+            g.userData.mesh.geometry.dispose();
+            g.userData.mesh.material.dispose();
+          }
+          const curve=new THREE.CatmullRomCurve3(points);
+          const mat=templeMat.clone();
+          mat.opacity=.12+.78*amount;
+          const mesh=new THREE.Mesh(
+            new THREE.TubeGeometry(curve,22,.012*this.imageFrameWidth,7,false),
+            mat
+          );
+          mesh.renderOrder=-1;
+          g.add(mesh); g.userData.mesh=mesh;
         }
       }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
