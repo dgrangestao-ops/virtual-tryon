@@ -64,3 +64,21 @@ O arquivo `/embed.js` cria o botão “Experimentar no meu rosto” na página d
 O provador não depende de modelagem manual por SKU. O fluxo de catálogo é: URL do produto → coleta da galeria → remoção de duplicatas e imagens de tema → análise de silhueta/simetria → seleção automática da melhor vista frontal → ativo local versionado → provador. O arquivo `selection.json` de cada SKU registra a escolha e o ranking para auditoria. Fotos laterais permanecem disponíveis na galeria para uma futura reconstrução 3D/premium.
 
 A validação do aplicativo e a sincronização dos ativos rodam automaticamente no GitHub Actions. O modo atual baseado em fotografia é deliberadamente 2D/2.5D; não promete recuperar geometria 3D física exata a partir de uma única foto.
+
+
+## Checklist de fechamento do piloto
+
+- [x] câmera e permissões
+- [x] rastreamento facial e rotação
+- [x] seleção automática de produto por SKU
+- [x] coleta automática da galeria do produto
+- [x] seleção automática da melhor vista frontal
+- [x] geração automática de asset transparente sem hastes superiores
+- [x] catálogo gerado e validado automaticamente
+- [x] modo público sem seletor/etiqueta de teste
+- [x] retorno seguro para a página do produto
+- [x] script de integração preparado para a vitrine
+- [ ] instalar o script/botão na loja Fremi (Nuvemshop)
+- [ ] homologação final dentro da página real da Fremi
+
+O seletor entre produtos permanece disponível apenas com `?test=1`, para homologação técnica sem expor controles internos ao consumidor.
