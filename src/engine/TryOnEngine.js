@@ -175,6 +175,12 @@ export class TryOnEngine {
     this.faceSeenAt=performance.now();
     const leftEye=face[33], rightEye=face[263];
     const leftTemple=face[234], rightTemple=face[454];
+    // Pontos laterais da face usados exclusivamente pela geometria das hastes.
+    // Mantemos os dois lados para o renderizador decidir qual está exposto.
+    const templeAnchors={
+      left:{x:leftTemple.x,y:leftTemple.y,z:leftTemple.z||0},
+      right:{x:rightTemple.x,y:rightTemple.y,z:rightTemple.z||0}
+    };
 
     // Trabalhamos em coordenadas NORMALIZADAS do MediaPipe até o WebGL.
     // Isso elimina mistura entre pixels, CSS, DPR e object-fit.
@@ -224,6 +230,7 @@ export class TryOnEngine {
       roll,
       yaw,
       pitch,
+      templeAnchors,
     });
 
     this.glasses3d.render();
