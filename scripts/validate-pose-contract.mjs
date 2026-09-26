@@ -12,7 +12,7 @@ const checks=[
  ["frontal roll dead-zone exists",/Math\.abs\(target\.roll\|\|0\)<0\.035 \? 0/.test(g)],
  ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.11/.test(g)],
  ["temple material is instance state",/this\.templeMaterial=new THREE\.MeshPhysicalMaterial/.test(g) && /this\.templeMaterial\.clone\(\)/.test(g)],
- ["face width yaw compensation exists",/rawFaceWidth\/yawCos/.test(t)]
+ ["hybrid stable face scale exists",/const faceWidth=rawFaceWidth\*\.35\+eyeBasedWidth\*\.65;/.test(t)]
 ];
 let fail=false;
 for(const [name,ok] of checks){console.log(`${ok?"✓":"✗"} ${name}`);if(!ok)fail=true;}
