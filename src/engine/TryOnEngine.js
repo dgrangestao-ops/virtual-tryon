@@ -105,7 +105,7 @@ export class TryOnEngine {
       audio:false,
       });
     }catch(error){
-      this.facingMode=previousMode;
+      if(requestToken===this.cameraRequestToken) this.facingMode=previousMode;
       throw error;
     }
     // Uma resposta antiga de getUserMedia não pode substituir uma solicitação
@@ -120,7 +120,8 @@ export class TryOnEngine {
     this.facingMode=facingMode;
     this.stream=stream;
     this.video.srcObject = stream;
-    await new Promise((resolve,reject)=>{
+    try{
+      await new Promise((resolve,reject)=>{
       if(this.video.readyState>=1 && this.video.videoWidth) return resolve();
       const ok=()=>{cleanup();resolve();};
       const fail=()=>{cleanup();reject(new Error("Falha ao carregar vídeo da câmera"));};
@@ -129,9 +130,16 @@ export class TryOnEngine {
         this.video.removeEventListener("error",fail);
       };
       this.video.addEventListener("loadedmetadata",ok,{once:true});
-      this.video.addEventListener("error",fail,{once:true});
-    });
-    await this.video.play();
+        this.video.addEventListener("error",fail,{once:true});
+      });
+      await this.video.play();
+    }catch(error){
+      stream.getTracks().forEach(track=>track.stop());
+      if(this.stream===stream) this.stream=null;
+      if(this.video.srcObject===stream) this.video.srcObject=null;
+      this.running=false;
+      throw error;
+    }
     this.resize();
     this.running = true;
     const token=++this.loopToken;
