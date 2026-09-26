@@ -79,6 +79,7 @@ export class Glasses3D {
 
   setImageFrame(asset, calibration={}){
     const token=++this.assetToken;
+    if(!asset?.url) return Promise.resolve(false);
     if(this.model){
       this.modelRoot.remove(this.model);
       this.model.traverse?.(node=>{
@@ -89,18 +90,29 @@ export class Glasses3D {
       this.model=null;
     }
     this.clearPhotoAsset();
-    const texture=new THREE.TextureLoader().load(
-      asset.url,
-      ()=>{ if(token===this.assetToken) this.render(); },
-      undefined,
-      error=>{ if(token===this.assetToken) console.warn("Falha ao carregar textura da armação",error); }
-    );
-    texture.colorSpace=THREE.SRGBColorSpace;
+    const textureReady=new Promise(resolve=>{
+      new THREE.TextureLoader().load(
+        asset.url,
+        texture=>{
+          if(token!==this.assetToken){texture.dispose();return resolve(false);}
+          texture.colorSpace=THREE.SRGBColorSpace;
+          if(this.imageFrame?.material) this.imageFrame.material.map=texture;
+          this.imageFrame?.material && (this.imageFrame.material.needsUpdate=true);
+          this.render();
+          resolve(true);
+        },
+        undefined,
+        error=>{
+          if(token===this.assetToken) console.warn("Falha ao carregar textura da armação",error);
+          resolve(false);
+        }
+      );
+    });
     const width=1.78*(calibration.scale||1);
     const height=width/Math.max(asset.aspect||2.2,1.2);
     const curvature=Math.max(0.035,Math.min(0.085,0.13/Math.max(asset.aspect||2.2,1.2)));
     const material=new THREE.MeshBasicMaterial({
-      map:texture,transparent:true,depthWrite:false,side:THREE.DoubleSide
+      map:null,transparent:true,depthWrite:false,side:THREE.DoubleSide
     });
     // Geometria 2.5D: uma curvatura leve evita o efeito de "cartão plano"
     // quando a cabeça gira, sem exigir um modelo 3D manual por SKU.
@@ -156,6 +168,7 @@ export class Glasses3D {
     this.rightTemple.visible=false;
     this.usingExternalModel=true;
     this.model=null;
+    return textureReady;
   }
 
   buildFallback(){
