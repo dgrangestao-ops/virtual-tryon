@@ -18,7 +18,7 @@ const checks=[
  ["temples use detected ear direction",g.includes("const earAnchor=this.earPose?.") && g.includes("const detectedEarX=")],
  ["temples project beyond preauricular landmark",g.includes("const projectedEarX=detectedEarX+templeToEarX*.92;") && g.includes("const minReach=this.imageFrameWidth*(.235+.09*amount);")],
  ["temples reach ear target",g.includes("new THREE.Vector3(earX,earY,rearZ)")],
- ["temple tip has no visible XY hook",g.includes("const tipX=earX;") && g.includes("const tipY=earY;")],
+ ["temple tip has no visible X hook",g.includes("const tipX=earX;")],
  ["temple tip disappears in depth",g.includes("const tipZ=rearZ-this.imageFrameWidth*(.14+.06*amount);") && g.includes("new THREE.Vector3(tipX,tipY,tipZ)")],
  ["temple visible rail is horizontal",g.includes("const earY=hingeY;") && g.includes("const railY=hingeY;")],
  ["ear vertical correction is hidden in depth",g.includes("const hiddenEarY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);") && g.includes("const tipY=hiddenEarY;")],
