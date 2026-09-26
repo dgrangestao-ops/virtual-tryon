@@ -1,26 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8f0e6"/><stop offset=".48" stop-color="#e9d6c5"/><stop offset="1" stop-color="#cda98f"/></linearGradient>
- <radialGradient id="sun"><stop stop-color="#fff" stop-opacity=".78"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
- <filter id="blur"><feGaussianBlur stdDeviation="26"/></filter>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7f1e9"/><stop offset=".52" stop-color="#eadbcd"/><stop offset="1" stop-color="#d2b9a4"/></linearGradient>
+ <radialGradient id="light"><stop stop-color="#fff" stop-opacity=".68"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="1920" height="1080" fill="url(#bg)"/>
-<circle cx="330" cy="160" r="420" fill="url(#sun)"/>
-<path d="M0 760 L460 0 H690 L210 1080 H0Z" fill="#fff" opacity=".20"/>
-<path d="M1920 90 L1530 0 1250 1080 1920 1080Z" fill="#8d654c" opacity=".10"/>
-<rect x="65" y="70" width="1790" height="940" rx="54" fill="none" stroke="#6b4a36" stroke-opacity=".16" stroke-width="2"/>
-<g fill="none" stroke="#5b3928" stroke-width="16" opacity=".18">
- <path d="M115 835 C180 780 275 780 340 835 C405 780 500 780 565 835"/>
- <path d="M115 835 C130 930 260 955 340 860 C420 955 550 930 565 835"/>
- <path d="M1355 800 C1420 745 1515 745 1580 800 C1645 745 1740 745 1805 800"/>
- <path d="M1355 800 C1370 895 1500 920 1580 825 C1660 920 1790 895 1805 800"/>
+<circle cx="420" cy="150" r="520" fill="url(#light)"/>
+<path d="M0 810 L420 0 H620 L205 1080 H0Z" fill="#fff" opacity=".12"/>
+<path d="M1920 120 L1610 0 1340 1080 1920 1080Z" fill="#866852" opacity=".055"/>
+<rect x="56" y="54" width="1808" height="972" rx="52" fill="none" stroke="#725946" stroke-opacity=".09" stroke-width="2"/>
+<g fill="none" stroke="#6b5140" stroke-width="11" opacity=".085">
+ <path d="M95 850 C155 805 235 805 295 850 C355 805 435 805 495 850"/>
+ <path d="M95 850 C115 925 220 945 295 875 C370 945 475 925 495 850"/>
+ <path d="M1425 835 C1485 790 1565 790 1625 835 C1685 790 1765 790 1825 835"/>
+ <path d="M1425 835 C1445 910 1550 930 1625 860 C1700 930 1805 910 1825 835"/>
 </g>
-<g fill="#66503f" opacity=".12">
- <ellipse cx="105" cy="340" rx="35" ry="150" transform="rotate(-25 105 340)"/>
- <ellipse cx="175" cy="300" rx="30" ry="130" transform="rotate(18 175 300)"/>
- <ellipse cx="1810" cy="380" rx="35" ry="150" transform="rotate(28 1810 380)"/>
- <ellipse cx="1740" cy="330" rx="30" ry="130" transform="rotate(-18 1740 330)"/>
+<g fill="#705b49" opacity=".055">
+ <ellipse cx="90" cy="325" rx="28" ry="120" transform="rotate(-25 90 325)"/>
+ <ellipse cx="154" cy="292" rx="24" ry="104" transform="rotate(18 154 292)"/>
+ <ellipse cx="1830" cy="350" rx="28" ry="120" transform="rotate(25 1830 350)"/>
+ <ellipse cx="1768" cy="315" rx="24" ry="104" transform="rotate(-18 1768 315)"/>
 </g>
-<text x="110" y="160" font-family="Georgia,serif" font-size="74" letter-spacing="24" fill="#4f3022" opacity=".42">FREMI</text>
-<text x="116" y="205" font-family="Arial,sans-serif" font-size="18" letter-spacing="13" fill="#4f3022" opacity=".40">EYEWEAR</text>
 </svg>
