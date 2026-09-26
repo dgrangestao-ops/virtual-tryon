@@ -80,72 +80,9 @@ export class FrameAssetProcessor {
     }
     if(!count) throw new Error("Não foi possível separar a armação do fundo.");
 
-    // Fotos de catálogo em 3/4 frequentemente trazem as hastes projetadas para
-    // cima. Para o modo foto/2.5D isso vira um arco sobre a sobrancelha.
-    // Detectamos automaticamente a faixa principal da frente da armação pela
-    // largura ocupada em cada linha e eliminamos somente apêndices muito acima
-    // dela, preservando a barra superior e armações altas.
-    const rowSpan=new Int32Array(h);
-    for(let y=0;y<h;y++){
-      let lo=w,hi=-1;
-      for(let x=0;x<w;x++){
-        if(d[(y*w+x)*4+3]>24){lo=Math.min(lo,x);hi=Math.max(hi,x);}
-      }
-      rowSpan[y]=hi>=lo?hi-lo+1:0;
-    }
-    let peakY=minY,peakSpan=0;
-    for(let y=minY;y<=maxY;y++){
-      if(rowSpan[y]>peakSpan){peakSpan=rowSpan[y];peakY=y;}
-    }
-    const objectH=Math.max(1,maxY-minY+1);
-
-    // Remove extensões estreitas acima da frente principal (normalmente hastes
-    // vistas em perspectiva). A frente da armação forma uma faixa horizontal
-    // larga; as hastes superiores aparecem como trechos curtos separados.
-    // Fazemos o corte linha a linha para não depender de um modelo/SKU específico.
-    // A parte frontal útil começa onde a silhueta passa a ocupar uma
-    // fração substancial da largura máxima. Tudo que surge antes disso é,
-    // nas fotos de catálogo, tipicamente haste/temple em perspectiva.
-    let frontTop=peakY;
-    for(let y=minY;y<=peakY;y++){
-      if(rowSpan[y]>=peakSpan*.82){frontTop=y;break;}
-    }
-    const feather=Math.max(2,Math.round(objectH*.018));
-    for(let y=minY;y<frontTop;y++){
-      for(let x=minX;x<=maxX;x++) d[(y*w+x)*4+3]=0;
-    }
-    for(let y=frontTop;y<Math.min(peakY,frontTop+feather);y++){
-      const alpha=(y-frontTop+1)/feather;
-      for(let x=minX;x<=maxX;x++){
-        const i=(y*w+x)*4+3;
-        d[i]=Math.round(d[i]*Math.min(1,alpha));
-      }
-    }
-    // Recalcula o topo após remover os apêndices.
-    let cleanedMinY=maxY;
-    for(let y=minY;y<=maxY;y++){
-      let occupied=false;
-      for(let x=minX;x<=maxX;x++){
-        if(d[(y*w+x)*4+3]>24){occupied=true;break;}
-      }
-      if(occupied){cleanedMinY=y;break;}
-    }
-    minY=cleanedMinY;
-
-    const trimAbove=Math.max(minY,Math.round(peakY-objectH*.30));
-    if(peakSpan>(maxX-minX)*.55 && trimAbove>minY){
-      for(let y=minY;y<trimAbove;y++){
-        const fadeStart=Math.max(minY,trimAbove-Math.round(objectH*.05));
-        const fade=y>=fadeStart?(y-fadeStart)/Math.max(1,trimAbove-fadeStart):0;
-        for(let x=minX;x<=maxX;x++){
-          const i=(y*w+x)*4;
-          if(y<fadeStart) d[i+3]=0;
-          else d[i+3]=Math.round(d[i+3]*fade);
-        }
-      }
-      minY=trimAbove;
-    }
-
+    // A vista frontal já é escolhida automaticamente no pipeline de catálogo.
+    // Aqui fazemos apenas a segmentação do fundo, sem recortes geométricos
+    // agressivos que poderiam mutilar formatos legítimos de armação.
     ctx.putImageData(img,0,0);
     const pad=Math.round(Math.max(maxX-minX,maxY-minY)*.04);
     minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
