@@ -22,6 +22,7 @@ export class TryOnEngine {
     this.faceSeenAt=0;
     this.faceScaleState=createStableFaceScale();
     this.missedFaceFrames=0;
+    this.loopToken=0;
   }
 
   setStatus(message){
@@ -123,7 +124,8 @@ export class TryOnEngine {
     await this.video.play();
     this.resize();
     this.running = true;
-    requestAnimationFrame(() => this.loop());
+    const token=++this.loopToken;
+    requestAnimationFrame(() => this.loop(token));
   }
 
   stopCamera(){
@@ -132,6 +134,7 @@ export class TryOnEngine {
       this.stream=null;
     }
     this.running=false;
+    this.loopToken++;
     this.lastVideoTime=-1;
     this.faceScaleState=createStableFaceScale();
     this.missedFaceFrames=0;
@@ -151,13 +154,13 @@ export class TryOnEngine {
     this.glasses3d.resize(width,height);
   }
 
-  loop() {
-    if(!this.running) return;
+  loop(token=this.loopToken) {
+    if(!this.running || token!==this.loopToken) return;
     if(this.video.currentTime!==this.lastVideoTime){
       this.lastVideoTime=this.video.currentTime;
       this.draw(this.landmarker.detectForVideo(this.video,performance.now()));
     }
-    requestAnimationFrame(()=>this.loop());
+    requestAnimationFrame(()=>this.loop(token));
   }
 
   draw(result) {
