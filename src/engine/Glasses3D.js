@@ -403,7 +403,13 @@ export class Glasses3D {
             ? hingeX-sx*minReach
             : projectedEarX;
           const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.42);
+          // Terminal curto além do topo da orelha: o primeiro ponto toca a
+          // região auricular e o segundo desce/recuа para simular a ponteira
+          // passando por trás, sem deformar o longo trecho horizontal.
+          const tipX=earX-sx*this.imageFrameWidth*(.055+.025*amount);
+          const tipY=earY-this.imageFrameHeight*(.16+.05*amount);
           const rearZ=-this.imageFrameWidth*(.14+.14*amount);
+          const tipZ=rearZ-this.imageFrameWidth*(.08+.04*amount);
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
@@ -421,7 +427,8 @@ export class Glasses3D {
               THREE.MathUtils.lerp(railY,earY,.35),
               rearZ*.48
             ),
-            new THREE.Vector3(earX,earY,rearZ)
+            new THREE.Vector3(earX,earY,rearZ),
+            new THREE.Vector3(tipX,tipY,tipZ)
           ];
           if(group.userData.mesh){
             group.remove(group.userData.mesh);
