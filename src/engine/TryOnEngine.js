@@ -1,6 +1,7 @@
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 import { Glasses3D } from "./Glasses3D.js";
 import { FrameAssetProcessor } from "./FrameAssetProcessor.js";
+import { createStableFaceScale, solveStableFaceScale } from "./FramePoseSolver.js";
 
 export class TryOnEngine {
   constructor(video, canvas2d, canvas3d, onStatus = () => {}) {
@@ -19,6 +20,7 @@ export class TryOnEngine {
     this.initialized = false;
     this.assetProcessor = new FrameAssetProcessor();
     this.faceSeenAt=0;
+    this.faceScaleState=createStableFaceScale();
   }
 
   setStatus(message){
@@ -130,6 +132,7 @@ export class TryOnEngine {
     }
     this.running=false;
     this.lastVideoTime=-1;
+    this.faceScaleState=createStableFaceScale();
   }
 
   async switchCamera(){
@@ -223,8 +226,9 @@ export class TryOnEngine {
     // a largura aparente das têmporas. Usamos as têmporas só para calibrar a
     // largura frontal e congelamos a variação excessiva causada pelo yaw.
     const eyeDistance=Math.hypot(rightEye.x-leftEye.x,rightEye.y-leftEye.y);
-    const eyeBasedWidth=eyeDistance*2.05;
-    const faceWidth=rawFaceWidth*.35+eyeBasedWidth*.65;
+    const faceWidth=solveStableFaceScale(this.faceScaleState,{
+      rawFaceWidth,eyeDistance,yaw
+    });
 
     this.glasses3d.setPose({
       x:centerX,
