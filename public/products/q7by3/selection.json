@@ -12,6 +12,12 @@
       "occupancy": 0.5663439173473251
     }
   },
+  "asset": {
+    "frontTop": 210,
+    "aspect": 2.1472081218274113,
+    "width": 423,
+    "height": 197
+  },
   "ranked": [
     {
       "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_4e0623f9-ef52-4689-9b51-383bb6ad1c7c_5876852_6089436-90965a65ec9ccbe41a17802622536330-480-0.webp",
