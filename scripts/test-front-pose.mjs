@@ -20,6 +20,11 @@ const moved=solveFrontPose({...base,x:.6});
 const sm=smoothPose(front,moved,.42);
 assert.ok(sm.x>front.x && sm.x<moved.x);
 assert.equal(sm.y,front.y);
+const micro=smoothPose(front,{...front,x:front.x+.0008,y:front.y-.0008,scale:front.scale+.0005,roll:front.roll+.001},.42);
+assert.equal(micro.x,front.x,"micro x jitter must be ignored");
+assert.equal(micro.y,front.y,"micro y jitter must be ignored");
+assert.equal(micro.scale,front.scale,"micro scale jitter must be ignored");
+assert.equal(micro.roll,front.roll,"micro roll jitter must be ignored");
 console.log("✓ front pose invariants");
 
 const scaleState=createStableFaceScale();
