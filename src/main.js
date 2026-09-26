@@ -212,7 +212,9 @@ const captureResult=async()=>{
   const cal=engine.product?.calibration?.scale||1;
   const aspect=engine.product?.imageAspect||2.2;
   const facePx=frozen.pose.scale*frozen.w;
-  const frameW=facePx*1.06*cal;
+  // A captura estática usa a largura facial detectada diretamente; amplia
+  // levemente a frente para alcançar as têmporas sem alterar a altura/âncora.
+  const frameW=facePx*1.18*cal;
   const frameH=frameW/aspect;
   let cx=frozen.pose.centerX*frozen.w;
   // Na foto congelada, ancora o centro óptico um pouco abaixo da linha dos
