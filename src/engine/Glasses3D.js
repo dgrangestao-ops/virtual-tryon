@@ -405,7 +405,10 @@ export class Glasses3D {
           const earX=directionalReach<minReach
             ? hingeX-sx*minReach
             : projectedEarX;
-          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);
+          // A haste física sai horizontal da dobradiça. O Y detectado da
+          // orelha é usado apenas no ponto oculto em profundidade.
+          const earY=hingeY;
+          const hiddenEarY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);
           // Terminal curto além do topo da orelha: o primeiro ponto toca a
           // região auricular e o segundo desce/recuа para simular a ponteira
           // passando por trás, sem deformar o longo trecho horizontal.
@@ -414,13 +417,13 @@ export class Glasses3D {
           // região auricular ela recua apenas em profundidade. Isso impede o
           // gancho visível acima/abaixo da haste nos dois lados.
           const tipX=earX;
-          const tipY=earY;
+          const tipY=hiddenEarY;
           const tipZ=rearZ-this.imageFrameWidth*(.14+.06*amount);
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
 
-          const railY=THREE.MathUtils.lerp(hingeY,earY,.18);
+          const railY=hingeY;
           const points=[
             new THREE.Vector3(hingeX,hingeY,.012),
             new THREE.Vector3(
@@ -430,7 +433,7 @@ export class Glasses3D {
             ),
             new THREE.Vector3(
               THREE.MathUtils.lerp(hingeX,earX,.76),
-              THREE.MathUtils.lerp(railY,earY,.35),
+              railY,
               rearZ*.48
             ),
             new THREE.Vector3(earX,earY,rearZ),
