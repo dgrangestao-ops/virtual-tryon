@@ -29,7 +29,7 @@ const checks=[
  ["failed photo texture clears partial asset",g.includes('console.warn("Falha ao carregar textura da armação",error);') && g.includes("this.clearPhotoAsset();") && g.includes("this.root.visible=false;")],
  ["stale GLB load disposes GPU resources",g.includes("if(token!==this.assetToken){") && g.includes("node.material?.map?.dispose?.()")],
  ["photo cleanup resets SKU state",g.includes("this.imageAssetGeometry=null;") && g.includes("this.imageFrameWidth=0;") && g.includes("this.imageFrameHeight=0;")],
- ["SKU geometry does not move face anchor",g.includes("hinge remains tied to") && g.includes("const hingeY=this.imageFrameHeight*.12;")],
+ ["SKU geometry does not move face anchor",g.includes("hinge remains tied to") && g.includes("const hingeY=this.imageFrameHeight*.20;")],
  ["temples use detected ear direction",g.includes("const earAnchor=this.earPose?.") && g.includes("const detectedEarX=")],
  ["temples use isolated solver",g.includes('solveTemple2D, templeVisibility, exposedTempleSide') && g.includes("const solvedTemple=solveTemple2D({")],
  ["temple visibility and side use solver",g.includes("const amount=templeVisibility(imageYaw);") && g.includes("const requestedSide=exposedTempleSide(imageYaw);")],
