@@ -23,6 +23,7 @@ export class TryOnEngine {
     this.faceScaleState=createStableFaceScale();
     this.missedFaceFrames=0;
     this.loopToken=0;
+    this.cameraRequestToken=0;
   }
 
   setStatus(message){
@@ -95,6 +96,7 @@ export class TryOnEngine {
   }
 
   async startCamera(facingMode=this.facingMode) {
+    const requestToken=++this.cameraRequestToken;
     const previousMode=this.facingMode;
     let stream;
     try{
@@ -106,9 +108,15 @@ export class TryOnEngine {
       this.facingMode=previousMode;
       throw error;
     }
+    // Uma resposta antiga de getUserMedia não pode substituir uma solicitação
+    // mais recente. Encerra apenas o stream obsoleto que acabou de chegar.
+    if(requestToken!==this.cameraRequestToken){
+      stream.getTracks().forEach(track=>track.stop());
+      return this.facingMode;
+    }
     // Só encerra a câmera atual depois que a substituta foi adquirida.
     // Se a solicitação falhar, a sessão existente continua funcionando.
-    this.stopCamera();
+    this.stopCamera({invalidateRequest:false});
     this.facingMode=facingMode;
     this.stream=stream;
     this.video.srcObject = stream;
@@ -130,7 +138,8 @@ export class TryOnEngine {
     requestAnimationFrame(() => this.loop(token));
   }
 
-  stopCamera(){
+  stopCamera({invalidateRequest=true}={}){
+    if(invalidateRequest) this.cameraRequestToken++;
     if(this.stream){
       this.stream.getTracks().forEach(track=>track.stop());
       this.stream=null;
