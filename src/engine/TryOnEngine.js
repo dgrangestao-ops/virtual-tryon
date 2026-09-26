@@ -95,7 +95,6 @@ export class TryOnEngine {
   }
 
   async startCamera(facingMode=this.facingMode) {
-    this.stopCamera();
     const previousMode=this.facingMode;
     let stream;
     try{
@@ -107,6 +106,9 @@ export class TryOnEngine {
       this.facingMode=previousMode;
       throw error;
     }
+    // Só encerra a câmera atual depois que a substituta foi adquirida.
+    // Se a solicitação falhar, a sessão existente continua funcionando.
+    this.stopCamera();
     this.facingMode=facingMode;
     this.stream=stream;
     this.video.srcObject = stream;
