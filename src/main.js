@@ -25,7 +25,14 @@ let activeProduct = matchedProduct || findProduct();
 const unknownProduct=Boolean(requestedKey && !matchedProduct);
 const backStore=document.querySelector("#back-store");
 const buyProduct=document.querySelector("#buy-product");
-const returnUrl=params.get("return") || activeProduct.productUrl || null;
+const requestedReturn=params.get("return");
+let returnUrl=activeProduct.productUrl || null;
+if(requestedReturn){
+  try{
+    const candidate=new URL(requestedReturn,location.origin);
+    if(candidate.protocol==="https:" || candidate.origin===location.origin) returnUrl=candidate.href;
+  }catch{}
+}
 productName.textContent=activeProduct.name;
 if(activeProduct.productUrl){
   buyProduct.href=activeProduct.productUrl;
@@ -93,6 +100,8 @@ start.addEventListener("click", async () => {
     const productReady=await engine.setProduct(activeProduct);
     if(productReady===false){
       setStatus("Produto indisponível para prova virtual");
+      start.textContent="Tentar novamente";
+      start.disabled=false;
       return;
     }
     await engine.startCamera();
