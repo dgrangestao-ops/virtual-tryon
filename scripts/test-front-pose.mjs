@@ -3,6 +3,12 @@ import {solveFrontPose,smoothPose,createStableFaceScale,solveStableFaceScale} fr
 
 const base={x:.5,y:.42,scale:.31,roll:0,yaw:0,pitch:0,aspect:1.25};
 const front=solveFrontPose(base);
+const expectedScale=((base.scale*2*base.aspect)/1.66)*.84;
+assert.ok(Math.abs(front.x-0)<1e-12,"front x contract changed");
+assert.ok(Math.abs(front.y-0.16)<1e-12,"front y contract changed");
+assert.ok(Math.abs(front.scale-expectedScale)<1e-12,"front scale coefficient changed");
+assert.equal(front.yaw,0,"front yaw contract changed");
+assert.equal(front.pitch,0,"front pitch contract changed");
 for(const yaw of [-.48,-.35,0,.35,.48]){
  const p=solveFrontPose({...base,yaw});
  assert.equal(p.y,front.y,"yaw must never move front vertically");
@@ -26,6 +32,16 @@ assert.equal(micro.y,front.y,"micro y jitter must be ignored");
 assert.equal(micro.scale,front.scale,"micro scale jitter must be ignored");
 assert.equal(micro.roll,front.roll,"micro roll jitter must be ignored");
 console.log("✓ front pose invariants");
+
+// Limite matemático por atualização: medição é limitada a ±6% do estado e
+// alpha máximo é .16 frontal / .025 em giro máximo. Assim nenhuma amostra
+// isolada pode causar salto visual maior que .96% frontal ou .15% em 3/4.
+const frontalState={value:.40};
+const frontalStep=solveStableFaceScale(frontalState,{rawFaceWidth:.10,eyeDistance:.05,yaw:0});
+assert.ok(Math.abs(frontalStep/.40-1)<=.0096000001,"frontal scale step exceeded 0.96%");
+const turnState={value:.40};
+const turnStep=solveStableFaceScale(turnState,{rawFaceWidth:.10,eyeDistance:.05,yaw:.48});
+assert.ok(Math.abs(turnStep/.40-1)<=.0015000001,"3/4 scale step exceeded 0.15%");
 
 const scaleState=createStableFaceScale();
 const neutral=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
