@@ -113,8 +113,10 @@ start.addEventListener("click", async () => {
     stage.classList.add("camera-active");
     start.textContent = "Câmera ativa";
     switchCamera.hidden = false;
-    capture.hidden = false;
+    capture.hidden = true;
     fullscreen.hidden = false;
+    setStatus("Fique parado olhando para a frente…");
+    setTimeout(()=>{ if(engine.running) captureResult(); },900);
     if(returnUrl) backStore.hidden=false;
   } catch (error) {
     console.error(error);
@@ -208,11 +210,12 @@ retake.addEventListener("click",async()=>{
   await engine.startCamera(engine.facingMode);
   retake.hidden=true;
   snapshot.hidden=true;
-  capture.hidden=false;
+  capture.hidden=true;
   switchCamera.hidden=false;
   start.hidden=false;
   start.textContent="Câmera ativa";
-  setStatus("Olhe de frente e centralize o rosto");
+  setStatus("Fique parado olhando para a frente…");
+  setTimeout(()=>{ if(engine.running) captureResult(); },900);
 });
 
 snapshot.addEventListener("click", () => {
