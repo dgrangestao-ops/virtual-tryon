@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { solveTemple2D, templeVisibility, exposedTempleSide } from "./TempleSolver.js";
+import { solveFrontPose, smoothPose } from "./FramePoseSolver.js";
 
 export class Glasses3D {
   constructor(canvas){
@@ -315,25 +316,11 @@ export class Glasses3D {
     const width=this.canvas.width||1;
     const height=this.canvas.height||1;
     const aspect=width/height;
-    const next={
-      x:(target.x*2-1)*aspect,
-      // A posição segue exclusivamente a âncora facial; a geometria do SKU
-      // permanece dentro de modelRoot/imageFrame.
-      y:-(target.y*2-1),
-      scale:((target.scale*2*aspect)/1.66)*0.84,
-      // Dead-zone frontal: evita que pequenos ruídos façam a frente oscilar.
-      roll:Math.abs(target.roll||0)<0.035 ? 0 : (target.roll||0)*0.30,
-      yaw:target.yaw||0,
-      pitch:target.pitch||0
-    };
+    const next=solveFrontPose({...target,aspect});
     this.templePose=target.templeAnchors||this.templePose;
     this.earPose=target.earAnchors||this.earPose;
 
-    if(!this.pose) this.pose={...next};
-    const a=0.42;
-    for(const key of Object.keys(next)){
-      this.pose[key]+=(next[key]-this.pose[key])*a;
-    }
+    this.pose=smoothPose(this.pose,next,.42);
 
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
