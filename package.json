@@ -10,9 +10,10 @@
     "prebuild": "npm run validate:catalog && node scripts/generate-products.mjs",
     "validate:catalog": "node scripts/validate-catalog.mjs",
     "validate:assets": "node scripts/validate-assets.mjs catalog/fremi.json",
-    "validate:all": "npm run validate:catalog && npm run validate:assets && npm run validate:pose && npm run test:temples && npm run build",
+    "validate:all": "npm run validate:catalog && npm run validate:assets && npm run validate:pose && npm run test:front && npm run test:temples && npm run build",
     "validate:pose": "node scripts/validate-pose-contract.mjs",
-    "test:temples": "node scripts/test-temple-solver.mjs"
+    "test:temples": "node scripts/test-temple-solver.mjs",
+    "test:front": "node scripts/test-front-pose.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.22",
