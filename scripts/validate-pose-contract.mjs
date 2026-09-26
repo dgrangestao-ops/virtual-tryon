@@ -18,6 +18,8 @@ const checks=[
  ["temples are a separate face-anchored layer",g.includes("const anchor=this.templePose?.") && g.includes("const localX=(anchorWorldX-this.pose.x)")],
  ["temples use per-SKU hinge metadata",g.includes("geom?.hingeLeftX") && g.includes("geom?.hingeRightX") && g.includes("const hingeX=(hingeNorm-.5)*this.imageFrameWidth;")],
  ["asset geometry is normalized before render",g.includes('normalizeAssetGeometry') && g.includes("this.imageAssetGeometry=normalizeAssetGeometry(asset.geometry);")],
+ ["photo asset cleanup is centralized",g.includes("clearPhotoAsset(){") && (g.match(/this\.clearPhotoAsset\(\);/g)||[]).length>=2],
+ ["photo cleanup resets SKU state",g.includes("this.imageAssetGeometry=null;") && g.includes("this.imageFrameWidth=0;") && g.includes("this.imageFrameHeight=0;")],
  ["SKU geometry does not move face anchor",g.includes("hinge remains tied to") && g.includes("const hingeY=this.imageFrameHeight*.12;")],
  ["temples use detected ear direction",g.includes("const earAnchor=this.earPose?.") && g.includes("const detectedEarX=")],
  ["temples use isolated solver",g.includes('solveTemple2D, templeVisibility, exposedTempleSide') && g.includes("const solvedTemple=solveTemple2D({")],
