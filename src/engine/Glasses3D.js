@@ -33,6 +33,8 @@ export class Glasses3D {
     this.imageFrame=null;
     this.imageFrameBaseX=0;
     this.imageTemples=null;
+    this.imageFrameWidth=0;
+    this.imageFrameHeight=0;
   }
 
   setImageFrame(asset, calibration={}){
@@ -83,26 +85,31 @@ export class Glasses3D {
     this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
 
-    // Hastes 2.5D independentes: a frente vem da fotografia, enquanto as
-    // laterais ganham profundidade real e aparecem progressivamente no 3/4.
+    // Hastes 2.5D independentes. A geometria é criada em coordenadas locais
+    // da armação e reposicionada dinamicamente para manter a dobradiça ligada
+    // à frente conforme a cabeça gira.
     const templeMat=new THREE.MeshPhysicalMaterial({
-      color:0x241714,roughness:0.28,metalness:0.02,clearcoat:0.38
+      color:0x241714,roughness:0.30,metalness:0.02,clearcoat:0.32,
+      transparent:true,opacity:0
     });
     const makeTemple=(side)=>{
-      const group=new THREE.Group();
-      const hingeX=side*width*.485;
-      const length=.78*width;
-      const curve=new THREE.CatmullRomCurve3([
-        new THREE.Vector3(hingeX,height*.18,-.005),
-        new THREE.Vector3(hingeX+side*.035,height*.16,-length*.25),
-        new THREE.Vector3(hingeX+side*.055,height*.12,-length*.68),
-        new THREE.Vector3(hingeX+side*.035,height*.02,-length)
-      ]);
-      const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,28,.018*width,7,false),templeMat);
-      group.add(mesh); return group;
+      const geometry=new THREE.BufferGeometry();
+      const positions=new Float32Array(4*3);
+      geometry.setAttribute("position",new THREE.BufferAttribute(positions,3));
+      const line=new THREE.Line(geometry,new THREE.LineBasicMaterial({
+        color:0x241714,transparent:true,opacity:0
+      }));
+      // Um tubo curto na dobradiça dá espessura visual; a linha longa garante
+      // continuidade até a têmpora sem criar arcos sobre a testa.
+      const stub=new THREE.Mesh(new THREE.CylinderGeometry(.014*width,.018*width,.18*width,7),templeMat.clone());
+      stub.rotation.x=Math.PI/2;
+      const group=new THREE.Group(); group.add(line,stub);
+      group.userData={side,line,stub};
+      return group;
     };
     const left=makeTemple(-1),right=makeTemple(1);
     this.imageTemples={left,right};
+    this.imageFrameWidth=width; this.imageFrameHeight=height;
     this.modelRoot.add(left,right);
     this.fallback.visible=false;
     this.leftTemple.visible=false;
@@ -330,12 +337,34 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
-        const amount=Math.min(1,Math.abs(imageYaw)/.34);
-        const showRight=imageYaw>0;
-        this.imageTemples.left.visible=amount>.06 && !showRight;
-        this.imageTemples.right.visible=amount>.06 && showRight;
-        const exposed=showRight?this.imageTemples.right:this.imageTemples.left;
-        exposed.scale.z=.72+.28*amount;
+        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.07)/.30));
+        const side=imageYaw>0 ? 1 : -1;
+        for(const g of [this.imageTemples.left,this.imageTemples.right]){
+          const active=g.userData.side===side && amount>.04;
+          g.visible=active;
+          if(!active) continue;
+          const sx=g.userData.side;
+          const hingeX=sx*this.imageFrameWidth*.485;
+          const y=this.imageFrameHeight*.16;
+          // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
+          // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
+          const endX=hingeX-sx*this.imageFrameWidth*(.10+.12*amount);
+          const z1=-this.imageFrameWidth*(.08+.05*amount);
+          const z2=-this.imageFrameWidth*(.34+.18*amount);
+          const z3=-this.imageFrameWidth*(.58+.25*amount);
+          const a=g.userData.line.geometry.attributes.position;
+          a.setXYZ(0,hingeX,y,0.015);
+          a.setXYZ(1,hingeX-sx*this.imageFrameWidth*.025,y-.006,z1);
+          a.setXYZ(2,endX+sx*this.imageFrameWidth*.035,y-.025,z2);
+          a.setXYZ(3,endX,y-.055,z3);
+          a.needsUpdate=true;
+          const opacity=.18+.72*amount;
+          g.userData.line.material.opacity=opacity;
+          const stub=g.userData.stub;
+          stub.material.opacity=opacity;
+          stub.position.set(hingeX-sx*this.imageFrameWidth*.012,y-.004,z1*.48);
+          stub.scale.y=1+.8*amount;
+        }
       }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
       // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
