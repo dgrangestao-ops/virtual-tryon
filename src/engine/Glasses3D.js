@@ -78,6 +78,7 @@ export class Glasses3D {
   }
 
   setImageFrame(asset, calibration={}){
+    const token=++this.assetToken;
     if(this.model){
       this.modelRoot.remove(this.model);
       this.model.traverse?.(node=>{
@@ -88,7 +89,6 @@ export class Glasses3D {
       this.model=null;
     }
     this.clearPhotoAsset();
-    const token=++this.assetToken;
     const texture=new THREE.TextureLoader().load(
       asset.url,
       ()=>{ if(token===this.assetToken) this.render(); },
@@ -291,7 +291,14 @@ export class Glasses3D {
     try{
       this.clearPhotoAsset();
       const gltf=await this.loader.loadAsync(url);
-      if(token!==this.assetToken) return false;
+      if(token!==this.assetToken){
+        gltf.scene?.traverse?.(node=>{
+          node.geometry?.dispose?.();
+          if(Array.isArray(node.material)) node.material.forEach(mat=>{mat?.map?.dispose?.();mat?.dispose?.();});
+          else {node.material?.map?.dispose?.();node.material?.dispose?.();}
+        });
+        return false;
+      }
       const model=gltf.scene;
       model.updateMatrixWorld(true);
 
