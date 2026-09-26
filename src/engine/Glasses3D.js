@@ -327,7 +327,7 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
-        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.07)/.30));
+        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.16)/.24));
         const side=imageYaw>0 ? 1 : -1;
         for(const g of [this.imageTemples.left,this.imageTemples.right]){
           const active=g.userData.side===side && amount>.04;
