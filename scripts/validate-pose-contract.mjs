@@ -15,6 +15,7 @@ const checks=[
  ["camera loop has generation guard",t.includes("const token=++this.loopToken;") && t.includes("token!==this.loopToken") && t.includes("this.loopToken++;")],
  ["camera switch acquires replacement before stopping current",t.indexOf("await navigator.mediaDevices.getUserMedia")<t.indexOf("this.stopCamera({invalidateRequest:false});",t.indexOf("async startCamera"))],
  ["camera requests have generation guard",t.includes("const requestToken=++this.cameraRequestToken;") && t.includes("requestToken!==this.cameraRequestToken") && t.includes("stopCamera({invalidateRequest=true}={})")],
+ ["failed camera startup releases acquired stream",t.includes("if(this.stream===stream) this.stream=null;") && t.includes("if(this.video.srcObject===stream) this.video.srcObject=null;")],
  ["camera stop clears stale visual state",t.includes("this.faceSeenAt=0;") && t.includes("this.video.srcObject=null;") && t.includes("this.glasses3d.hide();")],
  ["optical fit uses neutral low offset",g.includes("this.modelRoot.position.y=0.015;")],
  ["temple landmarks are forwarded",t.includes("templeAnchors") && t.includes("left:{x:leftTemple.x") && t.includes("right:{x:rightTemple.x")],
