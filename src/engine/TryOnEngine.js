@@ -67,17 +67,15 @@ export class TryOnEngine {
       return this.glasses3d.loadModel(product.modelUrl,product.calibration||{});
     }
     if(product.imageAssetUrl){
-      this.glasses3d.setImageFrame(
+      return await this.glasses3d.setImageFrame(
         {url:product.imageAssetUrl,aspect:product.imageAspect||2.2,geometry:product.assetGeometry||null},
         product.calibration||{}
       );
-      return true;
     }
     if(product.sourceImageUrl){
       try{
         const asset=await this.assetProcessor.fromUrl(product.sourceImageUrl);
-        this.glasses3d.setImageFrame(asset,product.calibration||{});
-        return true;
+        return await this.glasses3d.setImageFrame(asset,product.calibration||{});
       }catch(error){
         console.warn("Falha ao preparar foto do catálogo",error);
         this.setStatus("Não foi possível preparar a imagem deste produto");
@@ -91,8 +89,7 @@ export class TryOnEngine {
 
   async setImageFrame(asset){
     if(!asset?.url) return false;
-    this.glasses3d.setImageFrame?.(asset);
-    return true;
+    return await this.glasses3d.setImageFrame?.(asset);
   }
 
   async startCamera(facingMode=this.facingMode) {
