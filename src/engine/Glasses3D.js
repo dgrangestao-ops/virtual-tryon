@@ -46,6 +46,7 @@ export class Glasses3D {
     this.templeSide=0;
     this.templeSideCandidate=0;
     this.templeSideFrames=0;
+    this.assetToken=0;
   }
 
   clearPhotoAsset(){
@@ -87,7 +88,13 @@ export class Glasses3D {
       this.model=null;
     }
     this.clearPhotoAsset();
-    const texture=new THREE.TextureLoader().load(asset.url,()=>this.render());
+    const token=++this.assetToken;
+    const texture=new THREE.TextureLoader().load(
+      asset.url,
+      ()=>{ if(token===this.assetToken) this.render(); },
+      undefined,
+      error=>{ if(token===this.assetToken) console.warn("Falha ao carregar textura da armação",error); }
+    );
     texture.colorSpace=THREE.SRGBColorSpace;
     const width=1.78*(calibration.scale||1);
     const height=width/Math.max(asset.aspect||2.2,1.2);
@@ -280,9 +287,11 @@ export class Glasses3D {
   }
 
   async loadModel(url,calibration={}){
+    const token=++this.assetToken;
     try{
       this.clearPhotoAsset();
       const gltf=await this.loader.loadAsync(url);
+      if(token!==this.assetToken) return false;
       const model=gltf.scene;
       model.updateMatrixWorld(true);
 
