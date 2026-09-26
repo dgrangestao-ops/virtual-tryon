@@ -26,6 +26,7 @@ const checks=[
  ["photo asset cleanup is centralized",g.includes("clearPhotoAsset(){") && (g.match(/this\.clearPhotoAsset\(\);/g)||[]).length>=2],
  ["async asset loads have generation guard",g.includes("this.assetToken=0;") && (g.match(/\+\+this\.assetToken/g)||[]).length>=2 && g.includes("token!==this.assetToken")],
  ["photo asset readiness is awaited",g.includes("const textureReady=new Promise") && g.includes("return textureReady;") && t.includes("return await this.glasses3d.setImageFrame(")],
+ ["failed photo texture clears partial asset",g.includes('console.warn("Falha ao carregar textura da armação",error);') && g.includes("this.clearPhotoAsset();") && g.includes("this.root.visible=false;")],
  ["stale GLB load disposes GPU resources",g.includes("if(token!==this.assetToken){") && g.includes("node.material?.map?.dispose?.()")],
  ["photo cleanup resets SKU state",g.includes("this.imageAssetGeometry=null;") && g.includes("this.imageFrameWidth=0;") && g.includes("this.imageFrameHeight=0;")],
  ["SKU geometry does not move face anchor",g.includes("hinge remains tied to") && g.includes("const hingeY=this.imageFrameHeight*.12;")],
