@@ -14,7 +14,13 @@ export function solveFrontPose({x,y,scale,roll=0,yaw=0,pitch=0,aspect=1}){
 export function smoothPose(previous,next,alpha=.42){
   if(!previous) return {...next};
   const out={...previous};
-  for(const key of Object.keys(next)) out[key]=previous[key]+(next[key]-previous[key])*alpha;
+  for(const key of Object.keys(next)){
+    const delta=next[key]-previous[key];
+    // Pequeno dead-band evita microtremor visual sem adicionar atraso
+    // perceptível a movimentos reais da cabeça.
+    const epsilon=key==="x"||key==="y" ? .0012 : key==="scale" ? .0009 : key==="roll" ? .0025 : 0;
+    out[key]=Math.abs(delta)<=epsilon ? previous[key] : previous[key]+delta*alpha;
+  }
   return out;
 }
 
