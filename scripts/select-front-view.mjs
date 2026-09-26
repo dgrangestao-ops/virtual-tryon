@@ -37,6 +37,45 @@ async function silhouetteScore(path){
   const score=symmetry*52+frontalAspect*28+centered*12+Math.min(1,occupancy/.35)*8;
   return {score,symmetry,aspect,centered,occupancy};
 }
+async function makeTryOnAsset(source,out){
+  const img=sharp(source).resize({width:1200,withoutEnlargement:true}).ensureAlpha();
+  const {data,info}=await img.raw().toBuffer({resolveWithObject:true});
+  const {width:w,height:h}=info;
+  const samples=[];
+  const step=Math.max(1,Math.floor(Math.min(w,h)/60));
+  const px=(x,y)=>{const i=(y*w+x)*4;return [data[i],data[i+1],data[i+2]];};
+  for(let x=0;x<w;x+=step){samples.push(px(x,0),px(x,h-1));}
+  for(let y=0;y<h;y+=step){samples.push(px(0,y),px(w-1,y));}
+  const bg=[0,1,2].map(k=>samples.reduce((a,p)=>a+p[k],0)/samples.length);
+  const mask=new Uint8Array(w*h); const spans=[];
+  for(let y=0;y<h;y++){
+    let lo=w,hi=-1,count=0;
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4,d=Math.hypot(data[i]-bg[0],data[i+1]-bg[1],data[i+2]-bg[2]);
+      if(d>48){mask[y*w+x]=1;lo=Math.min(lo,x);hi=Math.max(hi,x);count++;}
+    }
+    spans[y]={lo,hi,count,span:hi>=lo?hi-lo+1:0};
+  }
+  const peak=Math.max(...spans.map(r=>r.span));
+  // A frente óptica forma uma faixa horizontal larga; hastes abertas aparecem
+  // como traços estreitos acima dela. Preservamos a frente e descartamos só
+  // pixels superiores anteriores ao primeiro trecho realmente largo.
+  let frontTop=spans.findIndex(r=>r.span>=peak*.72 && r.count>=peak*.18);
+  if(frontTop<0) frontTop=0;
+  const feather=Math.max(2,Math.round(h*.008));
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=(y*w+x)*4;
+    const d=Math.hypot(data[i]-bg[0],data[i+1]-bg[1],data[i+2]-bg[2]);
+    let a=Math.max(0,Math.min(255,(d-30)*7));
+    if(y<frontTop) a=0;
+    else if(y<frontTop+feather) a=Math.round(a*(y-frontTop)/feather);
+    data[i+3]=a;
+  }
+  await sharp(data,{raw:{width:w,height:h,channels:4}}).trim({background:{r:0,g:0,b:0,alpha:0}}).png().toFile(out);
+  const meta=await sharp(out).metadata();
+  return {frontTop,aspect:meta.width/meta.height,width:meta.width,height:meta.height};
+}
+
 for(const p of manifest.products||[]){
   const galleryPath=`public/products/${p.sku}/gallery.json`;
   let gallery; try{gallery=JSON.parse(await readFile(galleryPath,"utf8"));}catch{continue;}
@@ -48,6 +87,8 @@ for(const p of manifest.products||[]){
   if(!ranked.length) continue;
   const best=ranked[0];
   await copyFile(best.target,"public"+p.localSourceUrl);
-  await writeFile(`public/products/${p.sku}/selection.json`,JSON.stringify({selected:best,ranked},null,2));
+  const assetPath=`public/products/${p.sku}/asset.png`;
+  const asset=await makeTryOnAsset(best.target,assetPath);
+  await writeFile(`public/products/${p.sku}/selection.json`,JSON.stringify({selected:best,asset,ranked},null,2));
   console.log(`✓ ${p.sku}: frontal=${best.target} score=${best.metrics.score.toFixed(1)}`);
 }
