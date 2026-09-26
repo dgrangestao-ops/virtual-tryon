@@ -12,6 +12,8 @@ const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
 const retake = document.querySelector("#retake");
 const capture = document.querySelector("#capture");
+const countdown = document.querySelector("#countdown");
+let frozenFrame=null;
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
 const testProduct=document.querySelector("#test-product");
@@ -144,14 +146,51 @@ window.addEventListener("resize",()=>{
   resizeTimer=setTimeout(()=>{ if(engine.running) engine.resize(); },120);
 });
 
-const captureResult=()=>{
+const drawFrozenFrame=()=>{
+  const w=video.videoWidth||canvas3d.width;
+  const h=video.videoHeight||canvas3d.height;
+  if(!w||!h) return false;
+  if(!frozenFrame){
+    frozenFrame=document.createElement("canvas");
+    frozenFrame.id="frozen-frame";
+    frozenFrame.setAttribute("aria-label","Resultado capturado");
+    stage.insertBefore(frozenFrame,stage.firstChild);
+  }
+  frozenFrame.width=w; frozenFrame.height=h;
+  const ctx=frozenFrame.getContext("2d");
+  ctx.save();
+  if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
+  ctx.drawImage(video,0,0,w,h);
+  ctx.drawImage(canvas3d,0,0,w,h);
+  ctx.restore();
+  frozenFrame.hidden=false;
+  return true;
+};
+
+const captureResult=async()=>{
   if(!engine.running || !video.videoWidth){
     setStatus("Ative a câmera antes de capturar");
     return;
   }
+  capture.disabled=true;
+  switchCamera.disabled=true;
+  for(const n of [3,2,1]){
+    countdown.hidden=false;
+    countdown.textContent=n;
+    await new Promise(resolve=>setTimeout(resolve,850));
+  }
+  countdown.textContent="✓";
+  await new Promise(resolve=>setTimeout(resolve,180));
+  if(!drawFrozenFrame()){
+    countdown.hidden=true;
+    capture.disabled=false;
+    switchCamera.disabled=false;
+    setStatus("Não foi possível capturar. Tente novamente.");
+    return;
+  }
+  countdown.hidden=true;
   stage.classList.add("frozen");
-  video.pause();
-  engine.running=false;
+  engine.stopCamera();
   capture.hidden=true;
   switchCamera.hidden=true;
   retake.hidden=false;
@@ -163,9 +202,10 @@ const captureResult=()=>{
 capture.addEventListener("click",captureResult);
 
 retake.addEventListener("click",async()=>{
-  video.play();
-  engine.running=true;
+  frozenFrame?.remove();
+  frozenFrame=null;
   stage.classList.remove("frozen");
+  await engine.startCamera(engine.facingMode);
   retake.hidden=true;
   snapshot.hidden=true;
   capture.hidden=false;
@@ -176,22 +216,13 @@ retake.addEventListener("click",async()=>{
 });
 
 snapshot.addEventListener("click", () => {
-  if(!video.videoWidth){
+  if(!frozenFrame){
     setStatus("Capture uma imagem antes de salvar");
     return;
   }
-  const out=document.createElement("canvas");
-  out.width=video.videoWidth||canvas3d.width;
-  out.height=video.videoHeight||canvas3d.height;
-  const ctx=out.getContext("2d");
-  ctx.save();
-  if(engine.facingMode==="user"){ctx.translate(out.width,0);ctx.scale(-1,1);}
-  ctx.drawImage(video,0,0,out.width,out.height);
-  ctx.drawImage(canvas3d,0,0,out.width,out.height);
-  ctx.restore();
   const link=document.createElement("a");
   link.download="fremi-provador.png";
-  link.href=out.toDataURL("image/png");
+  link.href=frozenFrame.toDataURL("image/png");
   link.click();
   setStatus("Foto salva ✓");
 });
