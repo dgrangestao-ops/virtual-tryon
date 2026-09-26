@@ -160,9 +160,15 @@ const drawFrozenFrame=()=>{
   }
   frozenFrame.width=w; frozenFrame.height=h;
   const ctx=frozenFrame.getContext("2d");
+  // O vídeo e o WebGL são espelhados juntos na interface, mas o canvas 3D
+  // já contém a armação renderizada em pixels. Espelhamos cada camada para
+  // reproduzir exatamente o que o cliente vê antes da captura.
   ctx.save();
   if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
   ctx.drawImage(video,0,0,w,h);
+  ctx.restore();
+  ctx.save();
+  if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
   ctx.drawImage(canvas3d,0,0,w,h);
   ctx.restore();
   frozenFrame.hidden=false;
