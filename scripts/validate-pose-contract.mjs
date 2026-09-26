@@ -8,6 +8,8 @@ const checks=[
  ["photo front yaw is fixed",/const visualYaw=this\.usingExternalModel && this\.imageFrame \? 0 :/.test(g)],
  ["photo front pitch is fixed",/const visualPitch=this\.usingExternalModel && this\.imageFrame \? 0 :/.test(g)],
  ["photo front has no yaw parallax",/this\.imageFrame\.position\.x=this\.imageFrameBaseX;/.test(g)],
+ ["frontal yaw dead-zone exists",/Math\.abs\(this\.pose\.yaw\)<0\.10 \? 0/.test(g)],
+ ["frontal roll dead-zone exists",/Math\.abs\(target\.roll\|\|0\)<0\.035 \? 0/.test(g)],
  ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.11/.test(g)],
  ["temple material is instance state",/this\.templeMaterial=new THREE\.MeshPhysicalMaterial/.test(g) && /this\.templeMaterial\.clone\(\)/.test(g)],
  ["face width yaw compensation exists",/rawFaceWidth\/yawCos/.test(t)]
