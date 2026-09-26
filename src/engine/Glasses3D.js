@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { solveTemple2D } from "./TempleSolver.js";
+import { solveTemple2D, templeVisibility, exposedTempleSide } from "./TempleSolver.js";
 
 export class Glasses3D {
   constructor(canvas){
@@ -362,8 +362,8 @@ export class Glasses3D {
         // Hastes são uma camada 2.5D separada da frente. A posição final usa
         // landmarks reais da lateral do rosto; assim o comprimento acompanha
         // o usuário em vez de depender de um comprimento fixo por SKU.
-        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.07)/.24));
-        const side=imageYaw>0 ? -1 : 1;
+        const amount=templeVisibility(imageYaw);
+        const side=exposedTempleSide(imageYaw);
         if(this.templeOccluders){
           this.templeOccluders.left.visible=false;
           this.templeOccluders.right.visible=false;
@@ -371,7 +371,7 @@ export class Glasses3D {
         const anchor=this.templePose?.[side===-1?"left":"right"];
         const earAnchor=this.earPose?.[side===-1?"left":"right"];
         for(const group of [this.imageTemples.left,this.imageTemples.right]){
-          const active=group.userData.side===side && amount>.035 && anchor && earAnchor;
+          const active=side!==0 && group.userData.side===side && amount>.035 && anchor && earAnchor;
           group.visible=Boolean(active);
           if(!active) continue;
 
@@ -382,17 +382,13 @@ export class Glasses3D {
           // Converte a têmpora detectada do espaço normalizado da câmera para
           // coordenadas locais do óculos. root já contém posição/escala facial.
           const anchorWorldX=(anchor.x*2-1)*aspect;
-          const anchorWorldY=-(anchor.y*2-1);
           const localX=(anchorWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
-          const localY=(anchorWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
 
           // O destino agora vem de um landmark auricular real, não de uma
           // extensão arbitrária da têmpora. Mantemos a maior parte da haste
           // praticamente horizontal e só curvamos o terminal atrás da orelha.
           const earWorldX=(earAnchor.x*2-1)*aspect;
-          const earWorldY=-(earAnchor.y*2-1);
           const detectedEarX=(earWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
-          const detectedEarY=(earWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
           const solvedTemple=solveTemple2D({
             side:sx,
             hingeX,
@@ -405,7 +401,7 @@ export class Glasses3D {
           const earX=solvedTemple.endX;
           const earY=solvedTemple.endY;
           const rearZ=solvedTemple.rearZ;
-          const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
+          const bucket=`${Math.round(amount*12)}:${Math.round(localX*24)}:${Math.round(earX*24)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
 
