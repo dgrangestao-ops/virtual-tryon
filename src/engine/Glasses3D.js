@@ -100,7 +100,7 @@ export class Glasses3D {
     });
     const makeTemple=(side)=>{
       const group=new THREE.Group();
-      group.userData={side,mesh:null};
+      group.userData={side,mesh:null,lastBucket:-1};
       return group;
     };
     const left=makeTemple(-1),right=makeTemple(1);
@@ -367,6 +367,9 @@ export class Glasses3D {
           const z1=-this.imageFrameWidth*(.06+.04*amount);
           const z2=-this.imageFrameWidth*(.26+.16*amount);
           const z3=-this.imageFrameWidth*(.48+.24*amount);
+          const bucket=Math.round(amount*20);
+          if(g.userData.lastBucket===bucket) continue;
+          g.userData.lastBucket=bucket;
           const points=[
             new THREE.Vector3(hingeX,y,0.012),
             new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.018,y-.004,z1),
