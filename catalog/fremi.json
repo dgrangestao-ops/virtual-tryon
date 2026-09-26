@@ -14,10 +14,10 @@
       "assetStatus": "source-photo",
       "available": true,
       "calibration": {
-        "scale": 0.84,
+        "scale": 0.9,
         "position": [
           0,
-          -0.072,
+          0,
           0
         ],
         "rotation": [
