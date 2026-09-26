@@ -63,7 +63,7 @@ export class TryOnEngine {
     }
     if(product.imageAssetUrl){
       this.glasses3d.setImageFrame(
-        {url:product.imageAssetUrl,aspect:product.imageAspect||2.2},
+        {url:product.imageAssetUrl,aspect:product.imageAspect||2.2,geometry:product.assetGeometry||null},
         product.calibration||{}
       );
       return true;
