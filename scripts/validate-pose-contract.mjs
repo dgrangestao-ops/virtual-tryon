@@ -12,6 +12,7 @@ const checks=[
  ["front pose uses isolated solver",g.includes('solveFrontPose, smoothPose') && g.includes("const next=solveFrontPose({...target,aspect});")],
  ["front smoothing uses isolated solver",g.includes("this.pose=smoothPose(this.pose,next,.42);")],
  ["tracking tolerates isolated missed frames",t.includes("this.missedFaceFrames<=4") && t.includes("this.missedFaceFrames=0;")],
+ ["camera loop has generation guard",t.includes("const token=++this.loopToken;") && t.includes("token!==this.loopToken") && t.includes("this.loopToken++;")],
  ["optical fit uses neutral low offset",g.includes("this.modelRoot.position.y=0.015;")],
  ["temple landmarks are forwarded",t.includes("templeAnchors") && t.includes("left:{x:leftTemple.x") && t.includes("right:{x:rightTemple.x")],
  ["ear landmarks are forwarded",t.includes("face[127]") && t.includes("face[356]") && t.includes("earAnchors")],
