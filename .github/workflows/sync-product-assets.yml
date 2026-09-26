@@ -19,10 +19,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install dependencies
+        run: npm install
       - name: Validate catalog
         run: node scripts/validate-catalog.mjs catalog/fremi.json
       - name: Sync all catalog products
         run: node scripts/sync-catalog.mjs catalog/fremi.json
+      - name: Select best frontal view
+        run: node scripts/select-front-view.mjs catalog/fremi.json
       - name: Commit refreshed assets
         run: |
           git config user.name "github-actions[bot]"
