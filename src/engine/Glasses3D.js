@@ -396,13 +396,16 @@ export class Glasses3D {
           // haste. Projetamos o vetor têmpora→orelha além desse landmark para
           // alcançar a borda superior real da orelha sem alterar a dobradiça.
           const templeToEarX=detectedEarX-localX;
-          const projectedEarX=detectedEarX+templeToEarX*.72;
-          const minReach=this.imageFrameWidth*(.20+.08*amount);
+          // Pequena extensão adicional além do ponto pré-auricular. O
+          // teste real mostrou que a projeção anterior ainda terminava sobre
+          // a pele; este ganho atua somente no terminal, sem mover a frente.
+          const projectedEarX=detectedEarX+templeToEarX*.92;
+          const minReach=this.imageFrameWidth*(.235+.09*amount);
           const directionalReach=Math.abs(projectedEarX-hingeX);
           const earX=directionalReach<minReach
             ? hingeX-sx*minReach
             : projectedEarX;
-          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.42);
+          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);
           // Terminal curto além do topo da orelha: o primeiro ponto toca a
           // região auricular e o segundo desce/recuа para simular a ponteira
           // passando por trás, sem deformar o longo trecho horizontal.
