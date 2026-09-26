@@ -38,6 +38,7 @@ export class Glasses3D {
     this.templeOccluders=null;
     this.templeMaterial=null;
     this.templePose=null;
+    this.earPose=null;
   }
 
   setImageFrame(asset, calibration={}){
@@ -325,6 +326,7 @@ export class Glasses3D {
       pitch:target.pitch||0
     };
     this.templePose=target.templeAnchors||this.templePose;
+    this.earPose=target.earAnchors||this.earPose;
 
     if(!this.pose) this.pose={...next};
     const a=0.42;
@@ -366,8 +368,9 @@ export class Glasses3D {
           this.templeOccluders.right.visible=false;
         }
         const anchor=this.templePose?.[side===-1?"left":"right"];
+        const earAnchor=this.earPose?.[side===-1?"left":"right"];
         for(const group of [this.imageTemples.left,this.imageTemples.right]){
-          const active=group.userData.side===side && amount>.035 && anchor;
+          const active=group.userData.side===side && amount>.035 && anchor && earAnchor;
           group.visible=Boolean(active);
           if(!active) continue;
 
@@ -382,26 +385,32 @@ export class Glasses3D {
           const localX=(anchorWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
           const localY=(anchorWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
 
-          // O landmark termina na lateral da cabeça; estendemos um pouco para
-          // trás e para baixo para representar o trecho que passa sobre a orelha.
-          const earX=localX-sx*this.imageFrameWidth*(.10+.05*amount);
-          const earY=localY-this.imageFrameHeight*(.02+.05*amount);
-          const rearZ=-this.imageFrameWidth*(.18+.18*amount);
-          const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}`;
+          // O destino agora vem de um landmark auricular real, não de uma
+          // extensão arbitrária da têmpora. Mantemos a maior parte da haste
+          // praticamente horizontal e só curvamos o terminal atrás da orelha.
+          const earWorldX=(earAnchor.x*2-1)*aspect;
+          const earWorldY=-(earAnchor.y*2-1);
+          const detectedEarX=(earWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
+          const detectedEarY=(earWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
+          const earX=detectedEarX-sx*this.imageFrameWidth*.045;
+          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.55);
+          const rearZ=-this.imageFrameWidth*(.16+.16*amount);
+          const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
 
+          const railY=THREE.MathUtils.lerp(hingeY,earY,.28);
           const points=[
             new THREE.Vector3(hingeX,hingeY,.012),
             new THREE.Vector3(
-              THREE.MathUtils.lerp(hingeX,localX,.38),
-              THREE.MathUtils.lerp(hingeY,localY,.38),
-              -this.imageFrameWidth*.035
+              THREE.MathUtils.lerp(hingeX,earX,.34),
+              railY,
+              -this.imageFrameWidth*.025
             ),
             new THREE.Vector3(
-              THREE.MathUtils.lerp(hingeX,earX,.78),
-              THREE.MathUtils.lerp(hingeY,earY,.78),
-              rearZ*.58
+              THREE.MathUtils.lerp(hingeX,earX,.76),
+              THREE.MathUtils.lerp(railY,earY,.35),
+              rearZ*.48
             ),
             new THREE.Vector3(earX,earY,rearZ)
           ];
