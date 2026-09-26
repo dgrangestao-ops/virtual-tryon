@@ -26,7 +26,8 @@ const checks=[
  ["temple Y comes from solver",g.includes("const earY=solvedTemple.endY;")],
  ["photo temple occluders stay disabled",g.includes("this.templeOccluders.left.visible=false;") && g.includes("this.templeOccluders.right.visible=false;")],
  ["temple material is instance state",g.includes("this.templeMaterial=new THREE.MeshPhysicalMaterial") && g.includes("this.templeMaterial.clone()")],
- ["hybrid stable face scale exists",g.length>0 && t.includes("const faceWidth=rawFaceWidth*.35+eyeBasedWidth*.65;")]
+ ["stable face scale solver is used",t.includes("solveStableFaceScale(this.faceScaleState") && t.includes("createStableFaceScale()")],
+ ["face scale resets with camera",t.includes("this.faceScaleState=createStableFaceScale();")]
 ]
 let fail=false;
 for(const [name,ok] of checks){console.log(`${ok?"✓":"✗"} ${name}`);if(!ok)fail=true;}
