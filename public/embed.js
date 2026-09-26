@@ -13,7 +13,9 @@
     const url=new URL(base);
     url.searchParams.set("sku",sku);
     url.searchParams.set("return",location.href);
-    location.href=url.href;
+    // Abre em nova aba: preserva carrinho, variante e rolagem da página da loja.
+    const popup=window.open(url.href,"_blank","noopener,noreferrer");
+    if(!popup) location.href=url.href;
   };
   const enhance=(el)=>{
     if(el.dataset.vtoReady) return;
