@@ -10,7 +10,7 @@ export const PRODUCTS = [
     "remoteSourceImageUrl": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-1024-1024.webp",
     "modelUrl": null,
     "imageAssetUrl": "/products/98un1/asset.png",
-    "imageAspect": 2.0579710144927534,
+    "imageAspect": 2.8542713567839195,
     "assetStatus": "generated",
     "calibration": {
       "scale": 0.84,
@@ -36,7 +36,7 @@ export const PRODUCTS = [
     "sourceImageUrl": "/products/q7by3/source.webp",
     "modelUrl": null,
     "imageAssetUrl": "/products/q7by3/asset.png",
-    "imageAspect": 2.8366013071895426,
+    "imageAspect": 2.9324324324324325,
     "assetStatus": "generated",
     "calibration": {
       "scale": 1,
