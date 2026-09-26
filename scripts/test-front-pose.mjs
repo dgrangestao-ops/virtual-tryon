@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {solveFrontPose,smoothPose} from "../src/engine/FramePoseSolver.js";
+import {solveFrontPose,smoothPose,createStableFaceScale,solveStableFaceScale} from "../src/engine/FramePoseSolver.js";
 
 const base={x:.5,y:.42,scale:.31,roll:0,yaw:0,pitch:0,aspect:1.25};
 const front=solveFrontPose(base);
@@ -21,3 +21,13 @@ const sm=smoothPose(front,moved,.42);
 assert.ok(sm.x>front.x && sm.x<moved.x);
 assert.equal(sm.y,front.y);
 console.log("✓ front pose invariants");
+
+const scaleState=createStableFaceScale();
+const neutral=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
+let turned=neutral;
+for(let i=0;i<30;i++) turned=solveStableFaceScale(scaleState,{rawFaceWidth:.31,eyeDistance:.145,yaw:.42});
+assert.ok(Math.abs(turned-neutral)/neutral<.04,"3/4 must not shrink frame materially");
+let recovered=turned;
+for(let i=0;i<30;i++) recovered=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
+assert.ok(Math.abs(recovered-neutral)/neutral<.02,"neutral scale must recover smoothly");
+console.log("✓ face scale invariants");
