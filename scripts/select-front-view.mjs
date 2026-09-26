@@ -34,8 +34,30 @@ async function silhouetteScore(path){
   // Penaliza silhuetas excessivamente largas: em óculos isso costuma indicar
   // hastes abertas/projetadas, não a frente limpa desejada pelo provador.
   const frontalAspect=Math.max(0,1-Math.abs(aspect-2.05)/1.25);
-  const score=symmetry*52+frontalAspect*28+centered*12+Math.min(1,occupancy/.35)*8;
-  return {score,symmetry,aspect,centered,occupancy};
+  // Mede protrusões acima da frente óptica. Em fotos com hastes abertas,
+  // os braços formam dois arcos finos muito acima das lentes.
+  const rows=[];
+  for(let y=minY;y<=maxY;y++){
+    let lo=w,hi=-1,count=0;
+    for(let x=minX;x<=maxX;x++) if(mask[y*w+x]){lo=Math.min(lo,x);hi=Math.max(hi,x);count++;}
+    rows.push({y,span:hi>=lo?hi-lo+1:0,count});
+  }
+  const peak=Math.max(...rows.map(r=>r.span));
+  const sustained=Math.max(2,Math.round(bh*.025));
+  let opticalTop=minY;
+  outer: for(let i=0;i<rows.length-sustained;i++){
+    for(let k=0;k<sustained;k++){
+      const r=rows[i+k];
+      if(r.span<peak*.60 || r.count/Math.max(1,r.span)<.30) continue outer;
+    }
+    opticalTop=rows[i].y; break;
+  }
+  let upper=0;
+  for(let y=minY;y<opticalTop;y++) for(let x=minX;x<=maxX;x++) upper+=mask[y*w+x];
+  const upperRatio=upper/Math.max(1,n);
+  const protrusionPenalty=Math.min(32,upperRatio*180);
+  const score=symmetry*48+frontalAspect*26+centered*10+Math.min(1,occupancy/.35)*8-protrusionPenalty;
+  return {score,symmetry,aspect,centered,occupancy,upperRatio,opticalTop,protrusionPenalty};
 }
 async function makeTryOnAsset(source,out){
   const img=sharp(source).resize({width:1200,withoutEnlargement:true}).ensureAlpha();
