@@ -346,7 +346,7 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
-        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.20)/.20));
+        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.11)/.23));
         // MediaPipe e a camada espelhada usam sentidos opostos na tela.
         // A haste visível deve ser a do lado que realmente fica exposto ao usuário.
         const side=imageYaw>0 ? -1 : 1;
@@ -363,10 +363,10 @@ export class Glasses3D {
           const y=this.imageFrameHeight*.16;
           // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
           // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
-          const endX=hingeX-sx*this.imageFrameWidth*(.07+.08*amount);
+          const endX=hingeX-sx*this.imageFrameWidth*(.045+.055*amount);
           const z1=-this.imageFrameWidth*(.06+.04*amount);
-          const z2=-this.imageFrameWidth*(.26+.16*amount);
-          const z3=-this.imageFrameWidth*(.48+.24*amount);
+          const z2=-this.imageFrameWidth*(.22+.14*amount);
+          const z3=-this.imageFrameWidth*(.40+.20*amount);
           const bucket=Math.round(amount*20);
           if(g.userData.lastBucket===bucket) continue;
           g.userData.lastBucket=bucket;
