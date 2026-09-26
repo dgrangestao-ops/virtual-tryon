@@ -42,6 +42,9 @@ export class Glasses3D {
     this.templeMaterial=null;
     this.templePose=null;
     this.earPose=null;
+    this.templeSide=0;
+    this.templeSideCandidate=0;
+    this.templeSideFrames=0;
   }
 
   setImageFrame(asset, calibration={}){
@@ -352,7 +355,27 @@ export class Glasses3D {
         // landmarks reais da lateral do rosto; assim o comprimento acompanha
         // o usuário em vez de depender de um comprimento fixo por SKU.
         const amount=templeVisibility(imageYaw);
-        const side=exposedTempleSide(imageYaw);
+        const requestedSide=exposedTempleSide(imageYaw);
+        // Histerese temporal: evita a haste piscar/trocar de lado quando o
+        // usuário está quase frontal e o yaw oscila ao redor do limiar.
+        if(requestedSide===0){
+          this.templeSide=0;
+          this.templeSideCandidate=0;
+          this.templeSideFrames=0;
+        }else if(requestedSide===this.templeSide){
+          this.templeSideCandidate=requestedSide;
+          this.templeSideFrames=0;
+        }else if(requestedSide===this.templeSideCandidate){
+          this.templeSideFrames++;
+          if(this.templeSideFrames>=3){
+            this.templeSide=requestedSide;
+            this.templeSideFrames=0;
+          }
+        }else{
+          this.templeSideCandidate=requestedSide;
+          this.templeSideFrames=1;
+        }
+        const side=this.templeSide;
         if(this.templeOccluders){
           this.templeOccluders.left.visible=false;
           this.templeOccluders.right.visible=false;
@@ -434,6 +457,9 @@ export class Glasses3D {
   hide(){
     this.root.visible=false;
     this.pose=null;
+    this.templeSide=0;
+    this.templeSideCandidate=0;
+    this.templeSideFrames=0;
   }
 
   render(){this.renderer.render(this.scene,this.camera)}
