@@ -37,6 +37,7 @@ export class Glasses3D {
     this.imageFrameHeight=0;
     this.templeOccluders=null;
     this.templeMaterial=null;
+    this.templePose=null;
   }
 
   setImageFrame(asset, calibration={}){
@@ -323,6 +324,7 @@ export class Glasses3D {
       yaw:target.yaw||0,
       pitch:target.pitch||0
     };
+    this.templePose=target.templeAnchors||this.templePose;
 
     if(!this.pose) this.pose={...next};
     const a=0.42;
@@ -354,58 +356,72 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
+        // Hastes são uma camada 2.5D separada da frente. A posição final usa
+        // landmarks reais da lateral do rosto; assim o comprimento acompanha
+        // o usuário em vez de depender de um comprimento fixo por SKU.
         const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.07)/.24));
-        // MediaPipe e a camada espelhada usam sentidos opostos na tela.
-        // A haste visível deve ser a do lado que realmente fica exposto ao usuário.
         const side=imageYaw>0 ? -1 : 1;
-        // No modo 2.5D não mascaramos a haste com uma esfera aproximada:
-        // ela ocultava a peça inteira em 3/4. A própria geometria recua em Z.
         if(this.templeOccluders){
           this.templeOccluders.left.visible=false;
           this.templeOccluders.right.visible=false;
         }
-        for(const g of [this.imageTemples.left,this.imageTemples.right]){
-          const active=g.userData.side===side && amount>.04;
-          g.visible=active;
+        const anchor=this.templePose?.[side===-1?"left":"right"];
+        for(const group of [this.imageTemples.left,this.imageTemples.right]){
+          const active=group.userData.side===side && amount>.035 && anchor;
+          group.visible=Boolean(active);
           if(!active) continue;
-          const sx=g.userData.side;
+
+          const sx=group.userData.side;
           const hingeX=sx*this.imageFrameWidth*.485;
-          // Haste nasce na dobradiça lateral, próxima à linha óptica.
-          const y=this.imageFrameHeight*.12;
-          // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
-          // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
-          // A haste precisa permanecer visível no 3/4 e seguir horizontalmente
-          // até a região da orelha. O trecho final recua em Z para parecer passar
-          // atrás da cabeça, em vez de formar um bloco destacado junto à orelha.
-          const endX=hingeX-sx*this.imageFrameWidth*(.20+.14*amount);
-          const z1=-this.imageFrameWidth*(.025+.02*amount);
-          const z2=-this.imageFrameWidth*(.11+.07*amount);
-          const z3=-this.imageFrameWidth*(.28+.12*amount);
-          const bucket=Math.round(amount*20);
-          if(g.userData.lastBucket===bucket) continue;
-          g.userData.lastBucket=bucket;
+          const hingeY=this.imageFrameHeight*.12;
+
+          // Converte a têmpora detectada do espaço normalizado da câmera para
+          // coordenadas locais do óculos. root já contém posição/escala facial.
+          const anchorWorldX=(anchor.x*2-1)*aspect;
+          const anchorWorldY=-(anchor.y*2-1);
+          const localX=(anchorWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
+          const localY=(anchorWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
+
+          // O landmark termina na lateral da cabeça; estendemos um pouco para
+          // trás e para baixo para representar o trecho que passa sobre a orelha.
+          const earX=localX-sx*this.imageFrameWidth*(.10+.05*amount);
+          const earY=localY-this.imageFrameHeight*(.02+.05*amount);
+          const rearZ=-this.imageFrameWidth*(.18+.18*amount);
+          const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}`;
+          if(group.userData.lastBucket===bucket) continue;
+          group.userData.lastBucket=bucket;
+
           const points=[
-            new THREE.Vector3(hingeX,y,0.012),
-            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.055,y-.002,z1),
-            new THREE.Vector3(endX+sx*this.imageFrameWidth*.080,y-.006,z2),
-            new THREE.Vector3(endX,y-.018,z3)
+            new THREE.Vector3(hingeX,hingeY,.012),
+            new THREE.Vector3(
+              THREE.MathUtils.lerp(hingeX,localX,.38),
+              THREE.MathUtils.lerp(hingeY,localY,.38),
+              -this.imageFrameWidth*.035
+            ),
+            new THREE.Vector3(
+              THREE.MathUtils.lerp(hingeX,earX,.78),
+              THREE.MathUtils.lerp(hingeY,earY,.78),
+              rearZ*.58
+            ),
+            new THREE.Vector3(earX,earY,rearZ)
           ];
-          if(g.userData.mesh){
-            g.remove(g.userData.mesh);
-            g.userData.mesh.geometry.dispose();
-            g.userData.mesh.material.dispose();
+          if(group.userData.mesh){
+            group.remove(group.userData.mesh);
+            group.userData.mesh.geometry.dispose();
+            group.userData.mesh.material.dispose();
           }
           const curve=new THREE.CatmullRomCurve3(points);
           const mat=this.templeMaterial.clone();
-          mat.opacity=.35+.60*amount;
+          mat.opacity=.58+.38*amount;
           mat.depthWrite=true;
           mat.depthTest=true;
           const mesh=new THREE.Mesh(
-            new THREE.TubeGeometry(curve,24,.010*this.imageFrameWidth,7,false),
+            new THREE.TubeGeometry(curve,28,.009*this.imageFrameWidth,8,false),
             mat
           );
-          mesh.renderOrder=-1;
-          g.add(mesh); g.userData.mesh=mesh;
+          mesh.renderOrder=1;
+          group.add(mesh);
+          group.userData.mesh=mesh;
         }
       }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
