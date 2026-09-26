@@ -408,17 +408,11 @@ export class Glasses3D {
           // A haste física sai horizontal da dobradiça. O Y detectado da
           // orelha é usado apenas no ponto oculto em profundidade.
           const earY=hingeY;
-          const hiddenEarY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);
+          // detectedEarY é mantido apenas como referência futura de oclusão.
           // Terminal curto além do topo da orelha: o primeiro ponto toca a
           // região auricular e o segundo desce/recuа para simular a ponteira
           // passando por trás, sem deformar o longo trecho horizontal.
           const rearZ=-this.imageFrameWidth*(.14+.14*amount);
-          // Ponteira sem deslocamento adicional em X/Y: depois de tocar a
-          // região auricular ela recua apenas em profundidade. Isso impede o
-          // gancho visível acima/abaixo da haste nos dois lados.
-          const tipX=earX;
-          const tipY=hiddenEarY;
-          const tipZ=rearZ-this.imageFrameWidth*(.14+.06*amount);
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
@@ -436,8 +430,10 @@ export class Glasses3D {
               railY,
               rearZ*.48
             ),
-            new THREE.Vector3(earX,earY,rearZ),
-            new THREE.Vector3(tipX,tipY,tipZ)
+            // Termina limpo na borda auricular. A parte física que passaria
+            // atrás da orelha não deve ser desenhada sem uma máscara real da
+            // cabeça, pois sua projeção 2D cria o falso gancho/L.
+            new THREE.Vector3(earX,earY,rearZ)
           ];
           if(group.userData.mesh){
             group.remove(group.userData.mesh);
