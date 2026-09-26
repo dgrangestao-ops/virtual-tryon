@@ -318,9 +318,8 @@ export class Glasses3D {
       // permanece dentro de modelRoot/imageFrame.
       y:-(target.y*2-1),
       scale:((target.scale*2*aspect)/1.66)*0.84,
-      // Reduz microinclinações naturais/ruído dos landmarks para evitar
-      // que a armação pareça torta quando o usuário está praticamente frontal.
-      roll:(target.roll||0)*0.30,
+      // Dead-zone frontal: evita que pequenos ruídos façam a frente oscilar.
+      roll:Math.abs(target.roll||0)<0.035 ? 0 : (target.roll||0)*0.30,
       yaw:target.yaw||0,
       pitch:target.pitch||0
     };
@@ -340,7 +339,8 @@ export class Glasses3D {
     // A foto 2D não contém informação real da lateral. Limitamos a rotação
     // para evitar deformação excessiva em ângulos grandes e usamos a curvatura
     // apenas como pista de profundidade.
-    const imageYaw=Math.max(-0.48,Math.min(0.48,this.pose.yaw));
+    const rawImageYaw=Math.abs(this.pose.yaw)<0.10 ? 0 : this.pose.yaw;
+    const imageYaw=Math.max(-0.48,Math.min(0.48,rawImageYaw));
     // Ativos derivados de uma única foto frontal não possuem a geometria das
     // hastes. Mantemos apenas uma rotação visual discreta para preservar o
     // encaixe na ponte e evitar que a frente "descole" do rosto.
