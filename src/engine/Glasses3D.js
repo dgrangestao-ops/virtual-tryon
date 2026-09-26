@@ -435,7 +435,7 @@ export class Glasses3D {
           const hingeX=(hingeNorm-.5)*this.imageFrameWidth;
           // Asset metadata may later refine optical Y; hinge remains tied to
           // the frame plane so SKU geometry cannot move the facial anchor.
-          const hingeY=this.imageFrameHeight*.12;
+          const hingeY=this.imageFrameHeight*.20;
 
           // Converte a têmpora detectada do espaço normalizado da câmera para
           // coordenadas locais do óculos. root já contém posição/escala facial.
