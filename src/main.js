@@ -215,7 +215,9 @@ const captureResult=async()=>{
   const frameW=facePx*1.06*cal;
   const frameH=frameW/aspect;
   let cx=frozen.pose.centerX*frozen.w;
-  const cy=frozen.pose.centerY*frozen.h-frameH*.18;
+  // Na foto congelada, ancora o centro óptico um pouco abaixo da linha dos
+  // olhos para reproduzir o encaixe que já estava correto durante o preview.
+  const cy=frozen.pose.centerY*frozen.h+frameH*.06;
   const roll=frozen.pose.roll||0;
   if(engine.facingMode==="user") cx=frozen.w-cx;
   frozen.ctx.save();
