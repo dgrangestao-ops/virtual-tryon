@@ -13,6 +13,7 @@ const checks=[
  ["front smoothing uses isolated solver",g.includes("this.pose=smoothPose(this.pose,next,.42);")],
  ["tracking tolerates isolated missed frames",t.includes("this.missedFaceFrames<=4") && t.includes("this.missedFaceFrames=0;")],
  ["camera loop has generation guard",t.includes("const token=++this.loopToken;") && t.includes("token!==this.loopToken") && t.includes("this.loopToken++;")],
+ ["camera switch acquires replacement before stopping current",t.indexOf("await navigator.mediaDevices.getUserMedia")<t.indexOf("this.stopCamera();",t.indexOf("async startCamera"))],
  ["camera stop clears stale visual state",t.includes("this.faceSeenAt=0;") && t.includes("this.video.srcObject=null;") && t.includes("this.glasses3d.hide();")],
  ["optical fit uses neutral low offset",g.includes("this.modelRoot.position.y=0.015;")],
  ["temple landmarks are forwarded",t.includes("templeAnchors") && t.includes("left:{x:leftTemple.x") && t.includes("right:{x:rightTemple.x")],
