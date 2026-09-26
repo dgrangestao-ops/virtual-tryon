@@ -37,6 +37,7 @@ export class Glasses3D {
     this.imageTemples=null;
     this.imageFrameWidth=0;
     this.imageFrameHeight=0;
+    this.imageAssetGeometry=null;
     this.templeOccluders=null;
     this.templeMaterial=null;
     this.templePose=null;
@@ -95,6 +96,7 @@ export class Glasses3D {
     const pos=calibration.position||[0,0,0];
     this.imageFrame.position.set(pos[0]||0,0.015+(pos[1]||0),0.055+(pos[2]||0));
     this.imageFrame.userData.aspect=asset.aspect||2.2;
+    this.imageAssetGeometry=asset.geometry||null;
     this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
 
@@ -363,7 +365,11 @@ export class Glasses3D {
           if(!active) continue;
 
           const sx=group.userData.side;
-          const hingeX=sx*this.imageFrameWidth*.485;
+          const geom=this.imageAssetGeometry;
+          const hingeNorm=sx<0 ? (geom?.hingeLeftX ?? .015) : (geom?.hingeRightX ?? .985);
+          const hingeX=(hingeNorm-.5)*this.imageFrameWidth;
+          // Asset metadata may later refine optical Y; hinge remains tied to
+          // the frame plane so SKU geometry cannot move the facial anchor.
           const hingeY=this.imageFrameHeight*.12;
 
           // Converte a têmpora detectada do espaço normalizado da câmera para
