@@ -178,11 +178,10 @@ export class TryOnEngine {
 
     // Trabalhamos em coordenadas NORMALIZADAS do MediaPipe até o WebGL.
     // Isso elimina mistura entre pixels, CSS, DPR e object-fit.
+    // Âncora estável: ponto médio dos olhos. Offsets visuais pertencem ao
+    // renderizador/asset, nunca ao tracking facial.
     const centerX=(leftEye.x+rightEye.x)/2;
-    const centerY=(leftEye.y+rightEye.y)/2 + Math.hypot(
-      rightEye.x-leftEye.x,
-      rightEye.y-leftEye.y
-    )*0.04;
+    const centerY=(leftEye.y+rightEye.y)/2;
 
     const rawFaceWidth=Math.hypot(
       rightTemple.x-leftTemple.x,
@@ -218,10 +217,11 @@ export class TryOnEngine {
       x:centerX,
       y:centerY,
       scale:faceWidth,
+      rawFaceWidth,
+      eyeDistance:Math.hypot(rightEye.x-leftEye.x,rightEye.y-leftEye.y),
       roll,
       yaw,
       pitch,
-      face,
     });
 
     this.glasses3d.render();
