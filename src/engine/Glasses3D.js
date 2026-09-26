@@ -45,6 +45,11 @@ export class Glasses3D {
       });
       this.model=null;
     }
+    if(this.imageTemples){
+      this.modelRoot.remove(this.imageTemples.left,this.imageTemples.right);
+      for(const g of [this.imageTemples.left,this.imageTemples.right]) g.traverse(n=>{n.geometry?.dispose?.();n.material?.dispose?.();});
+      this.imageTemples=null;
+    }
     if(this.imageFrame){
       this.modelRoot.remove(this.imageFrame);
       this.imageFrame.material?.map?.dispose();
