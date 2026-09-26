@@ -2,41 +2,49 @@
   {
     "url": "http://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-640-0.webp",
     "source": "og",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-SIZE-0.webp",
     "target": "public/products/98un1/gallery/01.webp"
-  },
-  {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-640-0.webp",
-    "source": "og",
-    "target": "public/products/98un1/gallery/02.webp"
   },
   {
     "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110223_-614452b682f51500a017685884980392-480-0.webp",
     "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110223_-614452b682f51500a017685884980392-SIZE-0.webp",
+    "target": "public/products/98un1/gallery/02.webp"
+  },
+  {
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_ca3fdba2-b0a5-4e8b-b0c2-18684a7f99ce_5876852_6089436-e925d5a0bb58d0617417743983508900-480-0.webp",
+    "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_ca3fdba2-b0a5-4e8b-b0c2-18684a7f99ce_5876852_6089436-e925d5a0bb58d0617417743983508900-SIZE-0.webp",
     "target": "public/products/98un1/gallery/03.webp"
   },
   {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/themes/common/logo-1266626455-1741305601-fccd6dfca6023fc18f8b104b4d5fa5c91741305601.jpg?0",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135856_-516aac5c1a001f040417630013924857-480-0.webp",
     "source": "embedded",
-    "target": "public/products/98un1/gallery/04.jpg"
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135856_-516aac5c1a001f040417630013924857-SIZE-0.webp",
+    "target": "public/products/98un1/gallery/04.webp"
   },
   {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-480-0.webp",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9682c6eb-a4c2-47ed-b2f8-e5ec12791bfe_5876852_6089436-04b4c0b958cbdd1a4417743987956955-480-0.webp",
     "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9682c6eb-a4c2-47ed-b2f8-e5ec12791bfe_5876852_6089436-04b4c0b958cbdd1a4417743987956955-SIZE-0.webp",
     "target": "public/products/98un1/gallery/05.webp"
   },
   {
-    "url": "http://pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.fremieyewear.com.br%2Fprodutos%2Foculos-esportivo-preto-lente-preta-98un1%2F&media=https%3A%2F%2Fdcdn-us.mitiendanube.com%2Fstores%2F005%2F876%2F852%2Fproducts%2F20251112_135701_-0f9bafd9c75984685117630012588680-480-0.webp",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_aa30791f-3feb-4821-9d1c-73284b14688f_5876852_6089436-81ec9da65fbb0ff70817743994608117-480-0.webp",
     "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_aa30791f-3feb-4821-9d1c-73284b14688f_5876852_6089436-81ec9da65fbb0ff70817743994608117-SIZE-0.webp",
     "target": "public/products/98un1/gallery/06.webp"
   },
   {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110843_2-c6d5aed57d6b94611817685967134565-480-0.webp",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9669a586-b551-4121-b4e2-2d0a6afd45a1_5876852_6089436-5fb247e62c0b82b1e817685891197208-480-0.webp",
     "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9669a586-b551-4121-b4e2-2d0a6afd45a1_5876852_6089436-5fb247e62c0b82b1e817685891197208-SIZE-0.webp",
     "target": "public/products/98un1/gallery/07.webp"
   },
   {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110647_-4a27f2fc4607bb8b7317685963567343-480-0.webp",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110440_-f61cb65919e98711a017685887646557-480-0.webp",
     "source": "embedded",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110440_-f61cb65919e98711a017685887646557-SIZE-0.webp",
     "target": "public/products/98un1/gallery/08.webp"
   }
 ]
