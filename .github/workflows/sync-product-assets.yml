@@ -6,6 +6,7 @@ on:
     paths:
       - "catalog/**"
       - "scripts/sync-catalog.mjs"
+      - "scripts/select-front-view.mjs"
       - "scripts/validate-catalog.mjs"
       - "scripts/import-products.mjs"
       - ".github/workflows/sync-product-assets.yml"
