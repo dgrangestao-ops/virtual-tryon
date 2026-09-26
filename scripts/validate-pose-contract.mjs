@@ -10,7 +10,9 @@ const checks=[
  ["photo front has no yaw parallax",/this\.imageFrame\.position\.x=this\.imageFrameBaseX;/.test(g)],
  ["frontal yaw dead-zone exists",/Math\.abs\(this\.pose\.yaw\)<0\.10 \? 0/.test(g)],
  ["frontal roll dead-zone exists",/Math\.abs\(target\.roll\|\|0\)<0\.035 \? 0/.test(g)],
- ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.11/.test(g)],
+ ["optical fit uses neutral low offset",/this\.modelRoot\.position\.y=0\.015;/.test(g)],
+ ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.07/.test(g)],
+ ["temples start at hinge and extend rearward",/const hingeX=sx\*this\.imageFrameWidth\*\.485;/.test(g) && /const z3=-this\.imageFrameWidth\*\(\.36\+\.16\*amount\);/.test(g)],
  ["temple material is instance state",/this\.templeMaterial=new THREE\.MeshPhysicalMaterial/.test(g) && /this\.templeMaterial\.clone\(\)/.test(g)],
  ["hybrid stable face scale exists",/const faceWidth=rawFaceWidth\*\.35\+eyeBasedWidth\*\.65;/.test(t)]
 ];
