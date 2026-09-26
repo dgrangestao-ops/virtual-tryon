@@ -334,7 +334,7 @@ export class Glasses3D {
     this.root.scale.setScalar(this.pose.scale);
     // Um único offset óptico global, proporcional à largura facial. Não varia
     // com yaw/pitch e portanto não cria regressão vertical durante o giro.
-    this.modelRoot.position.y=0.070;
+    this.modelRoot.position.y=0.015;
 
     // A foto 2D não contém informação real da lateral. Limitamos a rotação
     // para evitar deformação excessiva em ângulos grandes e usamos a curvatura
@@ -354,7 +354,7 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
-        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.11)/.23));
+        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.07)/.24));
         // MediaPipe e a camada espelhada usam sentidos opostos na tela.
         // A haste visível deve ser a do lado que realmente fica exposto ao usuário.
         const side=imageYaw>0 ? -1 : 1;
@@ -368,21 +368,25 @@ export class Glasses3D {
           if(!active) continue;
           const sx=g.userData.side;
           const hingeX=sx*this.imageFrameWidth*.485;
-          const y=this.imageFrameHeight*.16;
+          // Haste nasce na dobradiça lateral, próxima à linha óptica.
+          const y=this.imageFrameHeight*.10;
           // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
           // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
-          const endX=hingeX-sx*this.imageFrameWidth*(.045+.055*amount);
-          const z1=-this.imageFrameWidth*(.06+.04*amount);
-          const z2=-this.imageFrameWidth*(.22+.14*amount);
-          const z3=-this.imageFrameWidth*(.40+.20*amount);
+          // A haste precisa permanecer visível no 3/4 e seguir horizontalmente
+          // até a região da orelha. O trecho final recua em Z para parecer passar
+          // atrás da cabeça, em vez de formar um bloco destacado junto à orelha.
+          const endX=hingeX-sx*this.imageFrameWidth*(.12+.10*amount);
+          const z1=-this.imageFrameWidth*(.04+.03*amount);
+          const z2=-this.imageFrameWidth*(.18+.10*amount);
+          const z3=-this.imageFrameWidth*(.36+.16*amount);
           const bucket=Math.round(amount*20);
           if(g.userData.lastBucket===bucket) continue;
           g.userData.lastBucket=bucket;
           const points=[
             new THREE.Vector3(hingeX,y,0.012),
-            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.018,y-.004,z1),
-            new THREE.Vector3(endX+sx*this.imageFrameWidth*.028,y-.020,z2),
-            new THREE.Vector3(endX,y-.050,z3)
+            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.035,y-.002,z1),
+            new THREE.Vector3(endX+sx*this.imageFrameWidth*.055,y-.010,z2),
+            new THREE.Vector3(endX,y-.028,z3)
           ];
           if(g.userData.mesh){
             g.remove(g.userData.mesh);
@@ -395,7 +399,7 @@ export class Glasses3D {
           mat.depthWrite=true;
           mat.depthTest=true;
           const mesh=new THREE.Mesh(
-            new THREE.TubeGeometry(curve,22,.012*this.imageFrameWidth,7,false),
+            new THREE.TubeGeometry(curve,24,.008*this.imageFrameWidth,7,false),
             mat
           );
           mesh.renderOrder=-1;
