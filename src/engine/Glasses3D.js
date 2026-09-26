@@ -311,9 +311,9 @@ export class Glasses3D {
     const aspect=width/height;
     const next={
       x:(target.x*2-1)*aspect,
-      // Sobe levemente a armação: o centro geométrico dos olhos não coincide
-      // com o centro óptico deste modelo Fremi mais alto na sobrancelha.
-      y:-(target.y*2-1)+0.085,
+      // A posição segue exclusivamente a âncora facial; a geometria do SKU
+      // permanece dentro de modelRoot/imageFrame.
+      y:-(target.y*2-1),
       scale:((target.scale*2*aspect)/1.66)*0.84,
       // Reduz microinclinações naturais/ruído dos landmarks para evitar
       // que a armação pareça torta quando o usuário está praticamente frontal.
@@ -330,6 +330,9 @@ export class Glasses3D {
 
     this.root.position.set(this.pose.x,this.pose.y,0);
     this.root.scale.setScalar(this.pose.scale);
+    // Um único offset óptico global, proporcional à largura facial. Não varia
+    // com yaw/pitch e portanto não cria regressão vertical durante o giro.
+    this.modelRoot.position.y=0.070;
 
     // A foto 2D não contém informação real da lateral. Limitamos a rotação
     // para evitar deformação excessiva em ângulos grandes e usamos a curvatura
@@ -338,8 +341,10 @@ export class Glasses3D {
     // Ativos derivados de uma única foto frontal não possuem a geometria das
     // hastes. Mantemos apenas uma rotação visual discreta para preservar o
     // encaixe na ponte e evitar que a frente "descole" do rosto.
-    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.12 : this.pose.yaw*0.50;
-    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.16 : this.pose.pitch*0.62;
+    // No modo fotográfico a frente permanece ancorada aos olhos. A sensação
+    // lateral vem das hastes e da curvatura do asset, não de girar o plano todo.
+    const visualYaw=this.usingExternalModel && this.imageFrame ? 0 : this.pose.yaw*0.50;
+    const visualPitch=this.usingExternalModel && this.imageFrame ? 0 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(this.usingExternalModel && this.imageFrame){
@@ -396,8 +401,7 @@ export class Glasses3D {
       }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
       // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
-      const parallax=Math.sin(imageYaw)*0.035;
-      this.imageFrame.position.x=this.imageFrameBaseX-parallax;
+      this.imageFrame.position.x=this.imageFrameBaseX;
     }
 
     if(!this.usingExternalModel){
