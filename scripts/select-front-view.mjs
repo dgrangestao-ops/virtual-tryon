@@ -31,7 +31,10 @@ async function silhouetteScore(path){
   const centerX=(minX+maxX)/2/w;
   const centered=1-Math.min(1,Math.abs(centerX-.5)*2);
   const occupancy=n/(bw*bh);
-  const score=symmetry*55+Math.min(1,aspect/2.1)*25+centered*12+Math.min(1,occupancy/.35)*8;
+  // Penaliza silhuetas excessivamente largas: em óculos isso costuma indicar
+  // hastes abertas/projetadas, não a frente limpa desejada pelo provador.
+  const frontalAspect=Math.max(0,1-Math.abs(aspect-2.05)/1.25);
+  const score=symmetry*52+frontalAspect*28+centered*12+Math.min(1,occupancy/.35)*8;
   return {score,symmetry,aspect,centered,occupancy};
 }
 for(const p of manifest.products||[]){
