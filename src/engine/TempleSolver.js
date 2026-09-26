@@ -16,11 +16,11 @@ export function solveTemple2D({
 }){
   const sx=side;
   const safeAmount=clamp(amount||0,0,1);
-  const templeToEarX=earX-templeX;
-  const projectedEarX=earX+templeToEarX*.92;
-  const minReach=frameWidth*(.235+.09*safeAmount);
-  const maxReach=frameWidth*.52;
-  let delta=projectedEarX-hingeX;
+  // A orelha detectada é o limite visual da haste. Não extrapolamos o
+  // landmark para trás: isso fazia a haste atravessar a lente/rosto no 3/4.
+  const minReach=frameWidth*(.12+.08*safeAmount);
+  const maxReach=frameWidth*.38;
+  let delta=earX-hingeX;
 
   // A haste sempre precisa caminhar para fora da dobradiça. Landmarks podem
   // cruzar por ruído/oclusão em ângulos extremos; nesses casos não aceitamos
