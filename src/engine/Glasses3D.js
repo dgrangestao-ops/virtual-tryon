@@ -317,7 +317,7 @@ export class Glasses3D {
       scale:((target.scale*2*aspect)/1.66)*0.84,
       // Reduz microinclinações naturais/ruído dos landmarks para evitar
       // que a armação pareça torta quando o usuário está praticamente frontal.
-      roll:(target.roll||0)*0.45,
+      roll:(target.roll||0)*0.30,
       yaw:target.yaw||0,
       pitch:target.pitch||0
     };
@@ -339,7 +339,7 @@ export class Glasses3D {
     // hastes. Mantemos apenas uma rotação visual discreta para preservar o
     // encaixe na ponte e evitar que a frente "descole" do rosto.
     const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.12 : this.pose.yaw*0.50;
-    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
+    const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.16 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(this.usingExternalModel && this.imageFrame){
@@ -391,7 +391,7 @@ export class Glasses3D {
       }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
       // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
-      const parallax=Math.sin(imageYaw)*0.085;
+      const parallax=Math.sin(imageYaw)*0.035;
       this.imageFrame.position.x=this.imageFrameBaseX-parallax;
     }
 
