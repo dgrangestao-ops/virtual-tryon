@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { solveTemple2D, templeVisibility, exposedTempleSide } from "./TempleSolver.js";
 import { solveFrontPose, smoothPose } from "./FramePoseSolver.js";
 import { normalizeAssetGeometry } from "./AssetGeometry.js";
 
@@ -141,35 +140,12 @@ export class Glasses3D {
     this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
 
-    // Hastes 2.5D independentes. A geometria é criada em coordenadas locais
-    // da armação e reposicionada dinamicamente para manter a dobradiça ligada
-    // à frente conforme a cabeça gira.
-    this.templeMaterial=new THREE.MeshPhysicalMaterial({
-      color:0x241714,roughness:0.30,metalness:0.02,clearcoat:0.32,
-      transparent:true,opacity:0
-    });
-    const makeTemple=(side)=>{
-      const group=new THREE.Group();
-      group.userData={side,mesh:null,lastBucket:-1};
-      return group;
-    };
-    const left=makeTemple(-1),right=makeTemple(1);
-    this.imageTemples={left,right};
+    // MVP frontal: ativos fotográficos usam somente a frente da armação.
+    // Hastes sintéticas foram removidas para evitar artefatos laterais.
+    this.imageTemples=null;
+    this.templeOccluders=null;
+    this.templeMaterial=null;
     this.imageFrameWidth=width; this.imageFrameHeight=height;
-    // Máscaras de profundidade aproximam a lateral da cabeça. Elas não desenham
-    // nada: apenas escondem o trecho da haste que deveria passar atrás da têmpora.
-    const occMat=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:true,depthTest:true});
-    const makeOcc=(side)=>{
-      const m=new THREE.Mesh(new THREE.SphereGeometry(.34*width,18,12),occMat.clone());
-      m.scale.set(.46,1.05,.72);
-      m.position.set(side*.57*width,.02,-.18*width);
-      m.renderOrder=-2;
-      return m;
-    };
-    this.templeOccluders={left:makeOcc(-1),right:makeOcc(1)};
-    this.modelRoot.add(this.templeOccluders.left,this.templeOccluders.right,left,right);
-    this.templeOccluders.left.visible=false;
-    this.templeOccluders.right.visible=false;
     this.fallback.visible=false;
     this.leftTemple.visible=false;
     this.rightTemple.visible=false;
@@ -390,99 +366,8 @@ export class Glasses3D {
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(this.usingExternalModel && this.imageFrame){
-      // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
-      // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
-      if(this.imageTemples){
-        // Hastes são uma camada 2.5D separada da frente. A posição final usa
-        // landmarks reais da lateral do rosto; assim o comprimento acompanha
-        // o usuário em vez de depender de um comprimento fixo por SKU.
-        const amount=templeVisibility(imageYaw);
-        const requestedSide=exposedTempleSide(imageYaw);
-        // Histerese temporal: evita a haste piscar/trocar de lado quando o
-        // usuário está quase frontal e o yaw oscila ao redor do limiar.
-        if(requestedSide===0){
-          this.templeSide=0;
-          this.templeSideCandidate=0;
-          this.templeSideFrames=0;
-        }else if(requestedSide===this.templeSide){
-          this.templeSideCandidate=requestedSide;
-          this.templeSideFrames=0;
-        }else if(requestedSide===this.templeSideCandidate){
-          this.templeSideFrames++;
-          if(this.templeSideFrames>=3){
-            this.templeSide=requestedSide;
-            this.templeSideFrames=0;
-          }
-        }else{
-          this.templeSideCandidate=requestedSide;
-          this.templeSideFrames=1;
-        }
-        const side=this.templeSide;
-        if(this.templeOccluders){
-          this.templeOccluders.left.visible=false;
-          this.templeOccluders.right.visible=false;
-        }
-        const anchor=this.templePose?.[side===-1?"left":"right"];
-        const earAnchor=this.earPose?.[side===-1?"left":"right"];
-        for(const group of [this.imageTemples.left,this.imageTemples.right]){
-          const active=side!==0 && group.userData.side===side && amount>.035 && anchor && earAnchor;
-          group.visible=Boolean(active);
-          if(!active) continue;
-
-          const sx=group.userData.side;
-          const geom=this.imageAssetGeometry;
-          const hingeNorm=sx<0 ? (geom?.hingeLeftX ?? .015) : (geom?.hingeRightX ?? .985);
-          const hingeX=(hingeNorm-.5)*this.imageFrameWidth;
-          // Asset metadata may later refine optical Y; hinge remains tied to
-          // the frame plane so SKU geometry cannot move the facial anchor.
-          const hingeY=this.imageFrameHeight*.20;
-
-          // Converte a têmpora detectada do espaço normalizado da câmera para
-          // coordenadas locais do óculos. root já contém posição/escala facial.
-          const anchorWorldX=(anchor.x*2-1)*aspect;
-          const localX=(anchorWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
-
-          // O destino agora vem de um landmark auricular real, não de uma
-          // extensão arbitrária da têmpora. Mantemos a maior parte da haste
-          // praticamente horizontal e só curvamos o terminal atrás da orelha.
-          const earWorldX=(earAnchor.x*2-1)*aspect;
-          const detectedEarX=(earWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
-          const solvedTemple=solveTemple2D({
-            side:sx,
-            hingeX,
-            hingeY,
-            frameWidth:this.imageFrameWidth,
-            amount,
-            templeX:localX,
-            earX:detectedEarX
-          });
-          const earX=solvedTemple.endX;
-          const bucket=`${Math.round(amount*12)}:${Math.round(localX*24)}:${Math.round(earX*24)}`;
-          if(group.userData.lastBucket===bucket) continue;
-          group.userData.lastBucket=bucket;
-
-          const points=solvedTemple.points.map(([x,y,z])=>new THREE.Vector3(x,y,z));
-          if(group.userData.mesh){
-            group.remove(group.userData.mesh);
-            group.userData.mesh.geometry.dispose();
-            group.userData.mesh.material.dispose();
-          }
-          const curve=new THREE.CatmullRomCurve3(points);
-          const mat=this.templeMaterial.clone();
-          mat.opacity=.58+.38*amount;
-          mat.depthWrite=true;
-          mat.depthTest=true;
-          const mesh=new THREE.Mesh(
-            new THREE.TubeGeometry(curve,28,.009*this.imageFrameWidth,8,false),
-            mat
-          );
-          mesh.renderOrder=1;
-          group.add(mesh);
-          group.userData.mesh=mesh;
-        }
-      }
-      // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
-      // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
+      // Modo frontal: não desenha hastes nem tenta reconstruir lateral 3D.
+      // A frente permanece ancorada aos olhos até a captura ser congelada.
       this.imageFrame.position.x=this.imageFrameBaseX;
     }
 
