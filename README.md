@@ -57,3 +57,10 @@ Opcionalmente, a loja pode enviar `return=<URL HTTPS codificada>`; nesse caso o 
 
 ## Integração na loja
 O arquivo `/embed.js` cria o botão “Experimentar no meu rosto” na página do produto. A loja informa apenas o SKU no atributo `data-sku`; o provador recebe o SKU e a URL de retorno automaticamente. Isso mantém o motor desacoplado da plataforma de e-commerce.
+
+
+## Pipeline automático de catálogo
+
+O provador não depende de modelagem manual por SKU. O fluxo de catálogo é: URL do produto → coleta da galeria → remoção de duplicatas e imagens de tema → análise de silhueta/simetria → seleção automática da melhor vista frontal → ativo local versionado → provador. O arquivo `selection.json` de cada SKU registra a escolha e o ranking para auditoria. Fotos laterais permanecem disponíveis na galeria para uma futura reconstrução 3D/premium.
+
+A validação do aplicativo e a sincronização dos ativos rodam automaticamente no GitHub Actions. O modo atual baseado em fotografia é deliberadamente 2D/2.5D; não promete recuperar geometria 3D física exata a partir de uma única foto.
