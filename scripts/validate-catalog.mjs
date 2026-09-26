@@ -16,6 +16,8 @@ for(const [i,p] of (m.products||[]).entries()){
  const c=p.calibration;
  if(c && (!(Number.isFinite(c.scale)&&c.scale>0) || !Array.isArray(c.position)||c.position.length!==3 || !Array.isArray(c.rotation)||c.rotation.length!==3)) errors.push(`${p.sku}: calibration inválida`);
 }
-if(m.defaultProductId && !(m.products||[]).some(p=>p.id===m.defaultProductId)) errors.push("defaultProductId não existe no catálogo");
+if(m.defaultProductId && !(m.products||[]).some(p=>p.id===m.defaultProductId && p.available!==false)) errors.push("defaultProductId não existe ou está indisponível");
+const available=(m.products||[]).filter(p=>p.available!==false);
+if(!available.length) errors.push("catálogo sem produtos disponíveis");
 if(errors.length){console.error("Catálogo inválido:\n- "+errors.join("\n- "));process.exit(1);}
 console.log(`✓ catálogo válido: ${m.products.length} produtos, ${seenSku.size} SKUs únicos`);
