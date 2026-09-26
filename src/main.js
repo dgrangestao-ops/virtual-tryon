@@ -11,7 +11,7 @@ const switchCamera = document.querySelector("#switch-camera");
 const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
 const retake = document.querySelector("#retake");
-const capture = document.querySelector("#capture");
+const capture = {hidden:true,disabled:false};
 const countdown = document.querySelector("#countdown");
 let frozenFrame=null;
 const stage = document.querySelector(".stage");
@@ -201,7 +201,7 @@ const captureResult=async()=>{
   setStatus("Resultado capturado ✓");
 };
 
-capture.addEventListener("click",captureResult);
+
 
 retake.addEventListener("click",async()=>{
   frozenFrame?.remove();
