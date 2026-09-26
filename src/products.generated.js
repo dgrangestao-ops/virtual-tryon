@@ -11,6 +11,17 @@ export const PRODUCTS = [
     "modelUrl": null,
     "imageAssetUrl": "/products/98un1/asset.png",
     "imageAspect": 2.8542713567839195,
+    "assetGeometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9982394366197183,
+      "opticalCenterY": 0.12060301507537688,
+      "bbox": {
+        "left": 0,
+        "right": 0.9982394366197183,
+        "top": 0,
+        "bottom": 0.9949748743718593
+      }
+    },
     "assetStatus": "generated",
     "calibration": {
       "scale": 0.9,
@@ -37,6 +48,17 @@ export const PRODUCTS = [
     "modelUrl": null,
     "imageAssetUrl": "/products/q7by3/asset.png",
     "imageAspect": 2.9324324324324325,
+    "assetGeometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9976958525345622,
+      "opticalCenterY": 0.08783783783783784,
+      "bbox": {
+        "left": 0,
+        "right": 0.9976958525345622,
+        "top": 0,
+        "bottom": 0.9932432432432432
+      }
+    },
     "assetStatus": "generated",
     "calibration": {
       "scale": 1,
