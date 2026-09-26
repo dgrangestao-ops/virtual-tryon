@@ -22,6 +22,7 @@ const checks=[
  ["asset geometry is normalized before render",g.includes('normalizeAssetGeometry') && g.includes("this.imageAssetGeometry=normalizeAssetGeometry(asset.geometry);")],
  ["photo asset cleanup is centralized",g.includes("clearPhotoAsset(){") && (g.match(/this\.clearPhotoAsset\(\);/g)||[]).length>=2],
  ["async asset loads have generation guard",g.includes("this.assetToken=0;") && (g.match(/\+\+this\.assetToken/g)||[]).length>=2 && g.includes("token!==this.assetToken")],
+ ["stale GLB load disposes GPU resources",g.includes("if(token!==this.assetToken){") && g.includes("node.material?.map?.dispose?.()")],
  ["photo cleanup resets SKU state",g.includes("this.imageAssetGeometry=null;") && g.includes("this.imageFrameWidth=0;") && g.includes("this.imageFrameHeight=0;")],
  ["SKU geometry does not move face anchor",g.includes("hinge remains tied to") && g.includes("const hingeY=this.imageFrameHeight*.12;")],
  ["temples use detected ear direction",g.includes("const earAnchor=this.earPose?.") && g.includes("const detectedEarX=")],
