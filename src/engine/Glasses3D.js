@@ -346,7 +346,7 @@ export class Glasses3D {
       // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
-        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.16)/.24));
+        const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.20)/.20));
         const side=imageYaw>0 ? 1 : -1;
         if(this.templeOccluders){
           this.templeOccluders.left.visible=amount>.08;
@@ -361,10 +361,10 @@ export class Glasses3D {
           const y=this.imageFrameHeight*.16;
           // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
           // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
-          const endX=hingeX-sx*this.imageFrameWidth*(.10+.12*amount);
-          const z1=-this.imageFrameWidth*(.08+.05*amount);
-          const z2=-this.imageFrameWidth*(.34+.18*amount);
-          const z3=-this.imageFrameWidth*(.58+.25*amount);
+          const endX=hingeX-sx*this.imageFrameWidth*(.07+.08*amount);
+          const z1=-this.imageFrameWidth*(.06+.04*amount);
+          const z2=-this.imageFrameWidth*(.26+.16*amount);
+          const z3=-this.imageFrameWidth*(.48+.24*amount);
           const points=[
             new THREE.Vector3(hingeX,y,0.012),
             new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.018,y-.004,z1),
@@ -378,7 +378,9 @@ export class Glasses3D {
           }
           const curve=new THREE.CatmullRomCurve3(points);
           const mat=templeMat.clone();
-          mat.opacity=.12+.78*amount;
+          mat.opacity=.10+.68*amount;
+          mat.depthWrite=true;
+          mat.depthTest=true;
           const mesh=new THREE.Mesh(
             new THREE.TubeGeometry(curve,22,.012*this.imageFrameWidth,7,false),
             mat
