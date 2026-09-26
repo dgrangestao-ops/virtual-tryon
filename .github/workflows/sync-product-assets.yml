@@ -32,4 +32,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/products
-          git diff --cached --quiet || (git commit -m "Atualiza assets locais do catálogo" && git push)
+          if ! git diff --cached --quiet; then
+            git commit -m "Atualiza assets locais do catálogo"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
