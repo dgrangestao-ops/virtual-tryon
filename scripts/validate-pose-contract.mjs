@@ -9,6 +9,7 @@ const checks=[
  ["photo front pitch is fixed",/const visualPitch=this\.usingExternalModel && this\.imageFrame \? 0 :/.test(g)],
  ["photo front has no yaw parallax",/this\.imageFrame\.position\.x=this\.imageFrameBaseX;/.test(g)],
  ["temples are hidden near frontal",/Math\.abs\(imageYaw\)-\.11/.test(g)],
+ ["temple material is instance state",/this\.templeMaterial=new THREE\.MeshPhysicalMaterial/.test(g) && /this\.templeMaterial\.clone\(\)/.test(g)],
  ["face width yaw compensation exists",/rawFaceWidth\/yawCos/.test(t)]
 ];
 let fail=false;
