@@ -347,10 +347,12 @@ export class Glasses3D {
       // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
       if(this.imageTemples){
         const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.20)/.20));
-        const side=imageYaw>0 ? 1 : -1;
+        // MediaPipe e a camada espelhada usam sentidos opostos na tela.
+        // A haste visível deve ser a do lado que realmente fica exposto ao usuário.
+        const side=imageYaw>0 ? -1 : 1;
         if(this.templeOccluders){
-          this.templeOccluders.left.visible=amount>.08;
-          this.templeOccluders.right.visible=amount>.08;
+          this.templeOccluders.left.visible=amount>.08 && side===-1;
+          this.templeOccluders.right.visible=amount>.08 && side===1;
         }
         for(const g of [this.imageTemples.left,this.imageTemples.right]){
           const active=g.userData.side===side && amount>.04;
