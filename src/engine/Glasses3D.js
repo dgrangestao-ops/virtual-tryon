@@ -392,14 +392,23 @@ export class Glasses3D {
           const earWorldY=-(earAnchor.y*2-1);
           const detectedEarX=(earWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
           const detectedEarY=(earWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
-          const earX=detectedEarX-sx*this.imageFrameWidth*.045;
-          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.55);
-          const rearZ=-this.imageFrameWidth*(.16+.16*amount);
+          // O landmark 127/356 marca a região pré-auricular, não o fim da
+          // haste. Projetamos o vetor têmpora→orelha além desse landmark para
+          // alcançar a borda superior real da orelha sem alterar a dobradiça.
+          const templeToEarX=detectedEarX-localX;
+          const projectedEarX=detectedEarX+templeToEarX*.72;
+          const minReach=this.imageFrameWidth*(.20+.08*amount);
+          const directionalReach=Math.abs(projectedEarX-hingeX);
+          const earX=directionalReach<minReach
+            ? hingeX-sx*minReach
+            : projectedEarX;
+          const earY=THREE.MathUtils.lerp(hingeY,detectedEarY,.42);
+          const rearZ=-this.imageFrameWidth*(.14+.14*amount);
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
 
-          const railY=THREE.MathUtils.lerp(hingeY,earY,.28);
+          const railY=THREE.MathUtils.lerp(hingeY,earY,.18);
           const points=[
             new THREE.Vector3(hingeX,hingeY,.012),
             new THREE.Vector3(
