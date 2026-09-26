@@ -5,11 +5,14 @@
     "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-SIZE-0.webp",
     "target": "public/products/98un1/gallery/01.webp",
     "metrics": {
-      "score": 98.2653522695628,
+      "score": 89.34917402844457,
       "symmetry": 0.9719855193539404,
       "aspect": 2.037593984962406,
       "centered": 1,
-      "occupancy": 0.5717892517271037
+      "occupancy": 0.5717892517271037,
+      "upperRatio": 0.005822698820903489,
+      "opticalTop": 137,
+      "protrusionPenalty": 1.048085787762628
     }
   },
   "asset": {
@@ -25,11 +28,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135701_-0f9bafd9c75984685117630012588680-SIZE-0.webp",
       "target": "public/products/98un1/gallery/01.webp",
       "metrics": {
-        "score": 98.2653522695628,
+        "score": 89.34917402844457,
         "symmetry": 0.9719855193539404,
         "aspect": 2.037593984962406,
         "centered": 1,
-        "occupancy": 0.5717892517271037
+        "occupancy": 0.5717892517271037,
+        "upperRatio": 0.005822698820903489,
+        "opticalTop": 137,
+        "protrusionPenalty": 1.048085787762628
       }
     },
     {
@@ -38,11 +44,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9682c6eb-a4c2-47ed-b2f8-e5ec12791bfe_5876852_6089436-04b4c0b958cbdd1a4417743987956955-SIZE-0.webp",
       "target": "public/products/98un1/gallery/05.webp",
       "metrics": {
-        "score": 93.03566974991436,
+        "score": 84.09478119293458,
         "symmetry": 0.9723909184340839,
         "aspect": 1.8116883116883118,
         "centered": 0.9841269841269841,
-        "occupancy": 0.5349811478843737
+        "occupancy": 0.5349811478843737,
+        "upperRatio": 0.00813538675715653,
+        "opticalTop": 127,
+        "protrusionPenalty": 1.4643696162881754
       }
     },
     {
@@ -51,11 +60,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_ca3fdba2-b0a5-4e8b-b0c2-18684a7f99ce_5876852_6089436-e925d5a0bb58d0617417743983508900-SIZE-0.webp",
       "target": "public/products/98un1/gallery/03.webp",
       "metrics": {
-        "score": 92.91505752463497,
+        "score": 83.77418643896402,
         "symmetry": 0.9257854821235103,
         "aspect": 2.1923076923076925,
         "centered": 0.9968253968253968,
-        "occupancy": 0.5376248313090418
+        "occupancy": 0.5376248313090418,
+        "upperRatio": 0.009287614840102414,
+        "opticalTop": 144,
+        "protrusionPenalty": 1.6717706712184346
       }
     },
     {
@@ -64,11 +76,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110440_-f61cb65919e98711a017685887646557-SIZE-0.webp",
       "target": "public/products/98un1/gallery/08.webp",
       "metrics": {
-        "score": 92.56204895072784,
+        "score": 83.55994135674956,
         "symmetry": 0.9632903981264637,
         "aspect": 2.2950819672131146,
         "centered": 0.9967320261437909,
-        "occupancy": 0.5856264637002342
+        "occupancy": 0.5856264637002342,
+        "upperRatio": 0.008597850537365658,
+        "opticalTop": 150,
+        "protrusionPenalty": 1.5476130967258184
       }
     },
     {
@@ -77,11 +92,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_9669a586-b551-4121-b4e2-2d0a6afd45a1_5876852_6089436-5fb247e62c0b82b1e817685891197208-SIZE-0.webp",
       "target": "public/products/98un1/gallery/07.webp",
       "metrics": {
-        "score": 92.48468303626198,
+        "score": 72.40527393296136,
         "symmetry": 0.9393764130606236,
         "aspect": 1.867132867132867,
         "centered": 0.9777777777777779,
-        "occupancy": 0.5623477645949556
+        "occupancy": 0.5623477645949556,
+        "upperRatio": 0.07032741837827768,
+        "opticalTop": 160,
+        "protrusionPenalty": 12.658935308089982
       }
     },
     {
@@ -90,11 +108,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_aa30791f-3feb-4821-9d1c-73284b14688f_5876852_6089436-81ec9da65fbb0ff70817743994608117-SIZE-0.webp",
       "target": "public/products/98un1/gallery/06.webp",
       "metrics": {
-        "score": 91.64596006144394,
+        "score": 70.8430921815819,
         "symmetry": 0.9422119815668203,
         "aspect": 1.8129032258064517,
         "centered": 0.9968253968253968,
-        "occupancy": 0.5457008380208931
+        "occupancy": 0.5457008380208931,
+        "upperRatio": 0.07455402221474251,
+        "opticalTop": 161,
+        "protrusionPenalty": 13.419723998653652
       }
     },
     {
@@ -103,11 +124,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20251112_135856_-516aac5c1a001f040417630013924857-SIZE-0.webp",
       "target": "public/products/98un1/gallery/04.webp",
       "metrics": {
-        "score": 77.07688551868071,
+        "score": 69.54619612944141,
         "symmetry": 0.959240284893165,
         "aspect": 1.1433962264150943,
         "centered": 0.9869281045751634,
-        "occupancy": 0.3351765365215767
+        "occupancy": 0.3351765365215767,
+        "upperRatio": 0.006502433768067477,
+        "opticalTop": 134,
+        "protrusionPenalty": 1.170438078252146
       }
     },
     {
@@ -116,11 +140,14 @@
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260110_110223_-614452b682f51500a017685884980392-SIZE-0.webp",
       "target": "public/products/98un1/gallery/02.webp",
       "metrics": {
-        "score": 76.09496238134894,
+        "score": 52.685516736476075,
         "symmetry": 0.9601029601029601,
         "aspect": 1.1814671814671815,
         "centered": 0.9967320261437909,
-        "occupancy": 0.2477982183864537
+        "occupancy": 0.2477982183864537,
+        "upperRatio": 0.094251234787922,
+        "opticalTop": 170,
+        "protrusionPenalty": 16.96522226182596
       }
     }
   ]

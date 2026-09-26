@@ -36,7 +36,7 @@ export const PRODUCTS = [
     "sourceImageUrl": "/products/q7by3/source.webp",
     "modelUrl": null,
     "imageAssetUrl": "/products/q7by3/asset.png",
-    "imageAspect": 2.764705882352941,
+    "imageAspect": 2.8366013071895426,
     "assetStatus": "generated",
     "calibration": {
       "scale": 1,
