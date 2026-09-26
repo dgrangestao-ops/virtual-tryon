@@ -406,10 +406,13 @@ export class Glasses3D {
           // Terminal curto além do topo da orelha: o primeiro ponto toca a
           // região auricular e o segundo desce/recuа para simular a ponteira
           // passando por trás, sem deformar o longo trecho horizontal.
-          const tipX=earX-sx*this.imageFrameWidth*(.055+.025*amount);
-          const tipY=earY-this.imageFrameHeight*(.16+.05*amount);
           const rearZ=-this.imageFrameWidth*(.14+.14*amount);
-          const tipZ=rearZ-this.imageFrameWidth*(.08+.04*amount);
+          // Ponteira sem deslocamento adicional em X/Y: depois de tocar a
+          // região auricular ela recua apenas em profundidade. Isso impede o
+          // gancho visível acima/abaixo da haste nos dois lados.
+          const tipX=earX;
+          const tipY=earY;
+          const tipZ=rearZ-this.imageFrameWidth*(.14+.06*amount);
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
