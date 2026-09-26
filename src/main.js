@@ -209,14 +209,14 @@ const captureResult=async()=>{
     if(frozen.img.complete) return resolve();
     frozen.img.onload=resolve; frozen.img.onerror=reject;
   });
-  const cal=engine.product?.calibration?.scale||1;
   const aspect=engine.product?.imageAspect||2.2;
-  // Reproduz na captura exatamente a mesma escala usada no preview WebGL.
-  // Antes a foto congelada aplicava um multiplicador extra de 1.27 sobre a
-  // largura facial bruta, fazendo a armação "crescer" após o 3-2-1.
+  // Espelha a geometria REAL do preview WebGL. A malha fotográfica já inclui
+  // a calibração do SKU (1.78 * calibration.scale), portanto não aplicamos
+  // calibration.scale novamente aqui.
   const stageAspect=frozen.w/frozen.h;
-  const previewScale=((frozen.pose.scale*2*stageAspect)/1.66)*.84;
-  const frameW=previewScale*(frozen.h/2)*2*cal;
+  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66)*.84;
+  const meshWidth=engine.glasses3d?.imageFrameWidth||1.78;
+  const frameW=(previewRootScale*meshWidth)*(frozen.w/(2*stageAspect));
   const frameH=frameW/aspect;
   let cx=frozen.pose.centerX*frozen.w;
   // Na foto congelada, ancora o centro óptico um pouco abaixo da linha dos
