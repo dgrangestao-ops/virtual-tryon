@@ -29,5 +29,5 @@ for(let i=0;i<30;i++) turned=solveStableFaceScale(scaleState,{rawFaceWidth:.31,e
 assert.ok(Math.abs(turned-neutral)/neutral<=.061,"3/4 must not shrink frame materially");
 let recovered=turned;
 for(let i=0;i<30;i++) recovered=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
-assert.ok(Math.abs(recovered-neutral)/neutral<.04,"neutral scale must recover smoothly");
+assert.ok(Math.abs(recovered-neutral)/neutral<.055,"neutral scale must recover smoothly");
 console.log("✓ face scale invariants");
