@@ -20,7 +20,8 @@ const checks=[
  ["temples reach ear target",g.includes("new THREE.Vector3(earX,earY,rearZ)")],
  ["temple tip has no visible XY hook",g.includes("const tipX=earX;") && g.includes("const tipY=earY;")],
  ["temple tip disappears in depth",g.includes("const tipZ=rearZ-this.imageFrameWidth*(.14+.06*amount);") && g.includes("new THREE.Vector3(tipX,tipY,tipZ)")],
- ["temple rail stays mostly horizontal",g.includes("const railY=THREE.MathUtils.lerp(hingeY,earY,.18);")],
+ ["temple visible rail is horizontal",g.includes("const earY=hingeY;") && g.includes("const railY=hingeY;")],
+ ["ear vertical correction is hidden in depth",g.includes("const hiddenEarY=THREE.MathUtils.lerp(hingeY,detectedEarY,.38);") && g.includes("const tipY=hiddenEarY;")],
  ["photo temple occluders stay disabled",g.includes("this.templeOccluders.left.visible=false;") && g.includes("this.templeOccluders.right.visible=false;")],
  ["temple material is instance state",g.includes("this.templeMaterial=new THREE.MeshPhysicalMaterial") && g.includes("this.templeMaterial.clone()")],
  ["hybrid stable face scale exists",g.length>0 && t.includes("const faceWidth=rawFaceWidth*.35+eyeBasedWidth*.65;")]
