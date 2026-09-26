@@ -28,11 +28,13 @@ jobs:
         run: node scripts/sync-catalog.mjs catalog/fremi.json
       - name: Select best frontal view
         run: node scripts/select-front-view.mjs catalog/fremi.json
+      - name: Regenerate runtime catalog
+        run: node scripts/generate-products.mjs catalog/fremi.json src/products.generated.js
       - name: Commit refreshed assets
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/products
+          git add public/products src/products.generated.js
           if ! git diff --cached --quiet; then
             git commit -m "Atualiza assets locais do catálogo"
             git pull --rebase origin main
