@@ -175,11 +175,16 @@ export class TryOnEngine {
     this.faceSeenAt=performance.now();
     const leftEye=face[33], rightEye=face[263];
     const leftTemple=face[234], rightTemple=face[454];
-    // Pontos laterais da face usados exclusivamente pela geometria das hastes.
-    // Mantemos os dois lados para o renderizador decidir qual está exposto.
+    // Landmarks auriculares do FaceMesh (127/356) ficam atrás das têmporas
+    // e são uma referência melhor para o destino visual das hastes.
+    const leftEar=face[127]||leftTemple, rightEar=face[356]||rightTemple;
     const templeAnchors={
       left:{x:leftTemple.x,y:leftTemple.y,z:leftTemple.z||0},
       right:{x:rightTemple.x,y:rightTemple.y,z:rightTemple.z||0}
+    };
+    const earAnchors={
+      left:{x:leftEar.x,y:leftEar.y,z:leftEar.z||0},
+      right:{x:rightEar.x,y:rightEar.y,z:rightEar.z||0}
     };
 
     // Trabalhamos em coordenadas NORMALIZADAS do MediaPipe até o WebGL.
@@ -231,6 +236,7 @@ export class TryOnEngine {
       yaw,
       pitch,
       templeAnchors,
+      earAnchors,
     });
 
     this.glasses3d.render();
