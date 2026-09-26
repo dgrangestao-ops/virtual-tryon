@@ -32,6 +32,7 @@ export class Glasses3D {
     this.pose=null;
     this.imageFrame=null;
     this.imageFrameBaseX=0;
+    this.imageTemples=null;
   }
 
   setImageFrame(asset, calibration={}){
@@ -76,6 +77,28 @@ export class Glasses3D {
     this.imageFrame.userData.aspect=asset.aspect||2.2;
     this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
+
+    // Hastes 2.5D independentes: a frente vem da fotografia, enquanto as
+    // laterais ganham profundidade real e aparecem progressivamente no 3/4.
+    const templeMat=new THREE.MeshPhysicalMaterial({
+      color:0x241714,roughness:0.28,metalness:0.02,clearcoat:0.38
+    });
+    const makeTemple=(side)=>{
+      const group=new THREE.Group();
+      const hingeX=side*width*.485;
+      const length=.78*width;
+      const curve=new THREE.CatmullRomCurve3([
+        new THREE.Vector3(hingeX,height*.18,-.005),
+        new THREE.Vector3(hingeX+side*.035,height*.16,-length*.25),
+        new THREE.Vector3(hingeX+side*.055,height*.12,-length*.68),
+        new THREE.Vector3(hingeX+side*.035,height*.02,-length)
+      ]);
+      const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,28,.018*width,7,false),templeMat);
+      group.add(mesh); return group;
+    };
+    const left=makeTemple(-1),right=makeTemple(1);
+    this.imageTemples={left,right};
+    this.modelRoot.add(left,right);
     this.fallback.visible=false;
     this.leftTemple.visible=false;
     this.rightTemple.visible=false;
@@ -299,6 +322,16 @@ export class Glasses3D {
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
     if(this.usingExternalModel && this.imageFrame){
+      // A haste do lado que fica mais exposto no 3/4 ganha opacidade; frontalmente
+      // ambas ficam discretas para não reaparecerem como arcos sobre a testa.
+      if(this.imageTemples){
+        const amount=Math.min(1,Math.abs(imageYaw)/.34);
+        const showRight=imageYaw>0;
+        this.imageTemples.left.visible=amount>.06 && !showRight;
+        this.imageTemples.right.visible=amount>.06 && showRight;
+        const exposed=showRight?this.imageTemples.right:this.imageTemples.left;
+        exposed.scale.z=.72+.28*amount;
+      }
       // Pequena correção de paralaxe: ao girar a cabeça, a ponte permanece
       // próxima ao nariz em vez de a frente inteira "escorregar" lateralmente.
       const parallax=Math.sin(imageYaw)*0.085;
