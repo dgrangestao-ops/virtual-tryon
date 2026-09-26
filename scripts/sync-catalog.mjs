@@ -16,8 +16,14 @@ function collectImages(html){
   const push=(u,source)=>{
     u=decode(u||"").trim();
     if(!/^https?:\/\//i.test(u)) return;
+    try{
+      const host=new URL(u).hostname;
+      if(!/mitiendanube\.com$/i.test(host) && !/fremieyewear\.com\.br$/i.test(host)) return;
+    }catch{return;}
+    if(/\/themes\/|\/logo[-_/]|favicon|banner|icon/i.test(u)) return;
     if(!/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(u)) return;
-    if(!found.some(x=>x.url===u)) found.push({url:u,source});
+    const key=u.replace(/^http:/i,"https:").replace(/-(?:240|320|480|640|1024|1080|1200|1500|2048)-0(?=\.)/i,"-SIZE-0");
+    if(!found.some(x=>x.key===key)) found.push({url:u,source,key});
   };
   for(const tag of html.match(/<meta\b[^>]*>/gi)||[]){
     if(/(?:property|name)\s*=\s*["']og:image(?::secure_url)?["']/i.test(tag)){
@@ -57,7 +63,7 @@ for(const product of manifest.products||[]){
     candidates.unshift({url:product.sourceImageUrl,source:"manifest"});
   }
   candidates=candidates
-    .filter((x,i,a)=>a.findIndex(y=>y.url===x.url)===i)
+    .filter((x,i,a)=>a.findIndex(y=>(y.key||y.url)===(x.key||x.url))===i)
     .sort((a,b)=>scoreCandidate(b,0)-scoreCandidate(a,0))
     .slice(0,8);
   if(!candidates.length) throw new Error(`Nenhuma imagem encontrada para ${product.sku}`);
