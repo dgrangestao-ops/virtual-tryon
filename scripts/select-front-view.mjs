@@ -103,8 +103,25 @@ async function makeTryOnAsset(source,out){
     data[i+3]=a;
   }
   await sharp(data,{raw:{width:w,height:h,channels:4}}).trim({background:{r:0,g:0,b:0,alpha:0}}).png().toFile(out);
-  const meta=await sharp(out).metadata();
-  return {frontTop,aspect:meta.width/meta.height,width:meta.width,height:meta.height};
+  const {data:assetData,info:assetInfo}=await sharp(out).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+  // Metadados geométricos normalizados usados pelo motor. São derivados do
+  // próprio asset, portanto novos SKUs não exigem ajuste manual.
+  let left=assetInfo.width,right=0,top=assetInfo.height,bottom=0;
+  const rowMass=new Array(assetInfo.height).fill(0);
+  for(let y=0;y<assetInfo.height;y++) for(let x=0;x<assetInfo.width;x++){
+    const a=assetData[(y*assetInfo.width+x)*4+3];
+    if(a>32){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);rowMass[y]++;}
+  }
+  const peakRow=Math.max(...rowMass);
+  let opticalRow=Math.round((top+bottom)/2);
+  for(let y=top;y<=bottom;y++) if(rowMass[y]>=peakRow*.72){opticalRow=y;break;}
+  const geometry={
+    hingeLeftX:left/assetInfo.width,
+    hingeRightX:right/assetInfo.width,
+    opticalCenterY:opticalRow/assetInfo.height,
+    bbox:{left:left/assetInfo.width,right:right/assetInfo.width,top:top/assetInfo.height,bottom:bottom/assetInfo.height}
+  };
+  return {frontTop,aspect:assetInfo.width/assetInfo.height,width:assetInfo.width,height:assetInfo.height,geometry};
 }
 
 for(const p of manifest.products||[]){
