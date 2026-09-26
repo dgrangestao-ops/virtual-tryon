@@ -136,6 +136,11 @@ export class TryOnEngine {
     this.running=false;
     this.loopToken++;
     this.lastVideoTime=-1;
+    this.faceSeenAt=0;
+    this.video.pause?.();
+    this.video.srcObject=null;
+    this.glasses3d.hide();
+    this.glasses3d.render();
     this.faceScaleState=createStableFaceScale();
     this.missedFaceFrames=0;
   }
