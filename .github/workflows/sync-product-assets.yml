@@ -7,6 +7,7 @@ on:
       - "catalog/**"
       - "scripts/sync-catalog.mjs"
       - "scripts/select-front-view.mjs"
+      - "scripts/validate-assets.mjs"
       - "scripts/validate-catalog.mjs"
       - "scripts/import-products.mjs"
       - ".github/workflows/sync-product-assets.yml"
@@ -28,6 +29,8 @@ jobs:
         run: node scripts/sync-catalog.mjs catalog/fremi.json
       - name: Select best frontal view
         run: node scripts/select-front-view.mjs catalog/fremi.json
+      - name: Validate processed assets
+        run: node scripts/validate-assets.mjs catalog/fremi.json
       - name: Regenerate runtime catalog
         run: node scripts/generate-products.mjs catalog/fremi.json src/products.generated.js
       - name: Commit refreshed assets
