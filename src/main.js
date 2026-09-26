@@ -13,7 +13,10 @@ const fullscreen = document.querySelector("#fullscreen");
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
 const testProduct=document.querySelector("#test-product");
+const pilotBadge=document.querySelector("#pilot-badge");
 const params=new URLSearchParams(location.search);
+const testMode=params.get("test")==="1";
+if(!testMode && pilotBadge) pilotBadge.hidden=true;
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
 const requestedKey=requestedSku||requestedProduct;
@@ -52,7 +55,7 @@ const engine = new TryOnEngine(
   setStatus
 );
 
-if(PRODUCTS.filter(p=>p.available).length>1){
+if(testMode && PRODUCTS.filter(p=>p.available).length>1){
   testProduct.hidden=false;
   for(const p of PRODUCTS.filter(p=>p.available)){
     const option=document.createElement("option");
