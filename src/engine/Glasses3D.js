@@ -358,9 +358,11 @@ export class Glasses3D {
         // MediaPipe e a camada espelhada usam sentidos opostos na tela.
         // A haste visível deve ser a do lado que realmente fica exposto ao usuário.
         const side=imageYaw>0 ? -1 : 1;
+        // No modo 2.5D não mascaramos a haste com uma esfera aproximada:
+        // ela ocultava a peça inteira em 3/4. A própria geometria recua em Z.
         if(this.templeOccluders){
-          this.templeOccluders.left.visible=amount>.08 && side===-1;
-          this.templeOccluders.right.visible=amount>.08 && side===1;
+          this.templeOccluders.left.visible=false;
+          this.templeOccluders.right.visible=false;
         }
         for(const g of [this.imageTemples.left,this.imageTemples.right]){
           const active=g.userData.side===side && amount>.04;
@@ -369,24 +371,24 @@ export class Glasses3D {
           const sx=g.userData.side;
           const hingeX=sx*this.imageFrameWidth*.485;
           // Haste nasce na dobradiça lateral, próxima à linha óptica.
-          const y=this.imageFrameHeight*.10;
+          const y=this.imageFrameHeight*.12;
           // A ponta se desloca para dentro da silhueta da cabeça e para trás em Z.
           // Assim a haste nasce exatamente na dobradiça e recua até a têmpora.
           // A haste precisa permanecer visível no 3/4 e seguir horizontalmente
           // até a região da orelha. O trecho final recua em Z para parecer passar
           // atrás da cabeça, em vez de formar um bloco destacado junto à orelha.
-          const endX=hingeX-sx*this.imageFrameWidth*(.12+.10*amount);
-          const z1=-this.imageFrameWidth*(.04+.03*amount);
-          const z2=-this.imageFrameWidth*(.18+.10*amount);
-          const z3=-this.imageFrameWidth*(.36+.16*amount);
+          const endX=hingeX-sx*this.imageFrameWidth*(.20+.14*amount);
+          const z1=-this.imageFrameWidth*(.025+.02*amount);
+          const z2=-this.imageFrameWidth*(.11+.07*amount);
+          const z3=-this.imageFrameWidth*(.28+.12*amount);
           const bucket=Math.round(amount*20);
           if(g.userData.lastBucket===bucket) continue;
           g.userData.lastBucket=bucket;
           const points=[
             new THREE.Vector3(hingeX,y,0.012),
-            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.035,y-.002,z1),
-            new THREE.Vector3(endX+sx*this.imageFrameWidth*.055,y-.010,z2),
-            new THREE.Vector3(endX,y-.028,z3)
+            new THREE.Vector3(hingeX-sx*this.imageFrameWidth*.055,y-.002,z1),
+            new THREE.Vector3(endX+sx*this.imageFrameWidth*.080,y-.006,z2),
+            new THREE.Vector3(endX,y-.018,z3)
           ];
           if(g.userData.mesh){
             g.remove(g.userData.mesh);
@@ -395,11 +397,11 @@ export class Glasses3D {
           }
           const curve=new THREE.CatmullRomCurve3(points);
           const mat=this.templeMaterial.clone();
-          mat.opacity=.10+.68*amount;
+          mat.opacity=.35+.60*amount;
           mat.depthWrite=true;
           mat.depthTest=true;
           const mesh=new THREE.Mesh(
-            new THREE.TubeGeometry(curve,24,.008*this.imageFrameWidth,7,false),
+            new THREE.TubeGeometry(curve,24,.010*this.imageFrameWidth,7,false),
             mat
           );
           mesh.renderOrder=-1;
