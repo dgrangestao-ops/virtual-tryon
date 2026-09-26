@@ -138,6 +138,10 @@ export class TryOnEngine {
       if(this.stream===stream) this.stream=null;
       if(this.video.srcObject===stream) this.video.srcObject=null;
       this.running=false;
+      this.glasses3d.hide();
+      this.glasses3d.render();
+      this.faceScaleState=createStableFaceScale();
+      this.missedFaceFrames=0;
       throw error;
     }
     this.resize();
