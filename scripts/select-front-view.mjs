@@ -57,12 +57,22 @@ async function makeTryOnAsset(source,out){
     spans[y]={lo,hi,count,span:hi>=lo?hi-lo+1:0};
   }
   const peak=Math.max(...spans.map(r=>r.span));
-  // A frente óptica forma uma faixa horizontal larga; hastes abertas aparecem
-  // como traços estreitos acima dela. Preservamos a frente e descartamos só
-  // pixels superiores anteriores ao primeiro trecho realmente largo.
-  let frontTop=spans.findIndex(r=>r.span>=peak*.72 && r.count>=peak*.18);
-  if(frontTop<0) frontTop=0;
-  const feather=Math.max(2,Math.round(h*.008));
+  // Detecta a frente pela primeira faixa horizontal sustentada. Hastes abertas
+  // podem ter grande largura entre as pontas, mas poucos pixels por linha; por
+  // isso exigimos simultaneamente largura e densidade durante várias linhas.
+  let frontTop=0;
+  const minSpan=peak*.62, minDensity=.30;
+  const sustained=Math.max(3,Math.round(h*.012));
+  outer: for(let y=0;y<h-sustained;y++){
+    for(let k=0;k<sustained;k++){
+      const r=spans[y+k];
+      if(r.span<minSpan || r.count/Math.max(1,r.span)<minDensity) continue outer;
+    }
+    frontTop=y; break;
+  }
+  // Pequena margem para não cortar a borda superior real da armação.
+  frontTop=Math.max(0,frontTop-Math.round(h*.006));
+  const feather=Math.max(2,Math.round(h*.006));
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
     const i=(y*w+x)*4;
     const d=Math.hypot(data[i]-bg[0],data[i+1]-bg[1],data[i+2]-bg[2]);
