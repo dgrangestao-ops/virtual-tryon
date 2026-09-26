@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { solveTemple2D } from "./TempleSolver.js";
 
 export class Glasses3D {
   constructor(canvas){
@@ -392,49 +393,23 @@ export class Glasses3D {
           const earWorldY=-(earAnchor.y*2-1);
           const detectedEarX=(earWorldX-this.pose.x)/Math.max(this.pose.scale,.0001);
           const detectedEarY=(earWorldY-this.pose.y)/Math.max(this.pose.scale,.0001);
-          // O landmark 127/356 marca a região pré-auricular, não o fim da
-          // haste. Projetamos o vetor têmpora→orelha além desse landmark para
-          // alcançar a borda superior real da orelha sem alterar a dobradiça.
-          const templeToEarX=detectedEarX-localX;
-          // Pequena extensão adicional além do ponto pré-auricular. O
-          // teste real mostrou que a projeção anterior ainda terminava sobre
-          // a pele; este ganho atua somente no terminal, sem mover a frente.
-          const projectedEarX=detectedEarX+templeToEarX*.92;
-          const minReach=this.imageFrameWidth*(.235+.09*amount);
-          const directionalReach=Math.abs(projectedEarX-hingeX);
-          const earX=directionalReach<minReach
-            ? hingeX-sx*minReach
-            : projectedEarX;
-          // A haste física sai horizontal da dobradiça. O Y detectado da
-          // orelha é usado apenas no ponto oculto em profundidade.
-          const earY=hingeY;
-          // detectedEarY é mantido apenas como referência futura de oclusão.
-          // Terminal curto além do topo da orelha: o primeiro ponto toca a
-          // região auricular e o segundo desce/recuа para simular a ponteira
-          // passando por trás, sem deformar o longo trecho horizontal.
-          const rearZ=-this.imageFrameWidth*(.14+.14*amount);
+          const solvedTemple=solveTemple2D({
+            side:sx,
+            hingeX,
+            hingeY,
+            frameWidth:this.imageFrameWidth,
+            amount,
+            templeX:localX,
+            earX:detectedEarX
+          });
+          const earX=solvedTemple.endX;
+          const earY=solvedTemple.endY;
+          const rearZ=solvedTemple.rearZ;
           const bucket=`${Math.round(amount*16)}:${Math.round(localX*40)}:${Math.round(localY*40)}:${Math.round(earX*40)}:${Math.round(earY*40)}`;
           if(group.userData.lastBucket===bucket) continue;
           group.userData.lastBucket=bucket;
 
-          const railY=hingeY;
-          const points=[
-            new THREE.Vector3(hingeX,hingeY,.012),
-            new THREE.Vector3(
-              THREE.MathUtils.lerp(hingeX,earX,.34),
-              railY,
-              -this.imageFrameWidth*.025
-            ),
-            new THREE.Vector3(
-              THREE.MathUtils.lerp(hingeX,earX,.76),
-              railY,
-              rearZ*.48
-            ),
-            // Termina limpo na borda auricular. A parte física que passaria
-            // atrás da orelha não deve ser desenhada sem uma máscara real da
-            // cabeça, pois sua projeção 2D cria o falso gancho/L.
-            new THREE.Vector3(earX,earY,rearZ)
-          ];
+          const points=solvedTemple.points.map(([x,y,z])=>new THREE.Vector3(x,y,z));
           if(group.userData.mesh){
             group.remove(group.userData.mesh);
             group.userData.mesh.geometry.dispose();
