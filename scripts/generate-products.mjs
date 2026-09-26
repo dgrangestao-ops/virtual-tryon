@@ -4,15 +4,15 @@ const out=process.argv[3]||"src/products.generated.js";
 const m=JSON.parse(await readFile(path,"utf8"));
 const products=[];
 for(const p of (m.products||[])){
- let generatedAsset=null,imageAspect=p.imageAspect;
+ let generatedAsset=null,imageAspect=p.imageAspect,assetGeometry=null;
  try{
    const sel=JSON.parse(await readFile(`public/products/${p.sku}/selection.json`,"utf8"));
-   if(sel.asset){generatedAsset=`/products/${p.sku}/asset.png`; imageAspect=sel.asset.aspect;}
+   if(sel.asset){generatedAsset=`/products/${p.sku}/asset.png`; imageAspect=sel.asset.aspect; assetGeometry=sel.asset.geometry||null;}
  }catch{}
  products.push({
  id:p.id,brand:p.brand||m.brand||m.store,name:p.name,sku:p.sku,productUrl:p.productUrl,
  sourceImageUrl:p.localSourceUrl||p.sourceImageUrl,remoteSourceImageUrl:p.sourceImageUrl?.startsWith("http")?p.sourceImageUrl:undefined,
- modelUrl:p.modelUrl??null,imageAssetUrl:p.imageAssetUrl??generatedAsset,imageAspect,assetStatus:generatedAsset?"generated":(p.assetStatus||"source-photo"),
+ modelUrl:p.modelUrl??null,imageAssetUrl:p.imageAssetUrl??generatedAsset,imageAspect,assetGeometry,assetStatus:generatedAsset?"generated":(p.assetStatus||"source-photo"),
  calibration:p.calibration||{scale:1,position:[0,0,0],rotation:[0,0,0]},available:p.available!==false
  });
 }
