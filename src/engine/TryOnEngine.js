@@ -62,7 +62,10 @@ export class TryOnEngine {
       return this.glasses3d.loadModel(product.modelUrl,product.calibration||{});
     }
     if(product.imageAssetUrl){
-      this.glasses3d.setImageFrame({url:product.imageAssetUrl,aspect:product.imageAspect||2.2});
+      this.glasses3d.setImageFrame(
+        {url:product.imageAssetUrl,aspect:product.imageAspect||2.2},
+        product.calibration||{}
+      );
       return true;
     }
     if(product.sourceImageUrl){
