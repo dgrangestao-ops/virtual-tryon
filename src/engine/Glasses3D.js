@@ -118,6 +118,8 @@ export class Glasses3D {
     };
     this.templeOccluders={left:makeOcc(-1),right:makeOcc(1)};
     this.modelRoot.add(this.templeOccluders.left,this.templeOccluders.right,left,right);
+    this.templeOccluders.left.visible=false;
+    this.templeOccluders.right.visible=false;
     this.fallback.visible=false;
     this.leftTemple.visible=false;
     this.rightTemple.visible=false;
