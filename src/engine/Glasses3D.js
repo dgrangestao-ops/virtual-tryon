@@ -477,6 +477,12 @@ export class Glasses3D {
   hide(){
     this.root.visible=false;
     this.pose=null;
+    this.templePose=null;
+    this.earPose=null;
+    if(this.imageTemples){
+      this.imageTemples.left.visible=false;
+      this.imageTemples.right.visible=false;
+    }
     this.templeSide=0;
     this.templeSideCandidate=0;
     this.templeSideFrames=0;
