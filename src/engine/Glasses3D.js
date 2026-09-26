@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { solveTemple2D, templeVisibility, exposedTempleSide } from "./TempleSolver.js";
 import { solveFrontPose, smoothPose } from "./FramePoseSolver.js";
+import { normalizeAssetGeometry } from "./AssetGeometry.js";
 
 export class Glasses3D {
   constructor(canvas){
@@ -99,7 +100,7 @@ export class Glasses3D {
     const pos=calibration.position||[0,0,0];
     this.imageFrame.position.set(pos[0]||0,0.015+(pos[1]||0),0.055+(pos[2]||0));
     this.imageFrame.userData.aspect=asset.aspect||2.2;
-    this.imageAssetGeometry=asset.geometry||null;
+    this.imageAssetGeometry=normalizeAssetGeometry(asset.geometry);
     this.imageFrameBaseX=pos[0]||0;
     this.modelRoot.add(this.imageFrame);
 
