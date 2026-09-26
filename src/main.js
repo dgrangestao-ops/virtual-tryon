@@ -149,9 +149,10 @@ window.addEventListener("resize",()=>{
 });
 
 const drawFrozenFrame=()=>{
-  const w=video.videoWidth||canvas3d.width;
-  const h=video.videoHeight||canvas3d.height;
-  if(!w||!h) return false;
+  const displayRect=stage.getBoundingClientRect();
+  const w=Math.max(1,Math.round(displayRect.width));
+  const h=Math.max(1,Math.round(displayRect.height));
+  if(!video.videoWidth||!canvas3d.width) return false;
   if(!frozenFrame){
     frozenFrame=document.createElement("canvas");
     frozenFrame.id="frozen-frame";
@@ -160,17 +161,18 @@ const drawFrozenFrame=()=>{
   }
   frozenFrame.width=w; frozenFrame.height=h;
   const ctx=frozenFrame.getContext("2d");
-  // O vídeo e o WebGL são espelhados juntos na interface, mas o canvas 3D
-  // já contém a armação renderizada em pixels. Espelhamos cada camada para
-  // reproduzir exatamente o que o cliente vê antes da captura.
-  ctx.save();
-  if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
-  ctx.drawImage(video,0,0,w,h);
-  ctx.restore();
-  ctx.save();
-  if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
-  ctx.drawImage(canvas3d,0,0,w,h);
-  ctx.restore();
+  const cover=(source,sw,sh,mirror=false)=>{
+    const scale=Math.max(w/sw,h/sh);
+    const dw=sw*scale, dh=sh*scale;
+    const dx=(w-dw)/2, dy=(h-dh)/2;
+    ctx.save();
+    if(mirror){ctx.translate(w,0);ctx.scale(-1,1);}
+    ctx.drawImage(source,dx,dy,dw,dh);
+    ctx.restore();
+  };
+  // Congela exatamente as duas camadas visíveis antes de encerrar o tracking.
+  cover(video,video.videoWidth,video.videoHeight,engine.facingMode==="user");
+  cover(canvas3d,canvas3d.width,canvas3d.height,engine.facingMode==="user");
   frozenFrame.hidden=false;
   return true;
 };
