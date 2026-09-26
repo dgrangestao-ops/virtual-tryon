@@ -35,6 +35,7 @@ export class Glasses3D {
     this.imageTemples=null;
     this.imageFrameWidth=0;
     this.imageFrameHeight=0;
+    this.templeOccluders=null;
   }
 
   setImageFrame(asset, calibration={}){
@@ -46,6 +47,11 @@ export class Glasses3D {
         else node.material?.dispose?.();
       });
       this.model=null;
+    }
+    if(this.templeOccluders){
+      this.modelRoot.remove(this.templeOccluders.left,this.templeOccluders.right);
+      for(const m of [this.templeOccluders.left,this.templeOccluders.right]){m.geometry?.dispose?.();m.material?.dispose?.();}
+      this.templeOccluders=null;
     }
     if(this.imageTemples){
       this.modelRoot.remove(this.imageTemples.left,this.imageTemples.right);
@@ -100,7 +106,18 @@ export class Glasses3D {
     const left=makeTemple(-1),right=makeTemple(1);
     this.imageTemples={left,right};
     this.imageFrameWidth=width; this.imageFrameHeight=height;
-    this.modelRoot.add(left,right);
+    // Máscaras de profundidade aproximam a lateral da cabeça. Elas não desenham
+    // nada: apenas escondem o trecho da haste que deveria passar atrás da têmpora.
+    const occMat=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:true,depthTest:true});
+    const makeOcc=(side)=>{
+      const m=new THREE.Mesh(new THREE.SphereGeometry(.34*width,18,12),occMat.clone());
+      m.scale.set(.46,1.05,.72);
+      m.position.set(side*.57*width,.02,-.18*width);
+      m.renderOrder=-2;
+      return m;
+    };
+    this.templeOccluders={left:makeOcc(-1),right:makeOcc(1)};
+    this.modelRoot.add(this.templeOccluders.left,this.templeOccluders.right,left,right);
     this.fallback.visible=false;
     this.leftTemple.visible=false;
     this.rightTemple.visible=false;
@@ -329,6 +346,10 @@ export class Glasses3D {
       if(this.imageTemples){
         const amount=Math.min(1,Math.max(0,(Math.abs(imageYaw)-.16)/.24));
         const side=imageYaw>0 ? 1 : -1;
+        if(this.templeOccluders){
+          this.templeOccluders.left.visible=amount>.08;
+          this.templeOccluders.right.visible=amount>.08;
+        }
         for(const g of [this.imageTemples.left,this.imageTemples.right]){
           const active=g.userData.side===side && amount>.04;
           g.visible=active;
