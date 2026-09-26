@@ -12,9 +12,11 @@ const checks=[
  ["frontal roll dead-zone exists",g.includes("Math.abs(target.roll||0)<0.035 ? 0")],
  ["optical fit uses neutral low offset",g.includes("this.modelRoot.position.y=0.015;")],
  ["temple landmarks are forwarded",t.includes("templeAnchors") && t.includes("left:{x:leftTemple.x") && t.includes("right:{x:rightTemple.x")],
+ ["ear landmarks are forwarded",t.includes("face[127]") && t.includes("face[356]") && t.includes("earAnchors")],
  ["temples are a separate face-anchored layer",g.includes("const anchor=this.templePose?.") && g.includes("const localX=(anchorWorldX-this.pose.x)")],
  ["temples originate at frame hinge",g.includes("const hingeX=sx*this.imageFrameWidth*.485;")],
- ["temples extend toward ear region",g.includes("const earX=localX-sx*this.imageFrameWidth") && g.includes("new THREE.Vector3(earX,earY,rearZ)")],
+ ["temples terminate at detected ear",g.includes("const earAnchor=this.earPose?.") && g.includes("const detectedEarX=") && g.includes("new THREE.Vector3(earX,earY,rearZ)")],
+ ["temple rail stays mostly horizontal",g.includes("const railY=THREE.MathUtils.lerp(hingeY,earY,.28);")],
  ["photo temple occluders stay disabled",g.includes("this.templeOccluders.left.visible=false;") && g.includes("this.templeOccluders.right.visible=false;")],
  ["temple material is instance state",g.includes("this.templeMaterial=new THREE.MeshPhysicalMaterial") && g.includes("this.templeMaterial.clone()")],
  ["hybrid stable face scale exists",g.length>0 && t.includes("const faceWidth=rawFaceWidth*.35+eyeBasedWidth*.65;")]
