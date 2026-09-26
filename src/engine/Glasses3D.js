@@ -313,8 +313,8 @@ export class Glasses3D {
       x:(target.x*2-1)*aspect,
       // Sobe levemente a armação: o centro geométrico dos olhos não coincide
       // com o centro óptico deste modelo Fremi mais alto na sobrancelha.
-      y:-(target.y*2-1)+0.018,
-      scale:((target.scale*2*aspect)/1.66)*0.89,
+      y:-(target.y*2-1)+0.085,
+      scale:((target.scale*2*aspect)/1.66)*0.84,
       // Reduz microinclinações naturais/ruído dos landmarks para evitar
       // que a armação pareça torta quando o usuário está praticamente frontal.
       roll:(target.roll||0)*0.45,
@@ -338,7 +338,7 @@ export class Glasses3D {
     // Ativos derivados de uma única foto frontal não possuem a geometria das
     // hastes. Mantemos apenas uma rotação visual discreta para preservar o
     // encaixe na ponte e evitar que a frente "descole" do rosto.
-    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.24 : this.pose.yaw*0.50;
+    const visualYaw=this.usingExternalModel && this.imageFrame ? imageYaw*0.12 : this.pose.yaw*0.50;
     const visualPitch=this.usingExternalModel && this.imageFrame ? this.pose.pitch*0.36 : this.pose.pitch*0.62;
     this.root.rotation.set(visualPitch,visualYaw,this.pose.roll);
 
