@@ -229,8 +229,6 @@ export class TryOnEngine {
     // renderizador/asset, nunca ao tracking facial.
     const centerX=(leftEye.x+rightEye.x)/2;
     const centerY=(leftEye.y+rightEye.y)/2;
-    this.lastFacePose={centerX,centerY,scale:faceWidth,roll};
-
     const rawFaceWidth=Math.hypot(
       rightTemple.x-leftTemple.x,
       rightTemple.y-leftTemple.y
@@ -247,6 +245,7 @@ export class TryOnEngine {
       ? Math.atan2(matrix[4],matrix[0])
       : landmarkRoll;
     const roll=matrixRoll;
+    this.lastFacePose={centerX,centerY,scale:rawFaceWidth,roll};
 
     const yaw=matrix?.length>=16
       ? Math.atan2(matrix[8],matrix[10])
