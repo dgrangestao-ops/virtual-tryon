@@ -103,7 +103,14 @@ export class Glasses3D {
         },
         undefined,
         error=>{
-          if(token===this.assetToken) console.warn("Falha ao carregar textura da armação",error);
+          if(token===this.assetToken){
+            console.warn("Falha ao carregar textura da armação",error);
+            this.clearPhotoAsset();
+            this.usingExternalModel=false;
+            this.fallback.visible=true;
+            this.root.visible=false;
+            this.render();
+          }
           resolve(false);
         }
       );
