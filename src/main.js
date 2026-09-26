@@ -10,6 +10,8 @@ const start = document.querySelector("#start");
 const switchCamera = document.querySelector("#switch-camera");
 const snapshot = document.querySelector("#snapshot");
 const fullscreen = document.querySelector("#fullscreen");
+const retake = document.querySelector("#retake");
+const capture = document.querySelector("#capture");
 const stage = document.querySelector(".stage");
 const productName = document.querySelector("#product-name");
 const testProduct=document.querySelector("#test-product");
@@ -109,7 +111,7 @@ start.addEventListener("click", async () => {
     stage.classList.add("camera-active");
     start.textContent = "Câmera ativa";
     switchCamera.hidden = false;
-    snapshot.hidden = false;
+    capture.hidden = false;
     fullscreen.hidden = false;
     if(returnUrl) backStore.hidden=false;
   } catch (error) {
@@ -142,26 +144,51 @@ window.addEventListener("resize",()=>{
   resizeTimer=setTimeout(()=>{ if(engine.running) engine.resize(); },120);
 });
 
-snapshot.addEventListener("click", () => {
+const captureResult=()=>{
   if(!engine.running || !video.videoWidth){
-    setStatus("Ative a câmera antes de salvar a foto");
+    setStatus("Ative a câmera antes de capturar");
+    return;
+  }
+  stage.classList.add("frozen");
+  video.pause();
+  engine.running=false;
+  capture.hidden=true;
+  switchCamera.hidden=true;
+  retake.hidden=false;
+  snapshot.hidden=false;
+  start.hidden=true;
+  setStatus("Resultado capturado ✓");
+};
+
+capture.addEventListener("click",captureResult);
+
+retake.addEventListener("click",async()=>{
+  video.play();
+  engine.running=true;
+  stage.classList.remove("frozen");
+  retake.hidden=true;
+  snapshot.hidden=true;
+  capture.hidden=false;
+  switchCamera.hidden=false;
+  start.hidden=false;
+  start.textContent="Câmera ativa";
+  setStatus("Olhe de frente e centralize o rosto");
+});
+
+snapshot.addEventListener("click", () => {
+  if(!video.videoWidth){
+    setStatus("Capture uma imagem antes de salvar");
     return;
   }
   const out=document.createElement("canvas");
   out.width=video.videoWidth||canvas3d.width;
   out.height=video.videoHeight||canvas3d.height;
   const ctx=out.getContext("2d");
-
-  // Reproduz exatamente a visualização espelhada do provador.
   ctx.save();
-  if(engine.facingMode==="user"){
-    ctx.translate(out.width,0);
-    ctx.scale(-1,1);
-  }
+  if(engine.facingMode==="user"){ctx.translate(out.width,0);ctx.scale(-1,1);}
   ctx.drawImage(video,0,0,out.width,out.height);
   ctx.drawImage(canvas3d,0,0,out.width,out.height);
   ctx.restore();
-
   const link=document.createElement("a");
   link.download="fremi-provador.png";
   link.href=out.toDataURL("image/png");
