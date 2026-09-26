@@ -13,10 +13,10 @@ export const PRODUCTS = [
     "imageAspect": 2.8542713567839195,
     "assetStatus": "generated",
     "calibration": {
-      "scale": 0.84,
+      "scale": 0.9,
       "position": [
         0,
-        -0.072,
+        0,
         0
       ],
       "rotation": [
