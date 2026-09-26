@@ -245,8 +245,6 @@ export class TryOnEngine {
       ? Math.atan2(matrix[4],matrix[0])
       : landmarkRoll;
     const roll=matrixRoll;
-    this.lastFacePose={centerX,centerY,scale:rawFaceWidth,roll};
-
     const yaw=matrix?.length>=16
       ? Math.atan2(matrix[8],matrix[10])
       : 0;
@@ -262,6 +260,9 @@ export class TryOnEngine {
     const faceWidth=solveStableFaceScale(this.faceScaleState,{
       rawFaceWidth,eyeDistance,yaw
     });
+    // Guarda exatamente a escala estabilizada usada no preview para que a
+    // captura congelada mantenha o mesmo tamanho visual da armação.
+    this.lastFacePose={centerX,centerY,scale:faceWidth,roll};
 
     this.glasses3d.setPose({
       x:centerX,
