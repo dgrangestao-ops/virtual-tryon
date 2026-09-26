@@ -48,6 +48,34 @@ export class Glasses3D {
     this.templeSideFrames=0;
   }
 
+  clearPhotoAsset(){
+    if(this.templeOccluders){
+      this.modelRoot.remove(this.templeOccluders.left,this.templeOccluders.right);
+      for(const m of [this.templeOccluders.left,this.templeOccluders.right]){m.geometry?.dispose?.();m.material?.dispose?.();}
+      this.templeOccluders=null;
+    }
+    if(this.imageTemples){
+      this.modelRoot.remove(this.imageTemples.left,this.imageTemples.right);
+      for(const g of [this.imageTemples.left,this.imageTemples.right]) g.traverse(n=>{n.geometry?.dispose?.();n.material?.dispose?.();});
+      this.imageTemples=null;
+    }
+    this.templeMaterial?.dispose?.();
+    this.templeMaterial=null;
+    if(this.imageFrame){
+      this.modelRoot.remove(this.imageFrame);
+      this.imageFrame.material?.map?.dispose?.();
+      this.imageFrame.material?.dispose?.();
+      this.imageFrame.geometry?.dispose?.();
+      this.imageFrame=null;
+    }
+    this.imageAssetGeometry=null;
+    this.imageFrameWidth=0;
+    this.imageFrameHeight=0;
+    this.templeSide=0;
+    this.templeSideCandidate=0;
+    this.templeSideFrames=0;
+  }
+
   setImageFrame(asset, calibration={}){
     if(this.model){
       this.modelRoot.remove(this.model);
@@ -58,24 +86,7 @@ export class Glasses3D {
       });
       this.model=null;
     }
-    if(this.templeOccluders){
-      this.modelRoot.remove(this.templeOccluders.left,this.templeOccluders.right);
-      for(const m of [this.templeOccluders.left,this.templeOccluders.right]){m.geometry?.dispose?.();m.material?.dispose?.();}
-      this.templeOccluders=null;
-    }
-    if(this.imageTemples){
-      this.modelRoot.remove(this.imageTemples.left,this.imageTemples.right);
-      for(const g of [this.imageTemples.left,this.imageTemples.right]) g.traverse(n=>{n.geometry?.dispose?.();n.material?.dispose?.();});
-      this.imageTemples=null;
-      this.templeMaterial?.dispose?.();
-      this.templeMaterial=null;
-    }
-    if(this.imageFrame){
-      this.modelRoot.remove(this.imageFrame);
-      this.imageFrame.material?.map?.dispose();
-      this.imageFrame.material?.dispose();
-      this.imageFrame.geometry?.dispose();
-    }
+    this.clearPhotoAsset();
     const texture=new THREE.TextureLoader().load(asset.url,()=>this.render());
     texture.colorSpace=THREE.SRGBColorSpace;
     const width=1.78*(calibration.scale||1);
@@ -270,13 +281,7 @@ export class Glasses3D {
 
   async loadModel(url,calibration={}){
     try{
-      if(this.imageFrame){
-        this.modelRoot.remove(this.imageFrame);
-        this.imageFrame.material?.map?.dispose();
-        this.imageFrame.material?.dispose();
-        this.imageFrame.geometry?.dispose();
-        this.imageFrame=null;
-      }
+      this.clearPhotoAsset();
       const gltf=await this.loader.loadAsync(url);
       const model=gltf.scene;
       model.updateMatrixWorld(true);
