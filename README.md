@@ -7,7 +7,7 @@ MVP de provador virtual de óculos no navegador, preparado como base para um pro
 - MediaPipe Face Landmarker em tempo real
 - pose 3D (posição, escala, roll, yaw e pitch)
 - renderização Three.js
-- armação procedural inspirada no modelo piloto Fremi
+- assets reais de catálogo processados automaticamente por SKU
 - suavização de movimento
 - captura local de foto
 - modo tela cheia
@@ -15,7 +15,7 @@ MVP de provador virtual de óculos no navegador, preparado como base para um pro
 - processamento local da câmera
 - fallback de rastreamento GPU → CPU
 - catálogo desacoplado de produtos/SKUs
-- API de troca de produto preparada para GLB/GLTF por armação
+- troca de produto por SKU e suporte opcional a GLB/GLTF
 
 ## Executar
 ```bash
@@ -29,15 +29,15 @@ npm run build
 ```
 
 ## Validação do MVP
-Tracking e encaixe frontal/3/4 validados em câmera real. O modelo procedural permanece como ativo provisório até a chegada dos ativos 3D finais dos SKUs Fremi.
+Tracking, assets fotográficos e pipeline de catálogo validados em câmera real. A homologação visual final da versão 2D/2.5D permanece obrigatória antes da instalação na loja.
 
 ## Próximas etapas de produto
-Adicionar modelos GLB/GLTF reais das armações, catálogo/SKUs, calibração por produto, oclusão avançada rosto/haste, analytics e integração com a loja.
+Após o piloto: analytics, painel multi-loja e, como opção premium, modelos 3D/GLB ou reconstrução por múltiplas fotos.
 
 > O MVP atual não envia vídeo da câmera para servidor.
 
 ## Arquitetura para expansão
-O arquivo `src/products.js` concentra os SKUs e calibrações. O motor recebe o produto pela API `setProduct`, permitindo que a mesma experiência seja reutilizada para novas armações e, posteriormente, para múltiplas lojas sem duplicar o motor de tracking.
+O arquivo `catalog/fremi.json` é a fonte dos SKUs e calibrações; `src/products.generated.js` é gerado automaticamente. O motor recebe o produto pela API `setProduct`, permitindo que a mesma experiência seja reutilizada para novas armações e, posteriormente, para múltiplas lojas sem duplicar o motor de tracking.
 
 ## Pipeline automático por fotografia
 O MVP agora aceita uma foto frontal de armação em fundo uniforme. O navegador estima o fundo, recorta a armação, cria um asset transparente e o injeta diretamente no motor facial. Esse fluxo é a base do cadastro em escala: foto → processamento → asset → try-on, sem exigir medição manual por SKU.
@@ -52,7 +52,7 @@ Opcionalmente, a loja pode enviar `return=<URL HTTPS codificada>`; nesse caso o 
 ## Validação do primeiro SKU real
 - Produto: Óculos esportivo preto lente preta (98un1)
 - Fluxo validado: catálogo → cópia local → processamento automático → seleção por SKU → rastreamento facial.
-- Calibração visual piloto: scale 0.84; offset Y -0.072.
+- Calibração atual do SKU 98un1: scale 0.90; offset neutro no asset processado.
 - Limitação conhecida: asset frontal é 2D/2.5D; vistas laterais de alta fidelidade exigirão múltiplas fotos ou modelo 3D.
 
 ## Integração na loja
@@ -78,6 +78,7 @@ A validação do aplicativo e a sincronização dos ativos rodam automaticamente
 - [x] modo público sem seletor/etiqueta de teste
 - [x] retorno seguro para a página do produto
 - [x] script de integração preparado para a vitrine
+- [ ] homologação visual final do provador isolado
 - [ ] instalar o script/botão na loja Fremi (Nuvemshop)
 - [ ] homologação final dentro da página real da Fremi
 
