@@ -30,6 +30,7 @@ const checks=[
  ["temple visibility and side use solver",g.includes("const amount=templeVisibility(imageYaw);") && g.includes("const requestedSide=exposedTempleSide(imageYaw);")],
  ["temple side has temporal hysteresis",g.includes("this.templeSideFrames>=3") && g.includes("const side=this.templeSide;")],
  ["temple side resets when hidden",g.includes("this.templeSideCandidate=0;") && g.includes("this.templeSideFrames=0;")],
+ ["face loss clears lateral anchors",g.includes("this.templePose=null;") && g.includes("this.earPose=null;") && g.includes("this.imageTemples.left.visible=false;")],
  ["temples reach solver target",g.includes("const earX=solvedTemple.endX;") && g.includes("solvedTemple.points.map(([x,y,z])")],
  ["temple has no artificial tip segment",!g.includes("const tipX=") && !g.includes("const tipY=") && !g.includes("const tipZ=")],
  ["temple geometry comes only from solver",g.includes("solvedTemple.points.map(([x,y,z])=>new THREE.Vector3(x,y,z))")],
