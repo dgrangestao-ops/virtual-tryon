@@ -152,7 +152,7 @@ const drawFrozenFrame=()=>{
   const displayRect=stage.getBoundingClientRect();
   const w=Math.max(1,Math.round(displayRect.width));
   const h=Math.max(1,Math.round(displayRect.height));
-  if(!video.videoWidth||!canvas3d.width) return false;
+  if(!video.videoWidth) return false;
   if(!frozenFrame){
     frozenFrame=document.createElement("canvas");
     frozenFrame.id="frozen-frame";
@@ -161,20 +161,26 @@ const drawFrozenFrame=()=>{
   }
   frozenFrame.width=w; frozenFrame.height=h;
   const ctx=frozenFrame.getContext("2d");
-  const cover=(source,sw,sh,mirror=false)=>{
-    const scale=Math.max(w/sw,h/sh);
-    const dw=sw*scale, dh=sh*scale;
-    const dx=(w-dw)/2, dy=(h-dh)/2;
-    ctx.save();
-    if(mirror){ctx.translate(w,0);ctx.scale(-1,1);}
-    ctx.drawImage(source,dx,dy,dw,dh);
-    ctx.restore();
-  };
-  // Congela exatamente as duas camadas visíveis antes de encerrar o tracking.
-  cover(video,video.videoWidth,video.videoHeight,engine.facingMode==="user");
-  cover(canvas3d,canvas3d.width,canvas3d.height,engine.facingMode==="user");
+
+  // Copia o vídeo com o mesmo object-fit:cover da tela.
+  const scale=Math.max(w/video.videoWidth,h/video.videoHeight);
+  const dw=video.videoWidth*scale, dh=video.videoHeight*scale;
+  const dx=(w-dw)/2, dy=(h-dh)/2;
+  ctx.save();
+  if(engine.facingMode==="user"){ctx.translate(w,0);ctx.scale(-1,1);}
+  ctx.drawImage(video,dx,dy,dw,dh);
+  ctx.restore();
+
+  // Em vez de tentar reamostrar o WebGL (que pode estar com drawing buffer
+  // já limpo no navegador), desenha a frente do SKU diretamente no quadro
+  // congelado usando a última pose facial conhecida.
+  const pose=engine.lastFacePose;
+  const asset=engine.product?.imageAssetUrl;
+  if(!pose||!asset) return false;
+  const img=new Image();
+  img.src=asset;
   frozenFrame.hidden=false;
-  return true;
+  return {img,ctx,w,h,pose};
 };
 
 const captureResult=async()=>{
@@ -191,13 +197,32 @@ const captureResult=async()=>{
   }
   countdown.textContent="✓";
   await new Promise(resolve=>setTimeout(resolve,180));
-  if(!drawFrozenFrame()){
+  const frozen=drawFrozenFrame();
+  if(!frozen){
     countdown.hidden=true;
     capture.disabled=false;
     switchCamera.disabled=false;
     setStatus("Não foi possível capturar. Tente novamente.");
     return;
   }
+  await new Promise((resolve,reject)=>{
+    if(frozen.img.complete) return resolve();
+    frozen.img.onload=resolve; frozen.img.onerror=reject;
+  });
+  const cal=engine.product?.calibration?.scale||1;
+  const aspect=engine.product?.imageAspect||2.2;
+  const facePx=frozen.pose.scale*frozen.w;
+  const frameW=facePx*1.06*cal;
+  const frameH=frameW/aspect;
+  let cx=frozen.pose.centerX*frozen.w;
+  const cy=frozen.pose.centerY*frozen.h-frameH*.18;
+  const roll=frozen.pose.roll||0;
+  if(engine.facingMode==="user") cx=frozen.w-cx;
+  frozen.ctx.save();
+  frozen.ctx.translate(cx,cy);
+  frozen.ctx.rotate(engine.facingMode==="user"?-roll:roll);
+  frozen.ctx.drawImage(frozen.img,-frameW/2,-frameH/2,frameW,frameH);
+  frozen.ctx.restore();
   countdown.hidden=true;
   stage.classList.add("frozen");
   engine.stopCamera();
