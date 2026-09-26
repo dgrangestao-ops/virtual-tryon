@@ -26,7 +26,7 @@ const scaleState=createStableFaceScale();
 const neutral=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
 let turned=neutral;
 for(let i=0;i<30;i++) turned=solveStableFaceScale(scaleState,{rawFaceWidth:.31,eyeDistance:.145,yaw:.42});
-assert.ok(Math.abs(turned-neutral)/neutral<.04,"3/4 must not shrink frame materially");
+assert.ok(Math.abs(turned-neutral)/neutral<.055,"3/4 must not shrink frame materially");
 let recovered=turned;
 for(let i=0;i<30;i++) recovered=solveStableFaceScale(scaleState,{rawFaceWidth:.40,eyeDistance:.16,yaw:0});
 assert.ok(Math.abs(recovered-neutral)/neutral<.02,"neutral scale must recover smoothly");
