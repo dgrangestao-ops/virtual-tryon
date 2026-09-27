@@ -74,6 +74,117 @@ export const PRODUCTS = [
       ]
     },
     "available": true
+  },
+  {
+    "id": "oculos-elo-retangular-preto-v82qv",
+    "brand": "Fremi",
+    "name": "Óculos Elo retangular preto lente champanhe",
+    "sku": "v82qv",
+    "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-v82qv/",
+    "sourceImageUrl": "/products/v82qv/source.webp",
+    "modelUrl": null,
+    "imageAssetUrl": "/products/v82qv/asset.png",
+    "imageAspect": 2.979020979020979,
+    "assetGeometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9976525821596244,
+      "opticalCenterY": 0.03496503496503497,
+      "bbox": {
+        "left": 0,
+        "right": 0.9976525821596244,
+        "top": 0,
+        "bottom": 0.993006993006993
+      }
+    },
+    "assetStatus": "generated",
+    "calibration": {
+      "scale": 1,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "available": true
+  },
+  {
+    "id": "oculos-identita-retangular-preto-179s2",
+    "brand": "Fremi",
+    "name": "Óculos Identità retangular preto lente champanhe",
+    "sku": "179s2",
+    "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-179s2/",
+    "sourceImageUrl": "/products/179s2/source.webp",
+    "modelUrl": null,
+    "imageAssetUrl": "/products/179s2/asset.png",
+    "imageAspect": 2.9324324324324325,
+    "assetGeometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9976958525345622,
+      "opticalCenterY": 0.08783783783783784,
+      "bbox": {
+        "left": 0,
+        "right": 0.9976958525345622,
+        "top": 0,
+        "bottom": 0.9932432432432432
+      }
+    },
+    "assetStatus": "generated",
+    "calibration": {
+      "scale": 1,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "available": true
+  },
+  {
+    "id": "oculos-solaris-preto-lente-amarela-1316q",
+    "brand": "Fremi",
+    "name": "Óculos Solaris preto lente amarela",
+    "sku": "1316q",
+    "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-1316q/",
+    "sourceImageUrl": "/products/1316q/source.webp",
+    "modelUrl": null,
+    "imageAssetUrl": "/products/1316q/asset.png",
+    "imageAspect": 2.9324324324324325,
+    "assetGeometry": {
+      "hingeLeftX": 0,
+      "hingeRightX": 0.9976958525345622,
+      "opticalCenterY": 0.08783783783783784,
+      "bbox": {
+        "left": 0,
+        "right": 0.9976958525345622,
+        "top": 0,
+        "bottom": 0.9932432432432432
+      }
+    },
+    "assetStatus": "generated",
+    "calibration": {
+      "scale": 1,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "available": true
   }
 ];
 export const DEFAULT_PRODUCT_ID = "oculos-esportivo-preto-lente-preta-98un1";
