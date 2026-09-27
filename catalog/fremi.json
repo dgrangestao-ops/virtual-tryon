@@ -52,6 +52,84 @@
           0
         ]
       }
+    },
+    {
+      "id": "oculos-elo-retangular-preto-v82qv",
+      "sku": "v82qv",
+      "name": "Óculos Elo retangular preto lente champanhe",
+      "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-v82qv/",
+      "sourceImageUrl": "AUTO:og:image",
+      "localSourceUrl": "/products/v82qv/source.webp",
+      "brand": "Fremi",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "oculos-identita-retangular-preto-179s2",
+      "sku": "179s2",
+      "name": "Óculos Identità retangular preto lente champanhe",
+      "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-179s2/",
+      "sourceImageUrl": "AUTO:og:image",
+      "localSourceUrl": "/products/179s2/source.webp",
+      "brand": "Fremi",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "oculos-solaris-preto-lente-amarela-1316q",
+      "sku": "1316q",
+      "name": "Óculos Solaris preto lente amarela",
+      "productUrl": "https://www.fremieyewear.com.br/produtos/oculos-1316q/",
+      "sourceImageUrl": "AUTO:og:image",
+      "localSourceUrl": "/products/1316q/source.webp",
+      "brand": "Fremi",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
     }
   ],
   "brand": "Fremi",
