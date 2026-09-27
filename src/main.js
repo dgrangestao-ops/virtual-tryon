@@ -19,7 +19,7 @@ const productName = document.querySelector("#product-name");
 const testProduct=document.querySelector("#test-product");
 const pilotBadge=document.querySelector("#pilot-badge");
 const params=new URLSearchParams(location.search);
-const testMode=params.get("test")==="1";
+const testMode=true;
 if(!testMode && pilotBadge) pilotBadge.hidden=true;
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
@@ -214,7 +214,7 @@ const captureResult=async()=>{
   // a calibração do SKU (1.78 * calibration.scale), portanto não aplicamos
   // calibration.scale novamente aqui.
   const stageAspect=frozen.w/frozen.h;
-  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66)*.84;
+  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66)*.91;
   const meshWidth=engine.glasses3d?.imageFrameWidth||1.78;
   const frameW=(previewRootScale*meshWidth)*(frozen.w/(2*stageAspect));
   const frameH=frameW/aspect;
