@@ -59,3 +59,6 @@ button:disabled{opacity:.65;cursor:default}
 #frozen-frame{position:absolute;z-index:5;inset:0;width:100%;height:100%;object-fit:cover}
 .stage.frozen .mirror-layer,.stage.frozen #overlay{visibility:hidden}
 .stage.frozen #status{z-index:7}
+
+.test-product:not([hidden]){display:block;margin:8px 0 0 auto;min-width:280px}
+@media(max-width:600px){.test-product:not([hidden]){margin:8px 0 0;width:100%;min-width:0}}
