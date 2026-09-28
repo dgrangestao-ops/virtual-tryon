@@ -3,6 +3,9 @@ const file=process.argv[2]||"catalog/fremi.json";
 const m=JSON.parse(await readFile(file,"utf8"));
 const errors=[];
 if(!m.store) errors.push("store ausente");
+if(!m.brand) errors.push("brand ausente");
+const requiredStoreConfig=["brand","pageTitle","description","heading","instruction","privacy","compatibility"];
+for(const key of requiredStoreConfig) if(!String(m.storeConfig?.[key]||"").trim()) errors.push(`storeConfig.${key} ausente`);
 if(!Array.isArray(m.products)||!m.products.length) errors.push("products vazio");
 const seenSku=new Set(),seenId=new Set();
 for(const [i,p] of (m.products||[]).entries()){
