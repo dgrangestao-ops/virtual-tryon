@@ -5,11 +5,11 @@ MVP de provador virtual de óculos no navegador, preparado como base para um pro
 ## Estado atual
 - câmera frontal e traseira
 - MediaPipe Face Landmarker em tempo real
-- pose 3D (posição, escala, roll, yaw e pitch)
-- renderização Three.js
+- detecção facial para posição, escala e inclinação frontal
+- preview frontal renderizado com Three.js, sem hastes sintéticas
 - assets reais de catálogo processados automaticamente por SKU
-- suavização de movimento
-- captura local de foto
+- captura frontal automática com contagem 3 → 2 → 1
+- fotografia final congelada e composta localmente com o SKU
 - modo tela cheia
 - layout responsivo
 - processamento local da câmera
@@ -29,7 +29,7 @@ npm run build
 ```
 
 ## Validação do MVP
-Tracking, assets fotográficos e pipeline de catálogo validados em câmera real. A homologação visual final da versão 2D/2.5D permanece obrigatória antes da instalação na loja.
+Tracking frontal, captura automática, assets fotográficos e pipeline de catálogo validados em câmera real. O MVP usa deliberadamente uma experiência frontal congelada; hastes sintéticas e simulação lateral foram retiradas do fluxo principal.
 
 ## Próximas etapas de produto
 Após o piloto: analytics, painel multi-loja e, como opção premium, modelos 3D/GLB ou reconstrução por múltiplas fotos.
@@ -78,7 +78,9 @@ A validação do aplicativo e a sincronização dos ativos rodam automaticamente
 - [x] modo público sem seletor/etiqueta de teste
 - [x] retorno seguro para a página do produto
 - [x] script de integração preparado para a vitrine
-- [ ] homologação visual final do provador isolado
+- [x] homologação visual frontal do provador isolado
+- [x] captura automática congelada com armação preservada
+- [x] remoção das hastes sintéticas do MVP
 - [ ] instalar o script/botão na loja Fremi (Nuvemshop)
 - [ ] homologação final dentro da página real da Fremi
 
