@@ -1,59 +1,43 @@
 {
   "selected": {
-    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_69ddd58f-7897-40d7-9644-ec7ac1a0156f_5876852_6089436-73c5cfe249ec1ee6f217802623299582-480-0.webp",
+    "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_87dcb98f-3484-4342-a45e-09e6f87c1fce_5876852_6089436-4c69c108f9384f2a8d17802803081556-480-0.webp",
     "source": "embedded",
-    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_69ddd58f-7897-40d7-9644-ec7ac1a0156f_5876852_6089436-73c5cfe249ec1ee6f217802623299582-SIZE-0.webp",
-    "target": "public/products/q7by3/gallery/07.webp",
+    "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_87dcb98f-3484-4342-a45e-09e6f87c1fce_5876852_6089436-4c69c108f9384f2a8d17802803081556-SIZE-0.webp",
+    "target": "public/products/q7by3/gallery/06.webp",
     "metrics": {
-      "score": 86.39265509326287,
-      "symmetry": 0.9430275606746195,
-      "aspect": 2.1029411764705883,
-      "centered": 1,
-      "occupancy": 0.5616515837104072,
-      "upperRatio": 0.009841618602947909,
-      "opticalTop": 132,
-      "protrusionPenalty": 1.7714913485306236
+      "score": 86.09969051872726,
+      "symmetry": 0.9281183932346723,
+      "aspect": 2.046511627906977,
+      "centered": 0.9873015873015873,
+      "occupancy": 0.5871505755226686,
+      "upperRatio": 0.01250250050010002,
+      "opticalTop": 153,
+      "protrusionPenalty": 2.2504500900180036
     }
   },
   "asset": {
-    "frontTop": 250,
-    "aspect": 2.9324324324324325,
-    "width": 434,
-    "height": 148,
+    "frontTop": 287,
+    "aspect": 3.0454545454545454,
+    "width": 402,
+    "height": 132,
     "geometry": {
       "hingeLeftX": 0,
-      "hingeRightX": 0.9976958525345622,
-      "opticalCenterY": 0.08783783783783784,
+      "hingeRightX": 0.9975124378109452,
+      "opticalCenterY": 0,
       "bbox": {
         "left": 0,
-        "right": 0.9976958525345622,
+        "right": 0.9975124378109452,
         "top": 0,
-        "bottom": 0.9932432432432432
+        "bottom": 0.9924242424242424
       }
     }
   },
   "ranked": [
     {
-      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_69ddd58f-7897-40d7-9644-ec7ac1a0156f_5876852_6089436-73c5cfe249ec1ee6f217802623299582-480-0.webp",
-      "source": "embedded",
-      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_69ddd58f-7897-40d7-9644-ec7ac1a0156f_5876852_6089436-73c5cfe249ec1ee6f217802623299582-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/07.webp",
-      "metrics": {
-        "score": 86.39265509326287,
-        "symmetry": 0.9430275606746195,
-        "aspect": 2.1029411764705883,
-        "centered": 1,
-        "occupancy": 0.5616515837104072,
-        "upperRatio": 0.009841618602947909,
-        "opticalTop": 132,
-        "protrusionPenalty": 1.7714913485306236
-      }
-    },
-    {
       "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_87dcb98f-3484-4342-a45e-09e6f87c1fce_5876852_6089436-4c69c108f9384f2a8d17802803081556-480-0.webp",
       "source": "embedded",
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_87dcb98f-3484-4342-a45e-09e6f87c1fce_5876852_6089436-4c69c108f9384f2a8d17802803081556-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/08.webp",
+      "target": "public/products/q7by3/gallery/06.webp",
       "metrics": {
         "score": 86.09969051872726,
         "symmetry": 0.9281183932346723,
@@ -101,7 +85,7 @@
       "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260619_092802_-73be195952989e56e217818738456293-480-0.webp",
       "source": "embedded",
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/20260619_092802_-73be195952989e56e217818738456293-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/06.webp",
+      "target": "public/products/q7by3/gallery/05.webp",
       "metrics": {
         "score": 81.2349099929643,
         "symmetry": 0.9430024286581664,
@@ -114,10 +98,26 @@
       }
     },
     {
+      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_7ad60ad6-cb2e-43fa-8ea0-b36842c12ee4_5876852_6089436-a0a90e072d00fcb25217802625594235-480-0.webp",
+      "source": "embedded",
+      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_7ad60ad6-cb2e-43fa-8ea0-b36842c12ee4_5876852_6089436-a0a90e072d00fcb25217802625594235-SIZE-0.webp",
+      "target": "public/products/q7by3/gallery/04.webp",
+      "metrics": {
+        "score": 77.62520748156383,
+        "symmetry": 0.9698531153755034,
+        "aspect": 2.134920634920635,
+        "centered": 0.9904761904761905,
+        "occupancy": 0.5993981235616923,
+        "upperRatio": 0.06147863752707226,
+        "opticalTop": 165,
+        "protrusionPenalty": 11.066154754873006
+      }
+    },
+    {
       "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_6ed0e6c4-304a-468a-8f5b-b7347d6cc2d5_5876852_6089436-f963cbddee7f2da94b17802804818503-480-0.webp",
       "source": "embedded",
       "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_6ed0e6c4-304a-468a-8f5b-b7347d6cc2d5_5876852_6089436-f963cbddee7f2da94b17802804818503-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/02.webp",
+      "target": "public/products/q7by3/gallery/07.webp",
       "metrics": {
         "score": 75.77796325199063,
         "symmetry": 0.9593210418495757,
@@ -130,35 +130,35 @@
       }
     },
     {
-      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_5efad2fb-88d6-48fd-9c80-fe0a44404f60_5876852_6089436-3e1412952addea27db17854638456149-480-0.webp",
+      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_1da448f7-18d0-4268-88ac-a06e40ef1cb3_5876852_6089436-307934f51b91aaa69417802626388738-480-0.webp",
       "source": "embedded",
-      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_5efad2fb-88d6-48fd-9c80-fe0a44404f60_5876852_6089436-3e1412952addea27db17854638456149-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/04.webp",
+      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_1da448f7-18d0-4268-88ac-a06e40ef1cb3_5876852_6089436-307934f51b91aaa69417802626388738-SIZE-0.webp",
+      "target": "public/products/q7by3/gallery/02.webp",
       "metrics": {
-        "score": 75.35693195377792,
-        "symmetry": 0.9631829849651632,
-        "aspect": 2.6732673267326734,
-        "centered": 0.9936507936507937,
-        "occupancy": 0.5427942794279428,
-        "upperRatio": 0.01026888258343467,
-        "opticalTop": 166,
-        "protrusionPenalty": 1.8483988650182406
+        "score": 72.58219403749038,
+        "symmetry": 0.9713020030816641,
+        "aspect": 2.23728813559322,
+        "centered": 0.9746031746031747,
+        "occupancy": 0.5682139188495121,
+        "upperRatio": 0.0771707813117903,
+        "opticalTop": 164,
+        "protrusionPenalty": 13.890740636122253
       }
     },
     {
-      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_4e0623f9-ef52-4689-9b51-383bb6ad1c7c_5876852_6089436-90965a65ec9ccbe41a17802622536330-480-0.webp",
+      "url": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_6af5bfd6-99c3-4665-86e6-aa321cff458f_5876852_6089436-b3536be8364cbddeac17802802429797-480-0.webp",
       "source": "embedded",
-      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_4e0623f9-ef52-4689-9b51-383bb6ad1c7c_5876852_6089436-90965a65ec9ccbe41a17802622536330-SIZE-0.webp",
-      "target": "public/products/q7by3/gallery/05.webp",
+      "key": "https://dcdn-us.mitiendanube.com/stores/005/876/852/products/tmp_b64_6af5bfd6-99c3-4665-86e6-aa321cff458f_5876852_6089436-b3536be8364cbddeac17802802429797-SIZE-0.webp",
+      "target": "public/products/q7by3/gallery/08.webp",
       "metrics": {
-        "score": 74.27480071276153,
-        "symmetry": 0.9439606209769027,
-        "aspect": 2.0902255639097747,
-        "centered": 0.9873015873015873,
-        "occupancy": 0.5663439173473251,
-        "upperRatio": 0.07817574021012416,
-        "opticalTop": 169,
-        "protrusionPenalty": 14.071633237822349
+        "score": 70.57050211793566,
+        "symmetry": 0.9550397877984085,
+        "aspect": 2.25,
+        "centered": 0.9904761904761905,
+        "occupancy": 0.5515259611573523,
+        "upperRatio": 0.08342316445083243,
+        "opticalTop": 179,
+        "protrusionPenalty": 15.016169601149839
       }
     }
   ]

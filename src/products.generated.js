@@ -47,16 +47,16 @@ export const PRODUCTS = [
     "sourceImageUrl": "/products/q7by3/source.webp",
     "modelUrl": null,
     "imageAssetUrl": "/products/q7by3/asset.png",
-    "imageAspect": 2.9324324324324325,
+    "imageAspect": 3.0454545454545454,
     "assetGeometry": {
       "hingeLeftX": 0,
-      "hingeRightX": 0.9976958525345622,
-      "opticalCenterY": 0.08783783783783784,
+      "hingeRightX": 0.9975124378109452,
+      "opticalCenterY": 0,
       "bbox": {
         "left": 0,
-        "right": 0.9976958525345622,
+        "right": 0.9975124378109452,
         "top": 0,
-        "bottom": 0.9932432432432432
+        "bottom": 0.9924242424242424
       }
     },
     "assetStatus": "generated",
@@ -84,16 +84,16 @@ export const PRODUCTS = [
     "sourceImageUrl": "/products/v82qv/source.webp",
     "modelUrl": null,
     "imageAssetUrl": "/products/v82qv/asset.png",
-    "imageAspect": 2.979020979020979,
+    "imageAspect": 3.0454545454545454,
     "assetGeometry": {
       "hingeLeftX": 0,
-      "hingeRightX": 0.9976525821596244,
-      "opticalCenterY": 0.03496503496503497,
+      "hingeRightX": 0.9975124378109452,
+      "opticalCenterY": 0,
       "bbox": {
         "left": 0,
-        "right": 0.9976525821596244,
+        "right": 0.9975124378109452,
         "top": 0,
-        "bottom": 0.993006993006993
+        "bottom": 0.9924242424242424
       }
     },
     "assetStatus": "generated",
