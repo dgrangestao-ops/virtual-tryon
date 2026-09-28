@@ -8,6 +8,7 @@
     const script=document.currentScript;
     const base=(script?.dataset.base||"https://virtual-tryon.dgran-gestao.workers.dev/").replace(/\/$/,"")+"/";
     const label=script?.dataset.label||"Experimentar no meu rosto";
+    const store=String(script?.dataset.store||"fremi").trim().toLowerCase();
     const selector=script?.dataset.selector||"[data-vto-sku]";
     const emit=(name,detail={})=>{
       try{window.dispatchEvent(new CustomEvent(name,{detail}));}catch{}
@@ -18,6 +19,7 @@
         const url=new URL(base);
         if(url.protocol!=="https:" && url.origin!==location.origin) return null;
         url.searchParams.set("sku",sku);
+        url.searchParams.set("store",store);
         url.searchParams.set("return",location.href);
         return url;
       }catch{return null;}
