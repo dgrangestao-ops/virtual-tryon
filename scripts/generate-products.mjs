@@ -16,7 +16,19 @@ for(const p of (m.products||[])){
  calibration:p.calibration||{scale:1,position:[0,0,0],rotation:[0,0,0]},available:p.available!==false
  });
 }
+const storeConfig={
+ id:m.store,
+ brand:m.storeConfig?.brand||m.brand||m.store,
+ brandSuffix:m.storeConfig?.brandSuffix||"",
+ pageTitle:m.storeConfig?.pageTitle||`${m.brand||m.store} · Provador Virtual`,
+ description:m.storeConfig?.description||`Experimente produtos ${m.brand||m.store} virtualmente.`,
+ heading:m.storeConfig?.heading||"Experimente no seu rosto",
+ instruction:m.storeConfig?.instruction||"Olhe para a frente. O provador fará a captura automaticamente.",
+ privacy:m.storeConfig?.privacy||"Sua câmera é processada neste dispositivo. O vídeo não é enviado.",
+ compatibility:m.storeConfig?.compatibility||"Para um resultado melhor, mantenha o rosto de frente e bem iluminado."
+};
 const js=`// AUTO-GENERATED from ${path}. Do not edit manually.
+export const STORE_CONFIG = ${JSON.stringify(storeConfig,null,2)};
 export const PRODUCTS = ${JSON.stringify(products,null,2)};
 export const DEFAULT_PRODUCT_ID = ${JSON.stringify(m.defaultProductId||products[0]?.id||"")};
 export function findProduct({sku,id}={}){
@@ -26,4 +38,4 @@ export function findProduct({sku,id}={}){
 }
 `;
 await writeFile(out,js);
-console.log(`✓ ${products.length} produtos -> ${out}`);
+console.log(`✓ ${products.length} produtos da loja ${m.store} -> ${out}`);
