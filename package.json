@@ -20,7 +20,8 @@
     "test:white-label": "node scripts/test-white-label.mjs",
     "test:embed-safety": "node scripts/test-embed-safety.mjs",
     "test:multi-store": "node scripts/test-multi-store.mjs",
-    "validate:template": "node scripts/validate-catalog.mjs catalog/store.template.json"
+    "validate:template": "node scripts/validate-catalog.mjs catalog/store.template.json",
+    "onboard:store": "node scripts/onboard-store.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.22",
