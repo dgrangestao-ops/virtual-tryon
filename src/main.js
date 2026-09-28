@@ -20,7 +20,7 @@ const productName = document.querySelector("#product-name");
 const testProduct=document.querySelector("#test-product");
 const pilotBadge=document.querySelector("#pilot-badge");
 const params=new URLSearchParams(location.search);
-const testMode=true;
+const testMode=params.get("test")==="1";
 if(!testMode && pilotBadge) pilotBadge.hidden=true;
 const requestedSku=params.get("sku");
 const requestedProduct=params.get("product");
@@ -263,7 +263,8 @@ snapshot.addEventListener("click", () => {
     return;
   }
   const link=document.createElement("a");
-  link.download="fremi-provador.png";
+  const safeBrand=String(activeProduct?.brand||"provador").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"provador";
+  link.download=`${safeBrand}-provador-${activeProduct?.sku||"foto"}.png`;
   link.href=frozenFrame.toDataURL("image/png");
   link.click();
   setStatus("Foto salva ✓");
