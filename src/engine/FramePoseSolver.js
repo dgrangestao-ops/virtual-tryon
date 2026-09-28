@@ -4,7 +4,7 @@ export function solveFrontPose({x,y,scale,roll=0,yaw=0,pitch=0,aspect=1}){
   return {
     x:(x*2-1)*aspect,
     y:-(y*2-1),
-    scale:((scale*2*aspect)/1.66)*.84,
+    scale:((scale*2*aspect)/1.66) * .90,
     roll:Math.abs(roll)<.035?0:roll*.30,
     yaw,
     pitch
