@@ -13,6 +13,7 @@
     const url=new URL(base);
     url.searchParams.set("sku",sku);
     url.searchParams.set("return",location.href);
+    window.dispatchEvent(new CustomEvent("virtual-tryon:open",{detail:{sku,url:url.href}}));
     // Abre em nova aba: preserva carrinho, variante e rolagem da página da loja.
     const popup=window.open(url.href,"_blank","noopener,noreferrer");
     if(!popup) location.href=url.href;
@@ -33,7 +34,14 @@
   };
   const scan=()=>document.querySelectorAll(selector).forEach(enhance);
   scan();
-  new MutationObserver(scan).observe(document.documentElement,{subtree:true,childList:true});
+  const observer=new MutationObserver(scan);
+  observer.observe(document.documentElement,{subtree:true,childList:true});
+  window.VirtualTryOn={
+    open,
+    rescan:scan,
+    destroy(){observer.disconnect();},
+    version:"3"
+  };
   const legacySku=script?.dataset.sku;
   if(legacySku && !document.querySelector(selector)){
     const host=document.createElement("span"); host.dataset.vtoSku=legacySku;
