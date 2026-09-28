@@ -3,11 +3,14 @@ const path=process.argv[2]||"catalog/fremi.json";
 const out=process.argv[3]||"src/products.generated.js";
 const m=JSON.parse(await readFile(path,"utf8"));
 const products=[];
+const storeSlug=String(m.store||"default").toLowerCase().replace(/[^a-z0-9-]+/g,"-");
 for(const p of (m.products||[])){
  let generatedAsset=null,imageAspect=p.imageAspect,assetGeometry=null;
  try{
-   const sel=JSON.parse(await readFile(`public/products/${p.sku}/selection.json`,"utf8"));
-   if(sel.asset){generatedAsset=`/products/${p.sku}/asset.png`; imageAspect=sel.asset.aspect; assetGeometry=sel.asset.geometry||null;}
+   let selectionPath=`public/stores/${storeSlug}/products/${p.sku}/selection.json`;
+   try{await readFile(selectionPath,"utf8");}catch{selectionPath=`public/products/${p.sku}/selection.json`;}
+   const sel=JSON.parse(await readFile(selectionPath,"utf8"));
+   if(sel.asset){generatedAsset=selectionPath.startsWith("public/stores/")?`/stores/${storeSlug}/products/${p.sku}/asset.png`:`/products/${p.sku}/asset.png`; imageAspect=sel.asset.aspect; assetGeometry=sel.asset.geometry||null;}
  }catch{}
  products.push({
  id:p.id,brand:p.brand||m.brand||m.store,name:p.name,sku:p.sku,productUrl:p.productUrl,
