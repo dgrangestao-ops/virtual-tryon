@@ -66,9 +66,10 @@ const engine = new TryOnEngine(
   setStatus
 );
 
-if(testMode && PRODUCTS.filter(p=>p.available).length>1){
+const testProducts=PRODUCTS.filter(p=>p.available).slice(0,4);
+if(testMode && testProducts.length>1){
   testProduct.hidden=false;
-  for(const p of PRODUCTS.filter(p=>p.available)){
+  for(const p of testProducts){
     const option=document.createElement("option");
     option.value=p.sku; option.textContent=p.name; option.selected=p.id===activeProduct.id;
     testProduct.appendChild(option);
