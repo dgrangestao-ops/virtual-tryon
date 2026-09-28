@@ -28,7 +28,8 @@ const storeConfig={
  heading:m.storeConfig?.heading||"Experimente no seu rosto",
  instruction:m.storeConfig?.instruction||"Olhe para a frente. O provador fará a captura automaticamente.",
  privacy:m.storeConfig?.privacy||"Sua câmera é processada neste dispositivo. O vídeo não é enviado.",
- compatibility:m.storeConfig?.compatibility||"Para um resultado melhor, mantenha o rosto de frente e bem iluminado."
+ compatibility:m.storeConfig?.compatibility||"Para um resultado melhor, mantenha o rosto de frente e bem iluminado.",
+ allowedReturnOrigins:Array.isArray(m.storeConfig?.allowedReturnOrigins)?m.storeConfig.allowedReturnOrigins:[]
 };
 const js=`// AUTO-GENERATED from ${path}. Do not edit manually.
 export const STORE_CONFIG = ${JSON.stringify(storeConfig,null,2)};
