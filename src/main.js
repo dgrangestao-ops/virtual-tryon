@@ -2,6 +2,9 @@ import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
 import { PRODUCTS, findProduct } from "./products.generated.js";
 import { solveCaptureFrame } from "./engine/PhotoCaptureSolver.js";
+import { applyStoreConfig } from "./store.config.js";
+
+applyStoreConfig();
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
