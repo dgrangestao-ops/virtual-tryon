@@ -214,7 +214,7 @@ const captureResult=async()=>{
   // a calibração do SKU (1.78 * calibration.scale), portanto não aplicamos
   // calibration.scale novamente aqui.
   const stageAspect=frozen.w/frozen.h;
-  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66)*.91;
+  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66) * .90;
   const meshWidth=engine.glasses3d?.imageFrameWidth||1.78;
   const frameW=(previewRootScale*meshWidth)*(frozen.w/(2*stageAspect));
   const frameH=frameW/aspect;
