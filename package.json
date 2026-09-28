@@ -10,7 +10,7 @@
     "prebuild": "npm run validate:catalog && node scripts/generate-products.mjs",
     "validate:catalog": "node scripts/validate-catalog.mjs",
     "validate:assets": "node scripts/validate-assets.mjs catalog/fremi.json",
-    "validate:all": "npm run validate:catalog && npm run validate:assets && npm run validate:pose && npm run test:geometry && npm run test:front && npm run test:capture && npm run test:public-mode && npm run test:white-label && npm run test:embed-safety && npm run build",
+    "validate:all": "npm run validate:catalog && npm run validate:assets && npm run validate:pose && npm run test:geometry && npm run test:front && npm run test:capture && npm run test:public-mode && npm run test:white-label && npm run test:embed-safety && npm run test:multi-store && npm run build",
     "validate:pose": "node scripts/validate-pose-contract.mjs",
     "test:temples": "node scripts/test-temple-solver.mjs",
     "test:front": "node scripts/test-front-pose.mjs",
@@ -18,7 +18,8 @@
     "test:capture": "node scripts/test-photo-capture.mjs",
     "test:public-mode": "node scripts/test-public-mode.mjs",
     "test:white-label": "node scripts/test-white-label.mjs",
-    "test:embed-safety": "node scripts/test-embed-safety.mjs"
+    "test:embed-safety": "node scripts/test-embed-safety.mjs",
+    "test:multi-store": "node scripts/test-multi-store.mjs"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.22",
