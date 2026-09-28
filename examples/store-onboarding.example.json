@@ -1,0 +1,43 @@
+{
+  "store": "otica-demo",
+  "brand": "Ótica Demo",
+  "storeConfig": {
+    "brand": "ÓTICA DEMO",
+    "brandSuffix": "",
+    "pageTitle": "Ótica Demo · Provador Virtual",
+    "description": "Experimente armações Ótica Demo virtualmente.",
+    "heading": "Experimente no seu rosto",
+    "instruction": "Olhe para a frente. O provador fará a captura automaticamente.",
+    "privacy": "Sua câmera é processada neste dispositivo. O vídeo não é enviado.",
+    "compatibility": "Para um resultado melhor, mantenha o rosto de frente e bem iluminado."
+  },
+  "defaultProductId": "armacao-demo-demo001",
+  "products": [
+    {
+      "id": "armacao-demo-demo001",
+      "sku": "DEMO001",
+      "name": "Armação Demo",
+      "productUrl": "https://example.com/produtos/armacao-demo/",
+      "sourceImageUrl": "https://example.com/images/armacao-demo.webp",
+      "localSourceUrl": "/products/DEMO001/source.webp",
+      "brand": "Ótica Demo",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ]
+}
