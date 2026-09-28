@@ -1,6 +1,7 @@
 import "./style.css";
 import { TryOnEngine } from "./engine/TryOnEngine.js";
 import { PRODUCTS, findProduct } from "./products.generated.js";
+import { solveCaptureFrame } from "./engine/PhotoCaptureSolver.js";
 
 const video = document.querySelector("#camera");
 const canvas = document.querySelector("#overlay");
@@ -210,25 +211,23 @@ const captureResult=async()=>{
     if(frozen.img.complete) return resolve();
     frozen.img.onload=resolve; frozen.img.onerror=reject;
   });
-  const aspect=engine.product?.imageAspect||2.2;
-  // Espelha a geometria REAL do preview WebGL. A malha fotográfica já inclui
-  // a calibração do SKU (1.78 * calibration.scale), portanto não aplicamos
-  // calibration.scale novamente aqui.
-  const stageAspect=frozen.w/frozen.h;
-  const previewRootScale=((frozen.pose.scale*2*stageAspect)/1.66) * .90;
-  const meshWidth=engine.glasses3d?.imageFrameWidth||1.78;
-  const frameW=(previewRootScale*meshWidth)*(frozen.w/(2*stageAspect));
-  const frameH=frameW/aspect;
-  let cx=frozen.pose.centerX*frozen.w;
-  // Na foto congelada, ancora o centro óptico um pouco abaixo da linha dos
-  // olhos para reproduzir o encaixe que já estava correto durante o preview.
-  const cy=frozen.pose.centerY*frozen.h+frameH*.06;
-  const roll=frozen.pose.roll||0;
-  if(engine.facingMode==="user") cx=frozen.w-cx;
+  const capturePose=solveCaptureFrame({
+    pose:frozen.pose,
+    stageWidth:frozen.w,
+    stageHeight:frozen.h,
+    meshWidth:engine.glasses3d?.imageFrameWidth||1.78,
+    imageAspect:engine.product?.imageAspect||2.2,
+    mirror:engine.facingMode==="user"
+  });
+  if(!capturePose) throw new Error("Pose de captura indisponível");
   frozen.ctx.save();
-  frozen.ctx.translate(cx,cy);
-  frozen.ctx.rotate(engine.facingMode==="user"?-roll:roll);
-  frozen.ctx.drawImage(frozen.img,-frameW/2,-frameH/2,frameW,frameH);
+  frozen.ctx.translate(capturePose.centerX,capturePose.centerY);
+  frozen.ctx.rotate(capturePose.rotation);
+  frozen.ctx.drawImage(
+    frozen.img,
+    -capturePose.width/2,-capturePose.height/2,
+    capturePose.width,capturePose.height
+  );
   frozen.ctx.restore();
   countdown.hidden=true;
   stage.classList.add("frozen");
