@@ -1,0 +1,43 @@
+{
+  "store": "nova-otica",
+  "brand": "Nome da Ótica",
+  "storeConfig": {
+    "brand": "NOME DA ÓTICA",
+    "brandSuffix": "",
+    "pageTitle": "Nome da Ótica · Provador Virtual",
+    "description": "Experimente armações virtualmente usando a câmera do seu dispositivo.",
+    "heading": "Experimente no seu rosto",
+    "instruction": "Olhe para a frente. O provador fará a captura automaticamente.",
+    "privacy": "Sua câmera é processada neste dispositivo. O vídeo não é enviado.",
+    "compatibility": "Para um resultado melhor, mantenha o rosto de frente e bem iluminado."
+  },
+  "defaultProductId": "produto-exemplo-sku001",
+  "products": [
+    {
+      "id": "produto-exemplo-sku001",
+      "sku": "SKU001",
+      "name": "Armação exemplo",
+      "productUrl": "https://www.exemplo.com.br/produtos/armacao-exemplo/",
+      "sourceImageUrl": "https://www.exemplo.com.br/imagens/armacao-exemplo.webp",
+      "localSourceUrl": "/products/SKU001/source.webp",
+      "brand": "Nome da Ótica",
+      "modelUrl": null,
+      "imageAssetUrl": null,
+      "assetStatus": "source-photo",
+      "available": true,
+      "calibration": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ]
+}
