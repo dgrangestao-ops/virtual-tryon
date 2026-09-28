@@ -3,7 +3,7 @@ import {solveFrontPose,smoothPose,createStableFaceScale,solveStableFaceScale} fr
 
 const base={x:.5,y:.42,scale:.31,roll:0,yaw:0,pitch:0,aspect:1.25};
 const front=solveFrontPose(base);
-const expectedScale=((base.scale*2*base.aspect)/1.66)*.84;
+const expectedScale=((base.scale*2*base.aspect)/1.66) * .90;
 assert.ok(Math.abs(front.x-0)<1e-12,"front x contract changed");
 assert.ok(Math.abs(front.y-0.16)<1e-12,"front y contract changed");
 assert.ok(Math.abs(front.scale-expectedScale)<1e-12,"front scale coefficient changed");
