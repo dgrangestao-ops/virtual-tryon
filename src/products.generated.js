@@ -1,4 +1,15 @@
 // AUTO-GENERATED from catalog/fremi.json. Do not edit manually.
+export const STORE_CONFIG = {
+  "id": "fremi",
+  "brand": "FREMI",
+  "brandSuffix": "EYEWEAR",
+  "pageTitle": "Fremi · Provador Virtual",
+  "description": "Experimente armações Fremi virtualmente usando a câmera do seu dispositivo.",
+  "heading": "Experimente no seu rosto",
+  "instruction": "Olhe para a frente. O provador fará a captura automaticamente.",
+  "privacy": "Sua câmera é processada neste dispositivo. O vídeo não é enviado.",
+  "compatibility": "Para um resultado melhor, mantenha o rosto de frente e bem iluminado."
+};
 export const PRODUCTS = [
   {
     "id": "oculos-esportivo-preto-lente-preta-98un1",
